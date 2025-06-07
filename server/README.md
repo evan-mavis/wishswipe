@@ -13,12 +13,3 @@
 │ ├── /types # TypeScript type declarations and interfaces
 │ ├── app.ts # Express app setup (middlewares, routes)
 │ └── server.ts # Entry point to start the server
-│
-├── /prisma # Prisma-specific files (schema.prisma, migrations)
-│
-├── /tests # Tests (unit, integration)
-│
-├── .env # Environment variables
-├── tsconfig.json # TypeScript config
-├── package.json
-└── README.md

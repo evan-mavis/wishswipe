@@ -39,7 +39,19 @@ function App() {
   return (
     <>
       <div>
-        <h1>🛍️WishSwipe🛍️</h1>
+        <h1>
+          <img
+            src="src/assets/wishswipe-logo.png"
+            alt="WishSwipe Logo"
+            className="logo-image"
+          />
+          Wish<em>Swipe</em>
+          <img
+            src="src/assets/wishswipe-logo.png"
+            alt="WishSwipe Logo"
+            className="logo-image"
+          />
+        </h1>
 
         {user ? (
           <div>

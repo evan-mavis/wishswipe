@@ -1,0 +1,25 @@
+:root {
+  /* colors */
+  --background-color: #333232;
+  --text-primary: #e0e0e0;
+  --text-secondary: #a0a0a0;
+  --accent-color: #be88d9;
+  --secondary-accent-color: #161718;
+
+  /* typography */
+  --font-family: "Roboto Mono", monospace;
+  --font-size-base: 16px;
+  --font-size-h1: 2.5rem;
+  --line-height: 1.5;
+
+  /* breakpoints */
+  --breakpoint-mobile: 576px;
+  --breakpoint-tablet: 768px;
+  --breakpoint-desktop: 992px;
+
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height);
+  color: var(--text-primary);
+  background-color: var(--background-color);
+}
