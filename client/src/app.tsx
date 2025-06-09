@@ -5,13 +5,13 @@ import { SidebarProvider, SidebarTrigger } from "./components/ui/sidebar";
 function App({ children }: { children: React.ReactNode }) {
   return (
     <SidebarProvider>
-      <AppSidebar />
-      <main className="w-full">
-        <ThemeProvider>
+      <ThemeProvider>
+        <AppSidebar />
+        <main className="w-full">
           <SidebarTrigger />
           {children}
-        </ThemeProvider>
-      </main>
+        </main>
+      </ThemeProvider>
     </SidebarProvider>
   );
 }

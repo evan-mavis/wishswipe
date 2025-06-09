@@ -1,5 +1,4 @@
 import { Calendar, Home, Inbox, Search, Settings } from "lucide-react";
-
 import {
   Sidebar,
   SidebarContent,
@@ -12,7 +11,6 @@ import {
 } from "@/components/ui/sidebar";
 import { ModeToggle } from "../modeToggle/ModeToggle";
 
-// Menu items.
 const items = [
   {
     title: "Home",
