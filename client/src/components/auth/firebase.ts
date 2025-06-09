@@ -1,5 +1,4 @@
 import { initializeApp } from "firebase/app";
-// https://firebase.google.com/docs/web/setup#available-libraries
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_API_KEY,
@@ -11,4 +10,4 @@ const firebaseConfig = {
   measurementId: import.meta.env.VITE_MEASUREMENT_ID,
 };
 
-export const app = initializeApp(firebaseConfig);
+export const firebaseApp = initializeApp(firebaseConfig);
