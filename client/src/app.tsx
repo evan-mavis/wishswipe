@@ -1,11 +1,18 @@
+import { AppSidebar } from "./components/appSidebar/AppSidebar";
 import { ThemeProvider } from "./components/themeProvider/ThemeProvider";
-import Home from "./pages/home/Home";
+import { SidebarProvider, SidebarTrigger } from "./components/ui/sidebar";
 
-function App() {
+function App({ children }: { children: React.ReactNode }) {
   return (
-    <ThemeProvider>
-      <Home />
-    </ThemeProvider>
+    <SidebarProvider>
+      <AppSidebar />
+      <main className="w-full">
+        <ThemeProvider>
+          <SidebarTrigger />
+          {children}
+        </ThemeProvider>
+      </main>
+    </SidebarProvider>
   );
 }
 

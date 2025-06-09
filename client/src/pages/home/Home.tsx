@@ -1,4 +1,3 @@
-import { ModeToggle } from "@/components/modeToggle/ModeToggle";
 import Auth from "@/components/auth/Auth";
 
 function Home() {
@@ -18,7 +17,6 @@ function Home() {
         />
       </h1>
       <Auth />
-      <ModeToggle />
     </div>
   );
 }
