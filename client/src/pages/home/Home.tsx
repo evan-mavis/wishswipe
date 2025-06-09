@@ -16,6 +16,10 @@ function Home() {
           className="w-12 h-12"
         />
       </h1>
+      <p className="mx-2 mb-2 text-center">
+        A swipe-based app for discovering and saving eBay items. Swipe right to
+        wishlist, left to dismiss.
+      </p>
       <Auth />
     </div>
   );

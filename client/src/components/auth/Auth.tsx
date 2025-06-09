@@ -44,7 +44,7 @@ function Auth() {
     </div>
   ) : (
     <div className="mb-2">
-      <Button onClick={signInWithGoogle}>Sign In with Google</Button>
+      <Button onClick={signInWithGoogle}>Sign in to get started!</Button>
     </div>
   );
 }
