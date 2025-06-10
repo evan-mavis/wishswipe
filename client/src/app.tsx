@@ -7,9 +7,11 @@ function App({ children }: { children: React.ReactNode }) {
     <SidebarProvider>
       <ThemeProvider>
         <AppSidebar />
-        <main className="w-full">
-          <SidebarTrigger />
-          {children}
+        <main className="flex w-full">
+          <div className="flex items-center justify-center">
+            <SidebarTrigger />
+          </div>
+          <div className="flex-grow">{children}</div>
         </main>
       </ThemeProvider>
     </SidebarProvider>

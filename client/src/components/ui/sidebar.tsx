@@ -2,7 +2,7 @@ import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { cva } from "class-variance-authority";
 import type { VariantProps } from "class-variance-authority";
-import { PanelLeftIcon } from "lucide-react";
+import { PanelLeftIcon, ChevronLeft, ChevronRight } from "lucide-react";
 
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
@@ -252,29 +252,30 @@ function Sidebar({
   );
 }
 
-function SidebarTrigger({
-  className,
-  onClick,
-  ...props
-}: React.ComponentProps<typeof Button>) {
-  const { toggleSidebar } = useSidebar();
+function SidebarTrigger({ onClick }: React.ComponentProps<"button">) {
+  const { toggleSidebar, open } = useSidebar();
 
   return (
-    <Button
-      data-sidebar="trigger"
-      data-slot="sidebar-trigger"
-      variant="ghost"
-      size="icon"
-      className={cn("size-7", className)}
+    <button
+      className="group h-20"
       onClick={(event) => {
         onClick?.(event);
         toggleSidebar();
       }}
-      {...props}
     >
-      <PanelLeftIcon />
       <span className="sr-only">Toggle Sidebar</span>
-    </Button>
+      {open ? (
+        <ChevronRight
+          className="transition group-hover:rotate-180 group-hover:scale-110 text-fuchsia-300"
+          size={35}
+        />
+      ) : (
+        <ChevronLeft
+          className="transition group-hover:rotate-180 group-hover:scale-110 text-fuchsia-300"
+          size={35}
+        />
+      )}
+    </button>
   );
 }
 

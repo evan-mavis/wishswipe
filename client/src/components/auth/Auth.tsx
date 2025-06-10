@@ -38,12 +38,12 @@ function Auth() {
   };
 
   return user ? (
-    <div className="mb-2">
+    <div className="mb-4">
       <p>Welcome, {user.displayName}!</p>
       <Button onClick={signOutUser}>Sign Out</Button>
     </div>
   ) : (
-    <div className="mb-2">
+    <div className="mb-4">
       <Button onClick={signInWithGoogle}>Sign in to get started!</Button>
     </div>
   );
