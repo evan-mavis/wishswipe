@@ -1,4 +1,5 @@
 import Auth from "@/components/auth/Auth";
+import { CustomCarousel } from "@/components/customCarousel/CustomCarousel";
 
 function Home() {
   return (
@@ -21,6 +22,7 @@ function Home() {
         wishlist, left to dismiss.
       </p>
       <Auth />
+      <CustomCarousel />
     </div>
   );
 }
