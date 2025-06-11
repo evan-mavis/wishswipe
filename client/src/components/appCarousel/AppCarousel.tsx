@@ -1,7 +1,7 @@
 import { ListingCard } from "../listingCard/ListingCard";
 import { Carousel, CarouselContent, CarouselItem } from "../ui/carousel";
 
-export function CustomCarousel() {
+export function AppCarousel() {
   return (
     <Carousel className="w-[70%]">
       <CarouselContent>
