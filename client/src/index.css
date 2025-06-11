@@ -120,6 +120,8 @@
   }
   body {
     @apply bg-background text-foreground font-wishswipe;
+    overflow: hidden;
+    height: 100vh;
   }
   h1 {
     font-weight: bold;
@@ -129,13 +131,4 @@
 }
 
 @layer components {
-}
-
-@layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
 }
