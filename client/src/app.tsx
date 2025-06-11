@@ -11,7 +11,7 @@ function App({ children }: { children: React.ReactNode }) {
           <div className="flex items-center justify-center">
             <SidebarTrigger />
           </div>
-          <div className="flex-grow">{children}</div>
+          <div>{children}</div>
         </main>
       </ThemeProvider>
     </SidebarProvider>

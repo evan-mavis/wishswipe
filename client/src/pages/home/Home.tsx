@@ -3,7 +3,7 @@ import { CustomCarousel } from "@/components/customCarousel/CustomCarousel";
 
 function Home() {
   return (
-    <div className="flex flex-col justify-center items-center">
+    <div className="flex flex-col justify-start items-center">
       <h1 className="flex items-center">
         <img
           src="wishswipe-logo.png"
