@@ -10,7 +10,7 @@ export function ListingCard({ imageUrl }: ListingCardProps) {
       <img
         src={imageUrl}
         alt="eBay product"
-        className="object-contain rounded-4xl w-full max-h-[500px]"
+        className="object-contain w-full max-h-[500px]"
         loading="lazy"
       />
       <ListingCaption />
