@@ -1,9 +1,9 @@
 import { AppSidebar } from "./components/appSidebar/AppSidebar";
 import { ThemeProvider } from "./components/themeProvider/ThemeProvider";
-import { SidebarProvider, SidebarTrigger } from "./components/ui/sidebar";
+import { SidebarProvider } from "./components/ui/sidebar";
 import { useAuth } from "./hooks/use-auth";
 import Home from "./pages/home/Home";
-import { Main } from "./pages/main/Main";
+import { Engine } from "./pages/engine/Engine";
 
 function App() {
   const { user } = useAuth();
@@ -14,7 +14,7 @@ function App() {
         <SidebarProvider>
           <div className="flex h-screen">
             <AppSidebar />
-            <Main />
+            <Engine />
           </div>
         </SidebarProvider>
       ) : (

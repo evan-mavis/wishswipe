@@ -3,7 +3,7 @@ import { MainCarousel } from "@/components/mainCarousel/MainCarousel";
 import { AppHeaderWithLogo } from "@/components/appHeader/AppHeaderWithLogo";
 import { useAuth } from "@/hooks/use-auth";
 
-export function Main() {
+export function Engine() {
   const { user } = useAuth();
 
   return (
