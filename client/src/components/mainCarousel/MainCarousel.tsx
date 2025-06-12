@@ -7,7 +7,7 @@ import {
   type CarouselApi,
 } from "../ui/carousel";
 
-const images = ["/test-image-3.jpg", "/test-image-2.jpg", "/test-image-3.jpg"];
+const images = ["/test-image-1.jpg", "/test-image-2.jpg", "/test-image-3.jpg"];
 
 export function MainCarousel() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -28,7 +28,7 @@ export function MainCarousel() {
   }, [emblaApi, onSelect]);
 
   return (
-    <Carousel className="w-[70%]" setApi={setEmblaApi}>
+    <Carousel setApi={setEmblaApi}>
       <CarouselContent>
         {images.map((imageUrl, index) => (
           <CarouselItem key={index}>

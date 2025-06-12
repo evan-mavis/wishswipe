@@ -2,6 +2,7 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 import { MainCarousel } from "@/components/mainCarousel/MainCarousel";
 import { AppHeaderWithLogo } from "@/components/appHeader/AppHeaderWithLogo";
 import { useAuth } from "@/hooks/use-auth";
+import { ArrowDownToLine, Trash2 } from "lucide-react";
 
 export function Engine() {
   const { user } = useAuth();
@@ -22,7 +23,13 @@ export function Engine() {
         <p className="text-center mb-4">
           Welcome, {user?.displayName || "User"}! Swipe away.
         </p>
-        <MainCarousel />
+        <div className="w-[70%] flex flex-col items-center">
+          <MainCarousel />
+          <div className="flex justify-between w-full mt-2">
+            <Trash2 />
+            <ArrowDownToLine />
+          </div>
+        </div>
       </div>
     </main>
   );
