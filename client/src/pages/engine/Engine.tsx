@@ -26,8 +26,8 @@ export function Engine() {
         <div className="w-[70%] flex flex-col items-center">
           <MainCarousel />
           <div className="flex justify-between w-full mt-2">
-            <Trash2 />
-            <ArrowDownToLine />
+            <Trash2 size="40" />
+            <ArrowDownToLine size="40" />
           </div>
         </div>
       </div>
