@@ -1,7 +1,7 @@
 import { AppHeaderWithLogo } from "@/components/appHeader/AppHeaderWithLogo";
-import { AppCarousel } from "@/components/appCarousel/AppCarousel";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
+import { MainCarousel } from "@/components/mainCarousel/MainCarousel";
 
 function Home() {
   const { user, signInWithGoogle } = useAuth();
@@ -12,7 +12,7 @@ function Home() {
         <AppHeaderWithLogo />
       </h1>
       {user ? (
-        <AppCarousel />
+        <MainCarousel />
       ) : (
         <div className="mb-4">
           <p className="mx-2 mb-4 text-center">
