@@ -6,13 +6,13 @@ export function AppHeaderWithLogo() {
       <img
         src="wishswipe-logo.png"
         alt="WishSwipe Logo"
-        className="w-12 h-12"
+        className="w-25 h-25"
       />
       <AppHeader />
       <img
         src="wishswipe-logo.png"
         alt="WishSwipe Logo"
-        className="w-12 h-12"
+        className="w-25 h-25"
       />
     </div>
   );

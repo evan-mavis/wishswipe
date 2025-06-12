@@ -5,12 +5,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@radix-ui/react-dropdown-menu";
-import { Button } from "../../../ui/button";
 import { useAuth } from "@/hooks/use-auth";
 import { ModeToggle } from "@/components/modeToggle/ModeToggle";
 
 export function SidebarFooterContent() {
-  const { user, signOutUser, signInWithGoogle } = useAuth();
+  const { user, signOutUser } = useAuth();
 
   return (
     <div className="flex items-center justify-between p-4">
@@ -33,15 +32,7 @@ export function SidebarFooterContent() {
             </DropdownMenuContent>
           </DropdownMenu>
         </>
-      ) : (
-        <Button
-          className="border-2 border-fuchsia-300"
-          variant="outline"
-          onClick={signInWithGoogle}
-        >
-          Sign In
-        </Button>
-      )}
+      ) : null}
       <ModeToggle />
     </div>
   );
