@@ -13,7 +13,11 @@ export function Engine() {
       </div>
       <div className="flex flex-col items-center justify-center">
         <h1>
-          <AppHeaderWithLogo />
+          <AppHeaderWithLogo
+            fontSize="text-4xl"
+            imageHeight="12"
+            imageWidth="12"
+          />
         </h1>
         <p className="text-center mb-4">
           Welcome, {user?.displayName || "User"}! Swipe away.
