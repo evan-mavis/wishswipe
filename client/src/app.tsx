@@ -10,7 +10,7 @@ function App() {
 
   return (
     <ThemeProvider>
-      {user ? (
+      {!user ? (
         <SidebarProvider>
           <div className="flex h-screen">
             <AppSidebar />
