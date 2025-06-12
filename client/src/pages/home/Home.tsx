@@ -1,32 +1,22 @@
 import { AppHeaderWithLogo } from "@/components/appHeader/AppHeaderWithLogo";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
-import { MainCarousel } from "@/components/mainCarousel/MainCarousel";
 
 function Home() {
-  const { user, signInWithGoogle } = useAuth();
+  const { signInWithGoogle } = useAuth();
 
   return (
     <div className="flex flex-col justify-center items-center">
       <h1>
         <AppHeaderWithLogo />
       </h1>
-      {user ? (
-        <>
-          <p className="text-center mb-4">
-            Welcome, {user.displayName || "User"}! Swipe away.
-          </p>
-          <MainCarousel />
-        </>
-      ) : (
-        <>
-          <p className="mx-2 mb-4 text-center">
-            A swipe-based app for discovering and saving eBay items. Swipe right
-            to wishlist, left to dismiss.
-          </p>
-          <Button onClick={signInWithGoogle}>Sign in to get started!</Button>
-        </>
-      )}
+      <>
+        <p className="text-lg mb-4 text-center">
+          A swipe-based app for discovering and saving eBay items. Swipe right
+          to wishlist, left to dismiss.
+        </p>
+        <Button onClick={signInWithGoogle}>Sign in to get started!</Button>
+      </>
     </div>
   );
 }
