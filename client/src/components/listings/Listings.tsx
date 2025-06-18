@@ -3,6 +3,7 @@ import { ListingCard } from "./components/listingCard/ListingCard";
 import { Progress } from "../ui/progress";
 import { useState } from "react";
 import type { Listing } from "../../types/listing";
+import { AnimatePresence } from "framer-motion";
 
 const initialListings: Listing[] = [
   {
@@ -110,17 +111,19 @@ export function Listings() {
   return (
     <>
       <div className="grid place-items-center">
-        {listings.map((listing, index) => (
-          <ListingCard
-            key={listing.id}
-            id={listing.id}
-            imageUrl={listing.imageUrl}
-            details={listing.details}
-            setListings={setListings}
-            isActive={index === 0 && !isDragging}
-            onProgressChange={handleProgressChange}
-          />
-        ))}
+        <AnimatePresence mode="wait">
+          {listings.map((listing, index) => (
+            <ListingCard
+              key={listing.id}
+              id={listing.id}
+              imageUrl={listing.imageUrl}
+              details={listing.details}
+              setListings={setListings}
+              onProgressChange={handleProgressChange}
+              index={index} // Add this new prop
+            />
+          ))}
+        </AnimatePresence>
       </div>
       <div className="flex justify-center items-center w-[50%] mt-2">
         <Trash2
