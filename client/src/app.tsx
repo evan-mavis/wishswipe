@@ -10,12 +10,10 @@ function App() {
 
   return (
     <ThemeProvider>
-      {!user ? (
+      {user ? (
         <SidebarProvider>
-          <div className="flex h-screen">
-            <AppSidebar />
-            <Engine />
-          </div>
+          <AppSidebar />
+          <Engine />
         </SidebarProvider>
       ) : (
         <Home />
