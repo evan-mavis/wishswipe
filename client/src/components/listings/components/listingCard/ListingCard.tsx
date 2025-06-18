@@ -56,6 +56,7 @@ export function ListingCard({
         x,
         opacity,
         rotate,
+        zIndex: isActive ? 10 : 0,
       }}
       drag="x"
       dragConstraints={{ left: 0, right: 0 }}
