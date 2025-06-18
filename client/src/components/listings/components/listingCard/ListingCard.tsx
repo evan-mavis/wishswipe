@@ -73,19 +73,21 @@ export function ListingCard({
           drag="x"
           dragConstraints={{ left: 0, right: 0 }}
           dragElastic={0.7}
-          className="cursor-grab active:cursor-grabbing"
+          className="cursor-grab active:cursor-grabbing flex flex-col"
           onDragEnd={handleDragEnd}
         >
-          <div className="w-[600px] h-[600px] pointer-events-none flex items-center justify-center">
+          <div className="w-[600px] h-[500px] pointer-events-none flex items-center justify-center">
             <img
               src={imageUrl}
               alt="eBay product"
-              className="max-w-full max-h-full w-auto h-auto object-contain pointer-events-none"
+              className="max-w-full max-h-full w-auto h-auto object-contain pointer-events-none rounded-4xl"
               loading="lazy"
               draggable="false"
             />
           </div>
-          <ListingCaption isActive={true} details={details} />
+          <div className="mt-4">
+            <ListingCaption isActive={true} details={details} />
+          </div>
         </motion.div>
       )}
     </AnimatePresence>

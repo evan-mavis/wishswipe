@@ -12,7 +12,7 @@ export function AppHeaderWithLogo({
   fontSize = "text-6xl",
 }: AppHeaderWithLogoProps) {
   return (
-    <div className="flex items-center">
+    <div className="flex items-center m-4">
       <img
         src="wishswipe-logo.png"
         alt="WishSwipe Logo"

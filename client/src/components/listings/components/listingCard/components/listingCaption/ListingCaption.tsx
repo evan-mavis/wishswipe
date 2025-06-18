@@ -8,7 +8,7 @@ interface ListingCaptionProps {
 
 export function ListingCaption({ isActive, details }: ListingCaptionProps) {
   return (
-    <div className="flex justify-center">
+    <div className="flex justify-center mb-6">
       <div
         className={`inline-block p-6 relative mt-4 transition-all duration-300
           ${isActive ? "opacity-100 translate-x-0" : "opacity-0"}

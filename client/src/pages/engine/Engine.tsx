@@ -15,7 +15,7 @@ export function Engine() {
         <div className="flex flex-col items-center justify-center flex-1">
           <h1>
             <AppHeaderWithLogo
-              fontSize="text-4xl"
+              fontSize="text-5xl"
               imageHeight="12"
               imageWidth="12"
             />
