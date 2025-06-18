@@ -12,6 +12,7 @@ interface ListingCardProps {
   imageUrl: string;
   isActive: boolean;
   setListings: Dispatch<SetStateAction<{ id: number; imageUrl: string }[]>>;
+  onProgressChange?: (progress: number) => void;
 }
 
 export function ListingCard({
@@ -19,20 +20,29 @@ export function ListingCard({
   imageUrl,
   isActive,
   setListings,
+  onProgressChange,
 }: ListingCardProps) {
   const x = useMotionValue(0);
+  const DRAG_THRESHOLD = 150;
 
   useMotionValueEvent(x, "change", (latest) => {
-    console.log("X position changed:", latest);
+    // Adjust calculation to reach 0/100 at threshold
+    const progress = 50 + (latest / DRAG_THRESHOLD) * 50;
+    onProgressChange?.(Math.min(Math.max(progress, 0), 100));
   });
 
-  const opacity = useTransform(x, [-350, 0, 350], [0, 1, 0]);
-  const rotate = useTransform(x, [-350, 350], [-15, 15]);
+  const opacity = useTransform(
+    x,
+    [-DRAG_THRESHOLD, 0, DRAG_THRESHOLD],
+    [0.2, 1, 0.2]
+  );
+  const rotate = useTransform(x, [-DRAG_THRESHOLD, DRAG_THRESHOLD], [-15, 15]);
 
   const handleDragEnd = () => {
-    if (Math.abs(x.get()) > 100) {
+    if (Math.abs(x.get()) > DRAG_THRESHOLD) {
       setListings((pv) => pv.filter((v) => v.id !== id));
     }
+    onProgressChange?.(50); // Reset to center
   };
 
   return (
@@ -43,7 +53,6 @@ export function ListingCard({
         x,
         opacity,
         rotate,
-        transition: "0.125s transform ease-in",
       }}
       drag="x"
       dragConstraints={{ left: 0, right: 0 }}
