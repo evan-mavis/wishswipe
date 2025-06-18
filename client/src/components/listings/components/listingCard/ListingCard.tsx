@@ -1,4 +1,5 @@
 import type { Dispatch, SetStateAction } from "react";
+import type { Listing, ListingDetails } from "../../../../types/listing";
 import { ListingCaption } from "./components/listingCaption/ListingCaption";
 import {
   motion,
@@ -10,14 +11,16 @@ import {
 interface ListingCardProps {
   id: number;
   imageUrl: string;
+  details: ListingDetails;
   isActive: boolean;
-  setListings: Dispatch<SetStateAction<{ id: number; imageUrl: string }[]>>;
+  setListings: Dispatch<SetStateAction<Listing[]>>;
   onProgressChange?: (progress: number) => void;
 }
 
 export function ListingCard({
   id,
   imageUrl,
+  details,
   isActive,
   setListings,
   onProgressChange,
@@ -42,7 +45,7 @@ export function ListingCard({
     if (Math.abs(x.get()) > DRAG_THRESHOLD) {
       setListings((pv) => pv.filter((v) => v.id !== id));
     }
-    onProgressChange?.(50); // Reset to center
+    onProgressChange?.(50); // This will reset progress and activeId
   };
 
   return (
@@ -69,7 +72,7 @@ export function ListingCard({
           draggable="false"
         />
       </div>
-      <ListingCaption isActive={isActive} />
+      <ListingCaption isActive={isActive} details={details} />
     </motion.div>
   );
 }
