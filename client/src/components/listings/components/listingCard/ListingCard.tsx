@@ -13,7 +13,6 @@ interface ListingCardProps {
   id: number;
   imageUrl: string;
   details: ListingDetails;
-  isActive: boolean;
   setListings: Dispatch<SetStateAction<Listing[]>>;
   onProgressChange?: (progress: number) => void;
   index: number; // Add this new prop
