@@ -10,13 +10,11 @@ function Home() {
       <h1>
         <AppHeaderWithLogo />
       </h1>
-      <>
-        <p className="text-lg mb-4 text-center">
-          A swipe-based app for discovering and saving eBay items. Swipe right
-          to wishlist, left to dismiss.
-        </p>
-        <Button onClick={signInWithGoogle}>Sign in to get started!</Button>
-      </>
+      <p className="text-lg mb-4 text-center">
+        A swipe-based app for discovering and saving eBay items. Swipe right to
+        wishlist, left to dismiss.
+      </p>
+      <Button onClick={signInWithGoogle}>Sign in to get started!</Button>
     </div>
   );
 }

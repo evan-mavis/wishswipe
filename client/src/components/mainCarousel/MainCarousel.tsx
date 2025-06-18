@@ -17,7 +17,6 @@ export function MainCarousel() {
   const [emblaApi, setEmblaApi] = useState<CarouselApi | null>(null);
   const [highlightLeft, setHighlightLeft] = useState(false);
   const [highlightRight, setHighlightRight] = useState(false);
-  const [showProgress, setShowProgress] = useState(true);
 
   const resetHighlights = () => {
     setTimeout(() => {
@@ -29,7 +28,7 @@ export function MainCarousel() {
   const onSelect = useCallback(() => {
     if (!emblaApi) return;
     setCurrentImageIndex(emblaApi.selectedScrollSnap());
-    setScrollProgress(50); // Reset to center when new slide is selected
+    setScrollProgress(50);
   }, [emblaApi]);
 
   const onScroll = useCallback(() => {
