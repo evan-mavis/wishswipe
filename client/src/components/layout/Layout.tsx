@@ -13,7 +13,9 @@ export function Layout() {
 				<div className="fixed top-1/2 z-50 hidden -translate-y-1/2 transition-all duration-200 ease-linear peer-data-[state=collapsed]:left-2 peer-data-[state=expanded]:left-[calc(var(--sidebar-width)-24px)] md:flex">
 					<SidebarTrigger />
 				</div>
-				<Outlet />
+				<div className="pl-8 md:p-0">
+					<Outlet />
+				</div>
 			</SidebarInset>
 		</SidebarProvider>
 	);

@@ -211,8 +211,8 @@ export function WishlistCard({
 												}}
 												className={cn(
 													"overflow-auto pb-4 pl-3",
-													isMobile 
-														? "flex flex-col gap-4" 
+													isMobile
+														? "flex flex-col gap-4"
 														: "flex snap-x snap-mandatory gap-4"
 												)}
 											>
@@ -223,7 +223,8 @@ export function WishlistCard({
 														className={cn(
 															"group/item",
 															!isMobile && "snap-center",
-															listingReorderMode && "cursor-grab active:cursor-grabbing"
+															listingReorderMode &&
+																"cursor-grab active:cursor-grabbing"
 														)}
 														drag={listingReorderMode}
 													>

@@ -7,6 +7,8 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { cn } from "@/lib/utils";
 
 interface WishlistActionsProps {
 	reorderMode: boolean;
@@ -31,16 +33,26 @@ export function WishlistActions({
 	onModeChange,
 	onNewWishlist,
 }: WishlistActionsProps) {
+	const isMobile = useIsMobile();
+
 	if (reorderMode) {
 		return (
 			<div className="flex gap-2">
-				<Button variant="ghost" onClick={onReorderCancel} className="gap-2">
+				<Button
+					variant="ghost"
+					onClick={onReorderCancel}
+					className={cn("gap-2", isMobile && "h-8 w-8 p-0")}
+				>
 					<X className="h-4 w-4" />
-					Cancel
+					{!isMobile && "Cancel"}
 				</Button>
-				<Button variant="default" onClick={onReorderSave} className="gap-2">
+				<Button
+					variant="default"
+					onClick={onReorderSave}
+					className={cn("gap-2", isMobile && "h-8 w-8 p-0")}
+				>
 					<Check className="h-4 w-4" />
-					Save Changes
+					{!isMobile && "Save Changes"}
 				</Button>
 			</div>
 		);
@@ -49,18 +61,22 @@ export function WishlistActions({
 	if (deleteMode) {
 		return (
 			<div className="flex gap-2">
-				<Button variant="ghost" onClick={onDeleteCancel} className="gap-2">
+				<Button
+					variant="ghost"
+					onClick={onDeleteCancel}
+					className={cn("gap-2", isMobile && "h-8 w-8 p-0")}
+				>
 					<X className="h-4 w-4" />
-					Cancel
+					{!isMobile && "Cancel"}
 				</Button>
 				<Button
 					variant="destructive"
 					onClick={onDeleteConfirm}
 					disabled={selectedCount === 0}
-					className="gap-2"
+					className={cn("gap-2", isMobile && "h-8 w-8 p-0")}
 				>
 					<Trash2 className="h-4 w-4" />
-					Delete ({selectedCount})
+					{!isMobile && `Delete (${selectedCount})`}
 				</Button>
 			</div>
 		);
@@ -69,9 +85,12 @@ export function WishlistActions({
 	return (
 		<DropdownMenu>
 			<DropdownMenuTrigger asChild>
-				<Button variant="outline" className="gap-2">
+				<Button
+					variant="outline"
+					className={cn("gap-2", isMobile && "h-8 w-8 p-0")}
+				>
 					<Settings2 className="h-4 w-4" />
-					Wishlist Actions
+					{!isMobile && "Wishlist Actions"}
 				</Button>
 			</DropdownMenuTrigger>
 			<DropdownMenuContent>
