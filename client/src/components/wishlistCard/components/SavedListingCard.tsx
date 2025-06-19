@@ -11,6 +11,7 @@ import {
 import { useState } from "react";
 import { Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface SavedListingCardProps {
 	listing: Listing;
@@ -24,6 +25,7 @@ export function SavedListingCard({
 	isReorderMode,
 }: SavedListingCardProps) {
 	const [showDetails, setShowDetails] = useState(false);
+	const isMobile = useIsMobile();
 
 	if (!listing) return null;
 
@@ -32,7 +34,8 @@ export function SavedListingCard({
 			<Card
 				className={cn(
 					"group/item relative overflow-hidden transition-colors",
-					isReorderMode && "hover:border-green-400"
+					isReorderMode && "hover:border-green-400",
+					isMobile && "w-full"
 				)}
 			>
 				<CardContent className="p-0">
@@ -40,7 +43,11 @@ export function SavedListingCard({
 						<Button
 							variant="ghost"
 							size="sm"
-							className="absolute top-2 right-2 h-8 w-8 rounded-full p-0 opacity-0 transition-opacity group-hover/item:opacity-100"
+							className={cn(
+								"absolute top-2 right-2 h-8 w-8 rounded-full p-0 transition-opacity",
+								!isMobile && "opacity-0 group-hover/item:opacity-100",
+								isMobile && "opacity-100"
+							)}
 							onClick={(e) => {
 								e.stopPropagation();
 								onDelete();
@@ -49,7 +56,7 @@ export function SavedListingCard({
 							<Trash2 className="h-4 w-4" />
 						</Button>
 					)}
-					<div className="flex gap-4 p-4">
+					<div className={cn("flex gap-4 p-4", isMobile && "items-center")}>
 						<div className="h-20 w-20 overflow-hidden rounded-md">
 							<img
 								src={listing.imageUrl}
@@ -69,7 +76,11 @@ export function SavedListingCard({
 						<Button
 							variant="ghost"
 							size="sm"
-							className="absolute right-2 bottom-2 h-8 w-8 rounded-full p-0 opacity-0 transition-opacity group-hover/item:opacity-100"
+							className={cn(
+								"absolute right-2 bottom-2 h-8 w-8 rounded-full p-0 transition-opacity",
+								!isMobile && "opacity-0 group-hover/item:opacity-100",
+								isMobile && "opacity-100"
+							)}
 							onClick={(e) => {
 								e.stopPropagation();
 								setShowDetails(true);

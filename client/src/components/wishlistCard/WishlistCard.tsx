@@ -24,6 +24,7 @@ import {
 	TooltipProvider,
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface WishlistCardProps extends WishList {
 	deleteMode: boolean;
@@ -48,6 +49,7 @@ export function WishlistCard({
 	isFavorite,
 	onFavorite,
 }: WishlistCardProps) {
+	const isMobile = useIsMobile();
 	const [isExpanded, setIsExpanded] = useState(false);
 	const [items, setItems] = useState(initialItems);
 	const [itemToDelete, setItemToDelete] = useState<number | null>(null);
@@ -91,7 +93,11 @@ export function WishlistCard({
 			<motion.div
 				layout
 				animate={{
-					width: isExpanded ? "calc(100% - 2rem)" : "300px",
+					width: isExpanded
+						? isMobile
+							? "100%"
+							: "calc(100% - 2rem)"
+						: "300px",
 					position: isExpanded ? "relative" : "static",
 					zIndex: isExpanded ? 50 : 0,
 				}}
@@ -196,28 +202,36 @@ export function WishlistCard({
 									>
 										<CardContent>
 											<Reorder.Group
-												axis="x"
+												axis={isMobile ? "y" : "x"}
 												values={items}
 												onReorder={(newOrder: Listing[]) => {
 													if (listingReorderMode) {
 														setItems(newOrder);
 													}
 												}}
-												className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-4 pl-3"
+												className={cn(
+													"overflow-auto pb-4 pl-3",
+													isMobile 
+														? "flex flex-col gap-4" 
+														: "flex snap-x snap-mandatory gap-4"
+												)}
 											>
 												{items.map((listing) => (
 													<Reorder.Item
 														key={listing.id}
 														value={listing}
 														className={cn(
-															"group/item snap-center",
-															listingReorderMode &&
-																"cursor-grab active:cursor-grabbing"
+															"group/item",
+															!isMobile && "snap-center",
+															listingReorderMode && "cursor-grab active:cursor-grabbing"
 														)}
 														drag={listingReorderMode}
 													>
 														<div
-															className="group relative w-[300px]"
+															className={cn(
+																"group relative",
+																isMobile ? "w-full" : "w-[300px]"
+															)}
 															onClick={(e) => e.stopPropagation()}
 														>
 															<SavedListingCard
