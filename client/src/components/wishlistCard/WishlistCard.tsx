@@ -91,8 +91,8 @@ export function WishlistCard({
 						deleteMode
 							? "hover:border-red-300"
 							: reorderMode
-							? "hover:border-green-400"
-							: "border-fuchsia-300 hover:shadow-md",
+								? "hover:border-green-400"
+								: "border-fuchsia-300 hover:shadow-md",
 						isSelected && "border-2 border-red-500",
 						isExpanded && "max-w-full"
 					)}
@@ -134,29 +134,19 @@ export function WishlistCard({
 												key={listing.id}
 												value={listing}
 												onPointerDown={handleReorderStart}
-												className="snap-center group/item" // Added group/item for individual hover
+												className="group/item snap-center"
 											>
 												<div
 													className="group relative w-[300px]"
 													onClick={(e) => e.stopPropagation()}
 												>
-													<div className="absolute -top-2 -right-2 z-10 opacity-0 transition-opacity group-hover/item:opacity-100">
-														<Button
-															variant="ghost"
-															size="sm"
-															className="bg-background h-8 w-8 rounded-full p-0 hover:bg-red-100 hover:text-red-500"
-															onClick={(e) => {
-																e.stopPropagation();
-																setItemToDelete(listing.id);
-															}}
-														>
-															<Trash2 className="h-4 w-4" />
-														</Button>
-													</div>
-													<div className="absolute top-1/2 -translate-y-1/2 -translate-x-4 opacity-0 transition-opacity group-hover/item:opacity-100">
+													<SavedListingCard
+														listing={listing}
+														onDelete={() => setItemToDelete(listing.id)}
+													/>
+													<div className="absolute top-1/2 -translate-x-4 -translate-y-1/2 opacity-0 transition-opacity group-hover/item:opacity-100">
 														<GripVertical className="text-muted-foreground h-4 w-4 cursor-grab" />
 													</div>
-													<SavedListingCard listing={listing} />
 												</div>
 											</Reorder.Item>
 										))}

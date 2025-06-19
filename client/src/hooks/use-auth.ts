@@ -1,6 +1,6 @@
 import {
 	getAuth,
-	signInWithRedirect,
+	signInWithPopup, // Changed from signInWithRedirect
 	GoogleAuthProvider,
 	signOut,
 } from "firebase/auth";
@@ -10,18 +10,22 @@ import { firebaseApp } from "@/auth/firebase";
 
 export function useAuth() {
 	const [user, setUser] = useState<User | null>(null);
+	const [loading, setLoading] = useState(true);
 	const auth = getAuth(firebaseApp);
 
 	useEffect(() => {
 		const unsubscribe = auth.onAuthStateChanged((user) => {
 			setUser(user);
+			setLoading(false);
 		});
-		return unsubscribe;
+
+		return () => unsubscribe();
 	}, [auth]);
 
 	const signInWithGoogle = async () => {
 		try {
-			await signInWithRedirect(auth, new GoogleAuthProvider());
+			const provider = new GoogleAuthProvider();
+			await signInWithPopup(auth, provider); // Changed from signInWithRedirect
 		} catch (error) {
 			console.error("Error signing in with Google:", error);
 		}
@@ -35,5 +39,5 @@ export function useAuth() {
 		}
 	};
 
-	return { user, signInWithGoogle, signOutUser };
+	return { user, loading, signInWithGoogle, signOutUser };
 }

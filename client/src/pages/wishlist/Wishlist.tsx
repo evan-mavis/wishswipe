@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { WishlistCard } from "../../components/wishlistCard/WishlistCard";
-import type { Listing, WishList } from "@/types/listing";
+import type { WishList } from "@/types/listing";
 import { useState } from "react";
 import {
 	AlertDialog,
@@ -286,14 +286,6 @@ export function Wishlist() {
 		setShowDeleteConfirm(false);
 	};
 
-	const toggleDeleteMode = () => {
-		if (deleteMode && selectedLists.size > 0) {
-			setShowDeleteConfirm(true);
-		} else {
-			setDeleteMode(!deleteMode);
-		}
-	};
-
 	const toggleListSelection = (id: string) => {
 		setSelectedLists((prev) => {
 			const newSet = new Set(prev);
@@ -426,7 +418,7 @@ export function Wishlist() {
 				<div className="mb-8 flex items-center justify-between">
 					<h1 className="flex items-center text-3xl font-bold">
 						<Scroll />
-						<div className="ml-2">My Wishlists</div>
+						<div className="ml-2 text-fuchsia-300">My Wishlists</div>
 					</h1>
 					{renderActionButtons()}
 				</div>
@@ -445,8 +437,8 @@ export function Wishlist() {
 						>
 							<div className="group relative">
 								{reorderMode && (
-									<div className="absolute top-1/2 -translate-y-1/2 -translate-x-4 opacity-0 transition-opacity group-hover:opacity-100">
-										<GripVertical className="h-4 w-4 cursor-grab text-muted-foreground" />
+									<div className="absolute top-1/2 -translate-x-4 -translate-y-1/2 opacity-0 transition-opacity group-hover:opacity-100">
+										<GripVertical className="text-muted-foreground h-4 w-4 cursor-grab" />
 									</div>
 								)}
 								<WishlistCard
