@@ -1,68 +1,73 @@
 import { Inbox, Search, Settings } from "lucide-react";
+import { Link, useLocation } from "react-router-dom";
 import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
+	Sidebar,
+	SidebarContent,
+	SidebarFooter,
+	SidebarGroup,
+	SidebarGroupContent,
+	SidebarGroupLabel,
+	SidebarHeader,
+	SidebarMenu,
+	SidebarMenuButton,
+	SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { AppHeader } from "../appHeader/AppHeader";
 import { SidebarFooterContent } from "./components/sidebarFooterContent/SidebarFooterContent";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 const items = [
-  {
-    title: "Explore",
-    url: "#",
-    icon: Search,
-  },
-  {
-    title: "WishList",
-    url: "#",
-    icon: Inbox,
-  },
-  {
-    title: "Settings",
-    url: "#",
-    icon: Settings,
-  },
+	{
+		title: "Explore",
+		url: "/",
+		icon: Search,
+	},
+	{
+		title: "WishList",
+		url: "/wishlist",
+		icon: Inbox,
+	},
+	{
+		title: "Settings",
+		url: "/settings",
+		icon: Settings,
+	},
 ];
 
 export function AppSidebar() {
-  const isMobile = useIsMobile();
+	const isMobile = useIsMobile();
+	const location = useLocation();
 
-  return (
-    <Sidebar side={isMobile ? "bottom" : "left"}>
-      <SidebarHeader>
-        <AppHeader />
-      </SidebarHeader>
-      <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel>Navigation</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {items.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <a href={item.url}>
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </a>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-      </SidebarContent>
-      <SidebarFooter>
-        <SidebarFooterContent />
-      </SidebarFooter>
-    </Sidebar>
-  );
+	return (
+		<Sidebar side={isMobile ? "bottom" : "left"}>
+			<SidebarHeader>
+				<AppHeader />
+			</SidebarHeader>
+			<SidebarContent>
+				<SidebarGroup>
+					<SidebarGroupLabel>Navigation</SidebarGroupLabel>
+					<SidebarGroupContent>
+						<SidebarMenu>
+							{items.map((item) => (
+								<SidebarMenuItem key={item.title}>
+									<SidebarMenuButton
+										asChild
+										isActive={location.pathname === item.url}
+									>
+										<Link to={item.url}>
+											<item.icon />
+											<span>{item.title}</span>
+										</Link>
+									</SidebarMenuButton>
+								</SidebarMenuItem>
+							))}
+						</SidebarMenu>
+					</SidebarGroupContent>
+				</SidebarGroup>
+			</SidebarContent>
+			<SidebarFooter>
+				<SidebarFooterContent />
+			</SidebarFooter>
+		</Sidebar>
+	);
 }
