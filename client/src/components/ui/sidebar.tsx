@@ -2,7 +2,7 @@ import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { cva } from "class-variance-authority";
 import type { VariantProps } from "class-variance-authority";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Menu } from "lucide-react";
 
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
@@ -157,7 +157,7 @@ function Sidebar({
   children,
   ...props
 }: React.ComponentProps<"div"> & {
-  side?: "left" | "right";
+  side?: "left" | "right" | "bottom"; // Add bottom option
   variant?: "sidebar" | "floating" | "inset";
   collapsible?: "offcanvas" | "icon" | "none";
 }) {
@@ -185,7 +185,10 @@ function Sidebar({
           data-sidebar="sidebar"
           data-slot="sidebar"
           data-mobile="true"
-          className="bg-sidebar text-sidebar-foreground w-(--sidebar-width) p-0 [&>button]:hidden"
+          className={cn(
+            "bg-sidebar text-sidebar-foreground p-0 [&>button]:hidden",
+            side === "bottom" ? "h-[80vh] rounded-t-xl" : "w-(--sidebar-width)"
+          )}
           style={
             {
               "--sidebar-width": SIDEBAR_WIDTH_MOBILE,
@@ -251,19 +254,28 @@ function Sidebar({
   );
 }
 
-function SidebarTrigger({ onClick }: React.ComponentProps<"button">) {
-  const { toggleSidebar, open } = useSidebar();
+function SidebarTrigger({
+  onClick,
+  className,
+}: React.ComponentProps<"button">) {
+  const { toggleSidebar, open, isMobile } = useSidebar();
 
   return (
     <button
-      className="group h-20"
+      className={cn(
+        "group",
+        isMobile ? "fixed top-8 left-4 z-50" : "h-20",
+        className
+      )}
       onClick={(event) => {
         onClick?.(event);
         toggleSidebar();
       }}
     >
       <span className="sr-only">Toggle Sidebar</span>
-      {open ? (
+      {isMobile ? (
+        <Menu className="text-fuchsia-300" size={24} />
+      ) : open ? (
         <ChevronRight
           className="transition group-hover:rotate-180 group-hover:scale-110 text-fuchsia-300"
           size={35}

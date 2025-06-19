@@ -9,10 +9,13 @@ export function SwipeView() {
   return (
     <SidebarInset>
       <main className="flex">
-        <div className="flex items-center justify-center">
-          <SidebarTrigger />
+        <div className="flex items-center">
+          <SidebarTrigger className="hidden md:block" />
         </div>
         <div className="flex flex-col items-center justify-center flex-1">
+          <div className="md:hidden absolute top-8 left-4">
+            <SidebarTrigger />
+          </div>
           <h1>
             <AppHeaderWithLogo
               fontSize="text-5xl"

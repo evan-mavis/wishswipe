@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/sidebar";
 import { AppHeader } from "../appHeader/AppHeader";
 import { SidebarFooterContent } from "./components/sidebarFooterContent/SidebarFooterContent";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const items = [
   {
@@ -38,8 +39,10 @@ const items = [
 ];
 
 export function AppSidebar() {
+  const isMobile = useIsMobile();
+
   return (
-    <Sidebar>
+    <Sidebar side={isMobile ? "bottom" : "left"}>
       <SidebarHeader>
         <AppHeader />
       </SidebarHeader>
