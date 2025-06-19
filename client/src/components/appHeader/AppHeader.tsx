@@ -1,11 +1,11 @@
 interface AppHeaderProps {
-  fontSize?: string;
+	fontSize?: string;
 }
 
 export function AppHeader({ fontSize = "text-lg" }: AppHeaderProps) {
-  return (
-    <div className={`font-bold ${fontSize}`}>
-      Wish<em className="text-fuchsia-300">Swipe</em>
-    </div>
-  );
+	return (
+		<div className={`font-bold ${fontSize}`}>
+			Wish<em className="text-fuchsia-300">Swipe</em>
+		</div>
+	);
 }
