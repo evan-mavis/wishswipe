@@ -112,7 +112,6 @@ export function Listings() {
 			<div className="grid w-full flex-1 place-items-center overflow-hidden pb-2">
 				{listings.length > 0 ? (
 					<AnimatePresence>
-						{/* Only show the first listing */}
 						<ListingCard
 							key={listings[0].id}
 							id={listings[0].id}

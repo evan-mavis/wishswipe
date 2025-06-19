@@ -1,4 +1,4 @@
-import { Inbox, Search, Settings } from "lucide-react";
+import { Inbox, Search, Settings, MessageSquare } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import {
 	Sidebar,
@@ -26,6 +26,11 @@ const items = [
 		title: "WishList",
 		url: "/wishlist",
 		icon: Inbox,
+	},
+	{
+		title: "Feedback",
+		url: "/feedback",
+		icon: MessageSquare,
 	},
 	{
 		title: "Settings",
