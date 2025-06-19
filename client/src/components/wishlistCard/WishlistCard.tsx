@@ -16,6 +16,7 @@ import { SavedListingCard } from "./components/SavedListingCard";
 import type { WishList, Listing } from "@/types/listing";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import React from "react";
 
 interface WishlistCardProps extends WishList {
 	deleteMode: boolean;
@@ -65,6 +66,13 @@ export function WishlistCard({
 		event.stopPropagation();
 	};
 
+	// Add effect to collapse when entering modes
+	React.useEffect(() => {
+		if (deleteMode || reorderMode) {
+			setIsExpanded(false);
+		}
+	}, [deleteMode, reorderMode]);
+
 	return (
 		<>
 			<motion.div
@@ -91,13 +99,15 @@ export function WishlistCard({
 					<CardHeader>
 						<div className="flex items-center justify-between">
 							<CardTitle>{title}</CardTitle>
-							<motion.div
-								animate={{ rotate: isExpanded ? -90 : 90 }} // Change rotation to be horizontal
-								transition={{ duration: 0.3 }}
-								className="cursor-pointer"
-							>
-								<ChevronDown className="h-5 w-5" />
-							</motion.div>
+							{!deleteMode && !reorderMode && (
+								<motion.div
+									animate={{ rotate: isExpanded ? -90 : 90 }}
+									transition={{ duration: 0.3 }}
+									className="cursor-pointer"
+								>
+									<ChevronDown className="h-5 w-5" />
+								</motion.div>
+							)}
 						</div>
 						<p className="text-muted-foreground text-sm">{description}</p>
 					</CardHeader>
