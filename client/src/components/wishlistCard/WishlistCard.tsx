@@ -19,6 +19,7 @@ import { Button } from "@/components/ui/button";
 
 interface WishlistCardProps extends WishList {
 	deleteMode: boolean;
+	reorderMode?: boolean; // Add reorderMode prop
 	isSelected: boolean;
 	onSelect: () => void;
 	onUpdateItems?: (id: string, items: Listing[]) => void;
@@ -30,6 +31,7 @@ export function WishlistCard({
 	description,
 	items: initialItems,
 	deleteMode,
+	reorderMode,
 	isSelected,
 	onSelect,
 	onUpdateItems,
@@ -41,7 +43,8 @@ export function WishlistCard({
 	const handleClick = () => {
 		if (deleteMode) {
 			onSelect();
-		} else {
+		} else if (!reorderMode) {
+			// Only allow expansion if not in reorder mode
 			setIsExpanded(!isExpanded);
 		}
 	};
@@ -75,7 +78,8 @@ export function WishlistCard({
 			>
 				<Card
 					className={cn(
-						"cursor-pointer transition-all duration-200",
+						"transition-all duration-200",
+						deleteMode || reorderMode ? "cursor-default" : "cursor-pointer",
 						deleteMode
 							? "hover:border-red-300"
 							: "border-fuchsia-300 hover:shadow-md",
