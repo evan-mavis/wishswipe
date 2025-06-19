@@ -2,7 +2,7 @@ import { AppSidebar } from "./components/appSidebar/AppSidebar";
 import { ThemeProvider } from "./components/themeProvider/ThemeProvider";
 import { SidebarProvider } from "./components/ui/sidebar";
 import { useAuth } from "./hooks/use-auth";
-import Home from "./pages/home/Home";
+import Login from "./pages/login/Login";
 import { SwipeView } from "./pages/swipeView/SwipeView";
 
 function App() {
@@ -16,7 +16,7 @@ function App() {
 					<SwipeView />
 				</SidebarProvider>
 			) : (
-				<Home />
+				<Login />
 			)}
 		</ThemeProvider>
 	);
