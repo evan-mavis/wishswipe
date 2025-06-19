@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence, Reorder } from "framer-motion";
-import { ChevronDown, GripVertical, Check, X, Trash2 } from "lucide-react";
+import { ChevronDown, GripVertical } from "lucide-react";
 import {
 	AlertDialog,
 	AlertDialogContent,
@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { SavedListingCard } from "./components/SavedListingCard";
+import { ListingReorderControls } from "./components/ListingReorderControls";
 import type { WishList, Listing } from "@/types/listing";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -56,15 +57,6 @@ export function WishlistCard({
 		setItems(newItems);
 		onUpdateItems?.(id, newItems);
 		setItemToDelete(null);
-	};
-
-	const handleReorder = (newOrder: Listing[]) => {
-		setItems(newOrder);
-		onUpdateItems?.(id, newOrder);
-	};
-
-	const handleReorderStart = (event: React.PointerEvent) => {
-		event.stopPropagation();
 	};
 
 	const handleListingReorderSave = () => {
@@ -116,32 +108,16 @@ export function WishlistCard({
 								{!deleteMode && !reorderMode && isExpanded && (
 									<>
 										{listingReorderMode ? (
-											<div className="flex gap-2">
-												<Button
-													variant="ghost"
-													size="sm"
-													onClick={(e) => {
-														e.stopPropagation();
-														handleListingReorderCancel();
-													}}
-													className="gap-2"
-												>
-													<X className="h-4 w-4" />
-													Cancel
-												</Button>
-												<Button
-													variant="default"
-													size="sm"
-													onClick={(e) => {
-														e.stopPropagation();
-														handleListingReorderSave();
-													}}
-													className="gap-2"
-												>
-													<Check className="h-4 w-4" />
-													Save Changes
-												</Button>
-											</div>
+											<ListingReorderControls
+												onCancel={(e) => {
+													e.stopPropagation();
+													handleListingReorderCancel();
+												}}
+												onSave={(e) => {
+													e.stopPropagation();
+													handleListingReorderSave();
+												}}
+											/>
 										) : (
 											<Button
 												variant="ghost"
@@ -180,7 +156,11 @@ export function WishlistCard({
 									<Reorder.Group
 										axis="x"
 										values={items}
-										onReorder={listingReorderMode ? setItems : undefined}
+										onReorder={(newOrder: Listing[]) => {
+											if (listingReorderMode) {
+												setItems(newOrder);
+											}
+										}}
 										className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-4 pl-3"
 									>
 										{items.map((listing) => (
@@ -205,6 +185,7 @@ export function WishlistCard({
 																? () => setItemToDelete(listing.id)
 																: undefined
 														}
+														isReorderMode={listingReorderMode}
 													/>
 													{listingReorderMode && (
 														<div className="absolute top-1/2 -translate-x-4 -translate-y-1/2 opacity-0 transition-opacity group-hover/item:opacity-100">

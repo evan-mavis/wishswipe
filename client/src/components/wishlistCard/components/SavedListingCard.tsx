@@ -10,20 +10,31 @@ import {
 } from "@/components/ui/dialog";
 import { useState } from "react";
 import { Trash2 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface SavedListingCardProps {
 	listing: Listing;
 	onDelete?: () => void;
+	isReorderMode?: boolean; // Add this prop
 }
 
-export function SavedListingCard({ listing, onDelete }: SavedListingCardProps) {
+export function SavedListingCard({
+	listing,
+	onDelete,
+	isReorderMode,
+}: SavedListingCardProps) {
 	const [showDetails, setShowDetails] = useState(false);
 
 	if (!listing) return null;
 
 	return (
 		<>
-			<Card className="group/item relative overflow-hidden">
+			<Card
+				className={cn(
+					"group/item relative overflow-hidden transition-colors",
+					isReorderMode && "hover:border-green-400"
+				)}
+			>
 				<CardContent className="p-0">
 					{onDelete && (
 						<Button

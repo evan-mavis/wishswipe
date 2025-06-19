@@ -1,20 +1,4 @@
-import {
-	Scroll,
-	Plus,
-	Trash2,
-	GripVertical,
-	Settings2,
-	Check,
-	X,
-} from "lucide-react";
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuGroup,
-	DropdownMenuItem,
-	DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
+import { GripVertical } from "lucide-react";
 import { WishlistCard } from "../../components/wishlistCard/WishlistCard";
 import type { WishList } from "@/types/listing";
 import { useState } from "react";
@@ -30,6 +14,8 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Reorder } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { WishlistHeader } from "../../components/wishlistCard/components/WishlistHeader";
+import { WishlistActions } from "../../components/wishlistCard/components/WishlistActions";
 
 const mockWishlists: WishList[] = [
 	{
@@ -319,109 +305,30 @@ export function Wishlist() {
 		setReorderMode(false);
 	};
 
-	const renderActionButtons = () => {
-		if (reorderMode) {
-			return (
-				<div className="flex gap-2">
-					<Button
-						variant="ghost"
-						onClick={handleReorderCancel}
-						className="gap-2"
-					>
-						<X className="h-4 w-4" />
-						Cancel
-					</Button>
-					<Button
-						variant="default"
-						onClick={handleReorderSave}
-						className="gap-2"
-					>
-						<Check className="h-4 w-4" />
-						Save Changes
-					</Button>
-				</div>
-			);
-		}
-
-		if (deleteMode) {
-			return (
-				<div className="flex gap-2">
-					<Button
-						variant="ghost"
-						onClick={() => {
-							setDeleteMode(false);
-							setSelectedLists(new Set());
-						}}
-						className="gap-2"
-					>
-						<X className="h-4 w-4" />
-						Cancel
-					</Button>
-					<Button
-						variant="destructive"
-						onClick={() => selectedLists.size > 0 && setShowDeleteConfirm(true)}
-						disabled={selectedLists.size === 0}
-						className="gap-2"
-					>
-						<Trash2 className="h-4 w-4" />
-						Delete ({selectedLists.size})
-					</Button>
-				</div>
-			);
-		}
-
-		return (
-			<DropdownMenu>
-				<DropdownMenuTrigger asChild>
-					<Button variant="outline" className="gap-2">
-						<Settings2 className="h-4 w-4" />
-						Wishlist Actions
-					</Button>
-				</DropdownMenuTrigger>
-				<DropdownMenuContent>
-					<DropdownMenuGroup>
-						<DropdownMenuItem
-							onClick={() => console.log("Add new wishlist")}
-							className="gap-2"
-						>
-							<Plus className="h-4 w-4" />
-							New Wishlist
-						</DropdownMenuItem>
-						<DropdownMenuItem
-							onClick={() => {
-								handleModeReset();
-								setReorderMode(true);
-							}}
-							className="gap-2"
-						>
-							<GripVertical className="h-4 w-4" />
-							{reorderMode ? "Exit Reorder Mode" : "Reorder Mode"}
-						</DropdownMenuItem>
-						<DropdownMenuItem
-							onClick={() => {
-								handleModeReset();
-								setDeleteMode(true);
-							}}
-							className="gap-2"
-						>
-							<Trash2 className="h-4 w-4" />
-							Delete Mode
-						</DropdownMenuItem>
-					</DropdownMenuGroup>
-				</DropdownMenuContent>
-			</DropdownMenu>
-		);
-	};
-
 	return (
 		<>
 			<div className="container mx-auto p-8">
 				<div className="mb-8 flex items-center justify-between">
-					<h1 className="flex items-center text-3xl font-bold">
-						<Scroll />
-						<div className="ml-2 text-fuchsia-300">My Wishlists</div>
-					</h1>
-					{renderActionButtons()}
+					<WishlistHeader />
+					<WishlistActions
+						reorderMode={reorderMode}
+						deleteMode={deleteMode}
+						selectedCount={selectedLists.size}
+						onReorderSave={handleReorderSave}
+						onReorderCancel={handleReorderCancel}
+						onDeleteCancel={() => {
+							setDeleteMode(false);
+							setSelectedLists(new Set());
+						}}
+						onDeleteConfirm={() =>
+							selectedLists.size > 0 && setShowDeleteConfirm(true)
+						}
+						onModeChange={(mode) => {
+							handleModeReset();
+							if (mode === "reorder") setReorderMode(true);
+							if (mode === "delete") setDeleteMode(true);
+						}}
+					/>
 				</div>
 				<Reorder.Group
 					axis="y"
