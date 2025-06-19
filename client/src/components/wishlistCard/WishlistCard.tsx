@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence, Reorder } from "framer-motion";
-import { ChevronDown, GripVertical, Trash2 } from "lucide-react";
+import { ChevronDown, GripVertical, Check, X, Trash2 } from "lucide-react";
 import {
 	AlertDialog,
 	AlertDialogContent,
@@ -40,6 +40,7 @@ export function WishlistCard({
 	const [isExpanded, setIsExpanded] = useState(false);
 	const [items, setItems] = useState(initialItems);
 	const [itemToDelete, setItemToDelete] = useState<number | null>(null);
+	const [listingReorderMode, setListingReorderMode] = useState(false);
 
 	const handleClick = () => {
 		if (deleteMode) {
@@ -64,6 +65,16 @@ export function WishlistCard({
 
 	const handleReorderStart = (event: React.PointerEvent) => {
 		event.stopPropagation();
+	};
+
+	const handleListingReorderSave = () => {
+		onUpdateItems?.(id, items);
+		setListingReorderMode(false);
+	};
+
+	const handleListingReorderCancel = () => {
+		setItems(initialItems);
+		setListingReorderMode(false);
 	};
 
 	// Add effect to collapse when entering modes
@@ -101,15 +112,58 @@ export function WishlistCard({
 					<CardHeader>
 						<div className="flex items-center justify-between">
 							<CardTitle>{title}</CardTitle>
-							{!deleteMode && !reorderMode && (
+							<div className="flex items-center gap-2">
+								{!deleteMode && !reorderMode && isExpanded && (
+									<>
+										{listingReorderMode ? (
+											<div className="flex gap-2">
+												<Button
+													variant="ghost"
+													size="sm"
+													onClick={(e) => {
+														e.stopPropagation();
+														handleListingReorderCancel();
+													}}
+													className="gap-2"
+												>
+													<X className="h-4 w-4" />
+													Cancel
+												</Button>
+												<Button
+													variant="default"
+													size="sm"
+													onClick={(e) => {
+														e.stopPropagation();
+														handleListingReorderSave();
+													}}
+													className="gap-2"
+												>
+													<Check className="h-4 w-4" />
+													Save Changes
+												</Button>
+											</div>
+										) : (
+											<Button
+												variant="ghost"
+												size="sm"
+												onClick={(e) => {
+													e.stopPropagation();
+													setListingReorderMode(true);
+												}}
+											>
+												<GripVertical className="h-4 w-4" />
+											</Button>
+										)}
+									</>
+								)}
 								<motion.div
-									animate={{ rotate: isExpanded ? -90 : 90 }}
+									animate={{ rotate: isExpanded ? 90 : -90 }}
 									transition={{ duration: 0.3 }}
 									className="cursor-pointer"
 								>
 									<ChevronDown className="h-5 w-5" />
 								</motion.div>
-							)}
+							</div>
 						</div>
 						<p className="text-muted-foreground text-sm">{description}</p>
 					</CardHeader>
@@ -126,15 +180,15 @@ export function WishlistCard({
 									<Reorder.Group
 										axis="x"
 										values={items}
-										onReorder={handleReorder}
-										className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-4 pl-3" // Added pl-3 for left padding
+										onReorder={listingReorderMode ? setItems : undefined}
+										className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-4 pl-3"
 									>
 										{items.map((listing) => (
 											<Reorder.Item
 												key={listing.id}
 												value={listing}
-												onPointerDown={handleReorderStart}
 												className="group/item snap-center"
+												drag={listingReorderMode}
 											>
 												<div
 													className="group relative w-[300px]"
@@ -142,11 +196,17 @@ export function WishlistCard({
 												>
 													<SavedListingCard
 														listing={listing}
-														onDelete={() => setItemToDelete(listing.id)}
+														onDelete={
+															!listingReorderMode
+																? () => setItemToDelete(listing.id)
+																: undefined
+														}
 													/>
-													<div className="absolute top-1/2 -translate-x-4 -translate-y-1/2 opacity-0 transition-opacity group-hover/item:opacity-100">
-														<GripVertical className="text-muted-foreground h-4 w-4 cursor-grab" />
-													</div>
+													{listingReorderMode && (
+														<div className="absolute top-1/2 -translate-x-4 -translate-y-1/2 opacity-0 transition-opacity group-hover/item:opacity-100">
+															<GripVertical className="text-muted-foreground h-4 w-4 cursor-grab active:cursor-grabbing" />
+														</div>
+													)}
 												</div>
 											</Reorder.Item>
 										))}
