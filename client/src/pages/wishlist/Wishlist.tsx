@@ -29,6 +29,7 @@ import {
 	AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Reorder } from "framer-motion";
+import { cn } from "@/lib/utils";
 
 const mockWishlists: WishList[] = [
 	{
@@ -432,7 +433,10 @@ export function Wishlist() {
 						<Reorder.Item
 							key={wishlist.id}
 							value={wishlist}
-							className="relative w-full"
+							className={cn(
+								"relative w-full",
+								reorderMode && "cursor-grab active:cursor-grabbing"
+							)}
 							drag={reorderMode}
 						>
 							<div className="group relative">

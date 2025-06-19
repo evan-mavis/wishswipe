@@ -102,7 +102,7 @@ export function WishlistCard({
 						deleteMode
 							? "hover:border-red-300"
 							: reorderMode
-								? "hover:border-green-400"
+								? "cursor-grab hover:border-green-400 active:cursor-grabbing"
 								: "border-fuchsia-300 hover:shadow-md",
 						isSelected && "border-2 border-red-500",
 						isExpanded && "max-w-full"
@@ -187,7 +187,11 @@ export function WishlistCard({
 											<Reorder.Item
 												key={listing.id}
 												value={listing}
-												className="group/item snap-center"
+												className={cn(
+													"group/item snap-center",
+													listingReorderMode &&
+														"cursor-grab active:cursor-grabbing"
+												)}
 												drag={listingReorderMode}
 											>
 												<div
