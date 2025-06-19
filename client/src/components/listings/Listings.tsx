@@ -4,6 +4,7 @@ import { Progress } from "../ui/progress";
 import { useState } from "react";
 import type { Listing } from "../../types/listing";
 import { AnimatePresence } from "framer-motion";
+import { DemoListing } from "@/components/demoListing/DemoListing";
 
 const initialListings: Listing[] = [
   {
@@ -109,19 +110,23 @@ export function Listings() {
   return (
     <div className="flex flex-col w-full h-full max-h-[calc(100vh-180px)]">
       <div className="flex-1 grid place-items-center w-full overflow-hidden pb-2">
-        <AnimatePresence mode="wait">
-          {listings.map((listing, index) => (
-            <ListingCard
-              key={listing.id}
-              id={listing.id}
-              imageUrl={listing.imageUrl}
-              details={listing.details}
-              setListings={setListings}
-              onProgressChange={handleProgressChange}
-              index={index} // Add this new prop
-            />
-          ))}
-        </AnimatePresence>
+        {listings.length > 0 ? (
+          <AnimatePresence mode="wait">
+            {listings.map((listing, index) => (
+              <ListingCard
+                key={listing.id}
+                id={listing.id}
+                imageUrl={listing.imageUrl}
+                details={listing.details}
+                setListings={setListings}
+                onProgressChange={handleProgressChange}
+                index={index} // Add this new prop
+              />
+            ))}
+          </AnimatePresence>
+        ) : (
+          <DemoListing text="Come back soon for more listings!" />
+        )}
       </div>
       <div className="flex justify-center items-center w-full px-4 max-w-[600px] mx-auto py-4">
         <Trash2

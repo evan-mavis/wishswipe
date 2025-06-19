@@ -26,7 +26,7 @@ function WaveText({ text }: { text: string }) {
         initial={{ scale: 1 }}
         animate={{ scale: [1, 1.4, 1] }}
         transition={{ duration: 0.5 }}
-        className="text-2xl font-medium bg-clip-text text-transparent bg-gradient-to-r from-white to-fuchsia-400 bg-[length:200%_100%] animate-keyboard-wave"
+        className="text-lg sm:text-xl md:text-2xl font-medium bg-clip-text text-transparent bg-gradient-to-r from-white to-fuchsia-400 bg-[length:200%_100%] animate-keyboard-wave max-w-[280px] text-center"
       >
         {text}
       </motion.div>
@@ -34,7 +34,11 @@ function WaveText({ text }: { text: string }) {
   );
 }
 
-export function DemoListing() {
+interface DemoListingProps {
+  text?: string;
+}
+
+export function DemoListing({ text }: DemoListingProps) {
   const [currentLangIndex, setCurrentLangIndex] = useState(0);
   const languages = Object.values(translations);
   const x = useMotionValue(0);
@@ -71,7 +75,7 @@ export function DemoListing() {
     >
       <div className="w-[400px] h-[400px] bg-card flex items-center justify-between rounded-xl border border-border px-12">
         <MoveLeft size={32} className="text-muted-foreground" />
-        <WaveText text={languages[currentLangIndex]} />
+        <WaveText text={text || languages[currentLangIndex]} />
         <MoveRight size={32} className="text-muted-foreground" />
       </div>
     </motion.div>
