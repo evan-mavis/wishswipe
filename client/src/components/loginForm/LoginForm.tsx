@@ -9,10 +9,9 @@ import {
 } from "@/components/ui/card";
 import { useAuth } from "@/hooks/use-auth";
 
-export function LoginForm({
-  className,
-  ...props
-}: React.ComponentProps<"div">) {
+type LoginFormProps = React.HTMLAttributes<HTMLDivElement>;
+
+export function LoginForm({ className, ...props }: LoginFormProps) {
   const { signInWithGoogle } = useAuth();
 
   return (

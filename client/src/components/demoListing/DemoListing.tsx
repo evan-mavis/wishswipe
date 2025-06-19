@@ -9,14 +9,14 @@ import { useState } from "react";
 
 const DRAG_THRESHOLD = 150;
 
-const translations = [
-  "Swipe me!", // English
-  "¡Deslízame!", // Spanish
-  "スワイプして!", // Japanese
-  "Balayez-moi!", // French
-  "Schiebe mich!", // German
-  "스와이프!", // Korean
-];
+const translations = {
+  english: "Swipe me!",
+  spanish: "¡Deslízame!",
+  japanese: "スワイプして!",
+  french: "Balayez-moi!",
+  german: "Schiebe mich!",
+  korean: "스와이프!",
+} as const;
 
 function WaveText({ text }: { text: string }) {
   return (
@@ -34,8 +34,9 @@ function WaveText({ text }: { text: string }) {
   );
 }
 
-export function DemoListing({ onComplete }: { onComplete: () => void }) {
+export function DemoListing() {
   const [currentLangIndex, setCurrentLangIndex] = useState(0);
+  const languages = Object.values(translations);
   const x = useMotionValue(0);
   const opacity = useTransform(
     x,
@@ -46,7 +47,7 @@ export function DemoListing({ onComplete }: { onComplete: () => void }) {
 
   const handleDragEnd = () => {
     if (Math.abs(x.get()) > DRAG_THRESHOLD) {
-      setCurrentLangIndex((prev) => (prev + 1) % translations.length);
+      setCurrentLangIndex((prev) => (prev + 1) % languages.length);
     }
   };
 
@@ -70,7 +71,7 @@ export function DemoListing({ onComplete }: { onComplete: () => void }) {
     >
       <div className="w-[400px] h-[400px] bg-card flex items-center justify-between rounded-xl border border-border px-12">
         <MoveLeft size={32} className="text-muted-foreground" />
-        <WaveText text={translations[currentLangIndex]} />
+        <WaveText text={languages[currentLangIndex]} />
         <MoveRight size={32} className="text-muted-foreground" />
       </div>
     </motion.div>

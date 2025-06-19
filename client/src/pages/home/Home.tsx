@@ -24,7 +24,7 @@ function Home() {
         <div className="h-[60px]" /> {/* Spacer for header */}
         <div className="flex-1 flex items-center">
           <div className="flex flex-col items-center w-[400px]">
-            <DemoListing onComplete={() => {}} />
+            <DemoListing />
             <p className="text-lg text-muted-foreground mt-8 text-center">
               A swipe-based app for discovering and saving eBay items. Swipe
               right to wishlist, left to dismiss.
