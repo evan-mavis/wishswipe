@@ -16,6 +16,7 @@ import { Reorder } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { WishlistHeader } from "../../components/wishlistCard/components/WishlistHeader";
 import { WishlistActions } from "../../components/wishlistCard/components/WishlistActions";
+import { NewWishlistDialog } from "../../components/wishlistCard/components/NewWishlistDialog";
 
 const mockWishlists: WishList[] = [
 	{
@@ -264,6 +265,7 @@ export function Wishlist() {
 	const [reorderMode, setReorderMode] = useState(false);
 	const [selectedLists, setSelectedLists] = useState<Set<string>>(new Set());
 	const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+	const [showNewWishlist, setShowNewWishlist] = useState(false);
 
 	const handleDeleteConfirm = () => {
 		// Delete selected lists
@@ -305,30 +307,54 @@ export function Wishlist() {
 		setReorderMode(false);
 	};
 
+	const handleCreateWishlist = ({
+		title,
+		description,
+	}: {
+		title: string;
+		description: string;
+	}) => {
+		const newWishlist: WishList = {
+			id: String(Date.now()), // temporary ID generation
+			title,
+			description,
+			items: [],
+			createdAt: new Date(),
+			updatedAt: new Date(),
+		};
+
+		setWishlists((prev) => [...prev, newWishlist]);
+	};
+
+	const renderWishlistActions = () => (
+		<WishlistActions
+			reorderMode={reorderMode}
+			deleteMode={deleteMode}
+			selectedCount={selectedLists.size}
+			onReorderSave={handleReorderSave}
+			onReorderCancel={handleReorderCancel}
+			onDeleteCancel={() => {
+				setDeleteMode(false);
+				setSelectedLists(new Set());
+			}}
+			onDeleteConfirm={() =>
+				selectedLists.size > 0 && setShowDeleteConfirm(true)
+			}
+			onModeChange={(mode) => {
+				handleModeReset();
+				if (mode === "reorder") setReorderMode(true);
+				if (mode === "delete") setDeleteMode(true);
+			}}
+			onNewWishlist={() => setShowNewWishlist(true)}
+		/>
+	);
+
 	return (
 		<>
 			<div className="container mx-auto p-8">
 				<div className="mb-8 flex items-center justify-between">
 					<WishlistHeader />
-					<WishlistActions
-						reorderMode={reorderMode}
-						deleteMode={deleteMode}
-						selectedCount={selectedLists.size}
-						onReorderSave={handleReorderSave}
-						onReorderCancel={handleReorderCancel}
-						onDeleteCancel={() => {
-							setDeleteMode(false);
-							setSelectedLists(new Set());
-						}}
-						onDeleteConfirm={() =>
-							selectedLists.size > 0 && setShowDeleteConfirm(true)
-						}
-						onModeChange={(mode) => {
-							handleModeReset();
-							if (mode === "reorder") setReorderMode(true);
-							if (mode === "delete") setDeleteMode(true);
-						}}
-					/>
+					{renderWishlistActions()}
 				</div>
 				<Reorder.Group
 					axis="y"
@@ -387,6 +413,12 @@ export function Wishlist() {
 					</AlertDialogFooter>
 				</AlertDialogContent>
 			</AlertDialog>
+
+			<NewWishlistDialog
+				open={showNewWishlist}
+				onOpenChange={setShowNewWishlist}
+				onSubmit={handleCreateWishlist}
+			/>
 		</>
 	);
 }

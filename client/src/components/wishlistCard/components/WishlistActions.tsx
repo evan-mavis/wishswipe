@@ -24,6 +24,7 @@ interface WishlistActionsProps {
   onDeleteCancel: () => void;
   onDeleteConfirm: () => void;
   onModeChange: (mode: 'reorder' | 'delete' | null) => void;
+  onNewWishlist: () => void;
 }
 
 export function WishlistActions({
@@ -35,6 +36,7 @@ export function WishlistActions({
   onDeleteCancel,
   onDeleteConfirm,
   onModeChange,
+  onNewWishlist,
 }: WishlistActionsProps) {
   if (reorderMode) {
     return (
@@ -82,7 +84,7 @@ export function WishlistActions({
       <DropdownMenuContent>
         <DropdownMenuGroup>
           <DropdownMenuItem
-            onClick={() => console.log("Add new wishlist")}
+            onClick={onNewWishlist}
             className="gap-2"
           >
             <Plus className="h-4 w-4" />
