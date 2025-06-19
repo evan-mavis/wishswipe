@@ -13,25 +13,17 @@ export function ProtectedRoute({
 }: ProtectedRouteProps) {
 	const { user, loading } = useAuth();
 
-	useEffect(() => {
-		console.log("ProtectedRoute state:", {
-			loading,
-			user: !!user,
-			requireAuth,
-		});
-	}, [loading, user, requireAuth]);
+	useEffect(() => {}, [loading, user, requireAuth]);
 
 	if (loading) {
 		return <div>Loading...</div>;
 	}
 
 	if (requireAuth && !user) {
-		console.log("Redirecting to login - no user");
 		return <Navigate to="/login" replace />;
 	}
 
 	if (!requireAuth && user) {
-		console.log("Redirecting to home - user exists");
 		return <Navigate to="/" replace />;
 	}
 
