@@ -117,7 +117,24 @@
 @layer base {
 	* {
 		@apply border-border outline-ring/50;
+		scrollbar-width: thin;
+		scrollbar-color: var(--accent) transparent;
 	}
+
+	*::-webkit-scrollbar {
+		width: 6px;
+		height: 6px;
+	}
+
+	*::-webkit-scrollbar-track {
+		background: transparent;
+	}
+
+	*::-webkit-scrollbar-thumb {
+		background-color: var(--accent);
+		border-radius: 3px;
+	}
+
 	body {
 		@apply bg-background text-foreground font-wishswipe;
 		height: 100vh;
