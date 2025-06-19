@@ -123,9 +123,9 @@ export function Listings() {
           ))}
         </AnimatePresence>
       </div>
-      <div className="flex justify-center items-center w-[50%] mt-2">
+      <div className="flex justify-center items-center w-full px-4 max-w-[600px] mx-auto mt-2">
         <Trash2
-          size="40"
+          size={32}
           className={`mr-4 transition-all duration-300 ${
             progress < 5 ? "text-red-500 scale-150" : ""
           }`}
@@ -137,7 +137,7 @@ export function Listings() {
           />
         </div>
         <ArrowDownToLine
-          size="40"
+          size={32}
           className={`ml-4 transition-all duration-300 ${
             progress > 95 ? "text-green-500 scale-150" : ""
           }`}

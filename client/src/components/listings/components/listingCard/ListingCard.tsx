@@ -76,7 +76,7 @@ export function ListingCard({
           className="cursor-grab active:cursor-grabbing flex flex-col items-center"
           onDragEnd={handleDragEnd}
         >
-          <div className="w-[300px] sm:w-[400px] md:w-[500px] lg:w-[600px] h-[250px] sm:h-[350px] md:h-[400px] lg:h-[500px] pointer-events-none flex items-center justify-center mx-auto">
+          <div className="w-[300px] sm:w-[400px] md:w-[500px] lg:w-[600px] h-[35vh] sm:h-[40vh] md:h-[45vh] lg:h-[50vh] pointer-events-none flex items-center justify-center mx-auto">
             <img
               src={imageUrl}
               alt="eBay product"
@@ -85,7 +85,7 @@ export function ListingCard({
               draggable="false"
             />
           </div>
-          <div className="mt-4">
+          <div className="mt-2 sm:mt-4">
             <ListingCaption isActive={true} details={details} />
           </div>
         </motion.div>
