@@ -111,18 +111,17 @@ export function Listings() {
 		<div className="flex h-full max-h-[calc(100vh-180px)] w-full flex-col">
 			<div className="grid w-full flex-1 place-items-center overflow-hidden pb-2">
 				{listings.length > 0 ? (
-					<AnimatePresence mode="wait">
-						{listings.map((listing, index) => (
-							<ListingCard
-								key={listing.id}
-								id={listing.id}
-								imageUrl={listing.imageUrl}
-								details={listing.details}
-								setListings={setListings}
-								onProgressChange={handleProgressChange}
-								index={index} // Add this new prop
-							/>
-						))}
+					<AnimatePresence>
+						{/* Only show the first listing */}
+						<ListingCard
+							key={listings[0].id}
+							id={listings[0].id}
+							imageUrl={listings[0].imageUrl}
+							details={listings[0].details}
+							setListings={setListings}
+							onProgressChange={handleProgressChange}
+							index={0}
+						/>
 					</AnimatePresence>
 				) : (
 					<DemoListing text="Come back soon for more listings!" />
