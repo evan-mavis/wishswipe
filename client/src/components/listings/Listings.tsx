@@ -107,8 +107,8 @@ export function Listings() {
   };
 
   return (
-    <>
-      <div className="grid place-items-center w-full">
+    <div className="flex flex-col w-full h-full max-h-[calc(100vh-180px)]">
+      <div className="flex-1 grid place-items-center w-full overflow-hidden pb-2">
         <AnimatePresence mode="wait">
           {listings.map((listing, index) => (
             <ListingCard
@@ -123,7 +123,7 @@ export function Listings() {
           ))}
         </AnimatePresence>
       </div>
-      <div className="flex justify-center items-center w-full px-4 max-w-[600px] mx-auto mt-2">
+      <div className="flex justify-center items-center w-full px-4 max-w-[600px] mx-auto py-4">
         <Trash2
           size={32}
           className={`mr-4 transition-all duration-300 ${
@@ -143,6 +143,6 @@ export function Listings() {
           }`}
         />
       </div>
-    </>
+    </div>
   );
 }

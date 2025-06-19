@@ -73,7 +73,7 @@ export function ListingCard({
           drag="x"
           dragConstraints={{ left: 0, right: 0 }}
           dragElastic={0.7}
-          className="cursor-grab active:cursor-grabbing flex flex-col items-center"
+          className="cursor-grab active:cursor-grabbing flex flex-col items-center justify-center flex-1 h-full"
           onDragEnd={handleDragEnd}
         >
           <div className="w-[300px] sm:w-[400px] md:w-[500px] lg:w-[600px] h-[35vh] sm:h-[40vh] md:h-[45vh] lg:h-[50vh] pointer-events-none flex items-center justify-center mx-auto">

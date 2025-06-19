@@ -8,23 +8,23 @@ export function SwipeView() {
 
   return (
     <SidebarInset>
-      <main className="flex">
+      <main className="flex min-h-screen">
         <div className="flex items-center">
           <SidebarTrigger className="hidden md:block" />
         </div>
-        <div className="flex flex-col items-center justify-center flex-1">
-          <div className="md:hidden absolute top-8 left-4">
+        <div className="flex flex-col items-center justify-center flex-1 py-4">
+          <div className="md:hidden absolute top-4 left-4">
             <SidebarTrigger />
           </div>
-          <h1>
+          <h1 className="mb-2">
             <AppHeaderWithLogo
-              fontSize="text-5xl"
-              imageHeight="12"
-              imageWidth="12"
-              margin="4"
+              fontSize="text-4xl"
+              imageHeight="10"
+              imageWidth="10"
+              margin="2"
             />
           </h1>
-          <p className="text-center mb-4">
+          <p className="text-center mb-2">
             Welcome, {user?.displayName || "User"}! Swipe away.
           </p>
           <Listings />
