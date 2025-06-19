@@ -23,7 +23,7 @@ const items = [
 		icon: Search,
 	},
 	{
-		title: "WishList",
+		title: "My WishLists",
 		url: "/wishlist",
 		icon: Scroll,
 	},

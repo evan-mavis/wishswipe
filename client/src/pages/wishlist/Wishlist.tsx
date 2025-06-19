@@ -266,6 +266,7 @@ export function Wishlist() {
 	const [selectedLists, setSelectedLists] = useState<Set<string>>(new Set());
 	const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 	const [showNewWishlist, setShowNewWishlist] = useState(false);
+	const [favoriteListId, setFavoriteListId] = useState<string | null>(null);
 
 	const handleDeleteConfirm = () => {
 		// Delete selected lists
@@ -326,6 +327,10 @@ export function Wishlist() {
 		setWishlists((prev) => [...prev, newWishlist]);
 	};
 
+	const handleSetFavorite = (id: string) => {
+		setFavoriteListId(id === favoriteListId ? null : id);
+	};
+
 	const renderWishlistActions = () => (
 		<WishlistActions
 			reorderMode={reorderMode}
@@ -359,7 +364,11 @@ export function Wishlist() {
 				<Reorder.Group
 					axis="y"
 					values={wishlists}
-					onReorder={reorderMode ? handleReorderLists : undefined}
+					onReorder={(newOrder: WishList[]) => {
+						if (reorderMode) {
+							handleReorderLists(newOrder);
+						}
+					}}
 					className="grid grid-cols-1 gap-6 pl-3"
 				>
 					{wishlists.map((wishlist) => (
@@ -384,6 +393,8 @@ export function Wishlist() {
 									reorderMode={reorderMode}
 									isSelected={selectedLists.has(wishlist.id)}
 									onSelect={() => toggleListSelection(wishlist.id)}
+									isFavorite={wishlist.id === favoriteListId}
+									onFavorite={() => handleSetFavorite(wishlist.id)}
 								/>
 							</div>
 						</Reorder.Item>

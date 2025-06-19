@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence, Reorder } from "framer-motion";
-import { ChevronDown, GripVertical } from "lucide-react";
+import { ChevronDown, GripVertical, Star } from "lucide-react";
 import {
 	AlertDialog,
 	AlertDialogContent,
@@ -18,6 +18,12 @@ import type { WishList, Listing } from "@/types/listing";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import React from "react";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface WishlistCardProps extends WishList {
 	deleteMode: boolean;
@@ -25,6 +31,8 @@ interface WishlistCardProps extends WishList {
 	isSelected: boolean;
 	onSelect: () => void;
 	onUpdateItems?: (id: string, items: Listing[]) => void;
+	isFavorite?: boolean;
+	onFavorite?: () => void;
 }
 
 export function WishlistCard({
@@ -37,6 +45,8 @@ export function WishlistCard({
 	isSelected,
 	onSelect,
 	onUpdateItems,
+	isFavorite,
+	onFavorite,
 }: WishlistCardProps) {
 	const [isExpanded, setIsExpanded] = useState(false);
 	const [items, setItems] = useState(initialItems);
@@ -87,120 +97,154 @@ export function WishlistCard({
 				}}
 				transition={{ duration: 0.3 }}
 			>
-				<Card
-					className={cn(
-						"transition-all duration-200",
-						deleteMode || reorderMode ? "cursor-default" : "cursor-pointer",
-						deleteMode
-							? "hover:border-red-300"
-							: reorderMode
-								? "cursor-grab hover:border-green-400 active:cursor-grabbing"
-								: "border-fuchsia-300 hover:shadow-md",
-						isSelected && "border-2 border-red-500",
-						isExpanded && "max-w-full"
-					)}
-					onClick={handleClick}
-				>
-					<CardHeader>
-						<div className="flex items-center justify-between">
-							<CardTitle>{title}</CardTitle>
-							<div className="flex items-center gap-2">
-								{!deleteMode && !reorderMode && isExpanded && (
-									<>
-										{listingReorderMode ? (
-											<ListingReorderControls
-												onCancel={(e) => {
-													e.stopPropagation();
-													handleListingReorderCancel();
-												}}
-												onSave={(e) => {
-													e.stopPropagation();
-													handleListingReorderSave();
-												}}
-											/>
-										) : (
-											<Button
-												variant="ghost"
-												size="sm"
-												onClick={(e) => {
-													e.stopPropagation();
-													setListingReorderMode(true);
-												}}
-											>
-												<GripVertical className="h-4 w-4" />
-											</Button>
-										)}
-									</>
-								)}
-								<motion.div
-									animate={{ rotate: isExpanded ? 90 : -90 }}
-									transition={{ duration: 0.3 }}
-									className="cursor-pointer"
+				<div className="relative">
+					<TooltipProvider>
+						<Tooltip>
+							<TooltipTrigger asChild>
+								<button
+									onClick={(e) => {
+										e.stopPropagation();
+										onFavorite?.();
+									}}
+									className={cn(
+										"bg-background ring-border absolute -top-3 -right-3 z-10 rounded-full p-1.5 shadow-sm ring-1 transition-all hover:scale-110",
+										!isFavorite &&
+											"opacity-0 group-hover/card:opacity-60 hover:opacity-100",
+										isFavorite && "text-amber-300"
+									)}
 								>
-									<ChevronDown className="h-5 w-5" />
-								</motion.div>
-							</div>
-						</div>
-						<p className="text-muted-foreground text-sm">{description}</p>
-					</CardHeader>
-					<AnimatePresence>
-						{isExpanded && (
-							<motion.div
-								initial={{ opacity: 0 }}
-								animate={{ opacity: 1 }}
-								exit={{ opacity: 0 }}
-								transition={{ duration: 0.2 }}
-								className="overflow-hidden"
-							>
-								<CardContent>
-									<Reorder.Group
-										axis="x"
-										values={items}
-										onReorder={(newOrder: Listing[]) => {
-											if (listingReorderMode) {
-												setItems(newOrder);
-											}
-										}}
-										className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-4 pl-3"
-									>
-										{items.map((listing) => (
-											<Reorder.Item
-												key={listing.id}
-												value={listing}
-												className={cn(
-													"group/item snap-center",
-													listingReorderMode &&
-														"cursor-grab active:cursor-grabbing"
-												)}
-												drag={listingReorderMode}
-											>
-												<div
-													className="group relative w-[300px]"
-													onClick={(e) => e.stopPropagation()}
-												>
-													<SavedListingCard
-														listing={listing}
-														onDelete={
-															!listingReorderMode
-																? () => setItemToDelete(listing.id)
-																: undefined
-														}
-														isReorderMode={listingReorderMode}
-													/>
-													{listingReorderMode && (
-														<div className="absolute top-1/2 -translate-x-4 -translate-y-1/2 opacity-0 transition-opacity group-hover/item:opacity-100">
-															<GripVertical className="text-muted-foreground h-4 w-4 cursor-grab active:cursor-grabbing" />
-														</div>
-													)}
-												</div>
-											</Reorder.Item>
-										))}
-									</Reorder.Group>
-								</CardContent>
-							</motion.div>
+									<Star
+										className="h-4 w-4"
+										fill={isFavorite ? "currentColor" : "none"}
+									/>
+								</button>
+							</TooltipTrigger>
+							<TooltipContent>
+								<p>
+									{isFavorite
+										? "Remove as default list"
+										: "Set as default list"}
+								</p>
+							</TooltipContent>
+						</Tooltip>
+					</TooltipProvider>
+					<Card
+						className={cn(
+							"transition-all duration-200",
+							deleteMode || reorderMode ? "cursor-default" : "cursor-pointer",
+							deleteMode
+								? "hover:border-red-300"
+								: reorderMode
+									? "cursor-grab hover:border-green-400 active:cursor-grabbing"
+									: "border-fuchsia-300 hover:shadow-md",
+							isSelected && "border-2 border-red-500",
+							isExpanded && "max-w-full"
 						)}
-					</AnimatePresence>
-				</Card>
+						onClick={handleClick}
+					>
+						<div className="group/card relative">
+							<CardHeader>
+								<div className="flex items-center justify-between">
+									<CardTitle>{title}</CardTitle>
+									<div className="flex items-center gap-2">
+										{!deleteMode && !reorderMode && isExpanded && (
+											<>
+												{listingReorderMode ? (
+													<ListingReorderControls
+														onCancel={(e) => {
+															e.stopPropagation();
+															handleListingReorderCancel();
+														}}
+														onSave={(e) => {
+															e.stopPropagation();
+															handleListingReorderSave();
+														}}
+													/>
+												) : (
+													<Button
+														variant="ghost"
+														size="sm"
+														onClick={(e) => {
+															e.stopPropagation();
+															setListingReorderMode(true);
+														}}
+													>
+														<GripVertical className="h-4 w-4" />
+													</Button>
+												)}
+											</>
+										)}
+										<motion.div
+											animate={{ rotate: isExpanded ? 90 : -90 }}
+											transition={{ duration: 0.3 }}
+											className="cursor-pointer"
+										>
+											<ChevronDown className="h-5 w-5" />
+										</motion.div>
+									</div>
+								</div>
+								<p className="text-muted-foreground text-sm">{description}</p>
+							</CardHeader>
+							<AnimatePresence>
+								{isExpanded && (
+									<motion.div
+										initial={{ opacity: 0 }}
+										animate={{ opacity: 1 }}
+										exit={{ opacity: 0 }}
+										transition={{ duration: 0.2 }}
+										className="overflow-hidden"
+									>
+										<CardContent>
+											<Reorder.Group
+												axis="x"
+												values={items}
+												onReorder={(newOrder: Listing[]) => {
+													if (listingReorderMode) {
+														setItems(newOrder);
+													}
+												}}
+												className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-4 pl-3"
+											>
+												{items.map((listing) => (
+													<Reorder.Item
+														key={listing.id}
+														value={listing}
+														className={cn(
+															"group/item snap-center",
+															listingReorderMode &&
+																"cursor-grab active:cursor-grabbing"
+														)}
+														drag={listingReorderMode}
+													>
+														<div
+															className="group relative w-[300px]"
+															onClick={(e) => e.stopPropagation()}
+														>
+															<SavedListingCard
+																listing={listing}
+																onDelete={
+																	!listingReorderMode
+																		? () => setItemToDelete(listing.id)
+																		: undefined
+																}
+																isReorderMode={listingReorderMode}
+															/>
+															{listingReorderMode && (
+																<div className="absolute top-1/2 -translate-x-4 -translate-y-1/2 opacity-0 transition-opacity group-hover/item:opacity-100">
+																	<GripVertical className="text-muted-foreground h-4 w-4 cursor-grab active:cursor-grabbing" />
+																</div>
+															)}
+														</div>
+													</Reorder.Item>
+												))}
+											</Reorder.Group>
+										</CardContent>
+									</motion.div>
+								)}
+							</AnimatePresence>
+						</div>
+					</Card>
+				</div>
 			</motion.div>
 
 			<AlertDialog
