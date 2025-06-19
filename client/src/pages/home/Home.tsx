@@ -5,11 +5,8 @@ import { motion } from "framer-motion";
 
 function Home() {
   return (
-    <div
-      className="grid min-h-svh relative overflow-hidden"
-      style={{ gridTemplateColumns: "1fr 1fr" }}
-    >
-      <div className="fixed top-6 left-6 z-10">
+    <div className="grid min-h-svh relative overflow-hidden grid-cols-1 md:grid-cols-2">
+      <div className="fixed top-6 left-6 z-10 hidden md:block">
         <h1 className="m-0">
           <AppHeaderWithLogo
             imageHeight="9"
@@ -20,7 +17,7 @@ function Home() {
         </h1>
       </div>
 
-      <motion.div className="flex flex-col items-center p-6 bg-popover">
+      <motion.div className="hidden md:flex flex-col items-center p-6 bg-popover">
         <div className="h-[60px]" /> {/* Spacer for header */}
         <div className="flex-1 flex items-center">
           <div className="flex flex-col items-center w-[400px]">
@@ -33,8 +30,8 @@ function Home() {
         </div>
       </motion.div>
 
-      <div className="flex flex-1 items-center justify-center">
-        <div className="w-full max-w-xs mx-auto">
+      <div className="flex flex-1 items-center justify-center p-6">
+        <div className="w-full max-w-xs mx-auto mt-16">
           <LoginForm />
         </div>
       </div>
