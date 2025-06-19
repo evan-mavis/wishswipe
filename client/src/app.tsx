@@ -6,20 +6,20 @@ import Home from "./pages/home/Home";
 import { SwipeView } from "./pages/swipeView/SwipeView";
 
 function App() {
-  const { user } = useAuth();
+	const { user } = useAuth();
 
-  return (
-    <ThemeProvider>
-      {user ? (
-        <SidebarProvider>
-          <AppSidebar />
-          <SwipeView />
-        </SidebarProvider>
-      ) : (
-        <Home />
-      )}
-    </ThemeProvider>
-  );
+	return (
+		<ThemeProvider>
+			{user ? (
+				<SidebarProvider>
+					<AppSidebar />
+					<SwipeView />
+				</SidebarProvider>
+			) : (
+				<Home />
+			)}
+		</ThemeProvider>
+	);
 }
 
 export default App;
