@@ -1,4 +1,4 @@
-import { Home, Inbox, Search, Settings } from "lucide-react";
+import { Inbox, Search, Settings } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -17,19 +17,14 @@ import { useIsMobile } from "@/hooks/use-mobile";
 
 const items = [
   {
-    title: "Home",
+    title: "Explore",
     url: "#",
-    icon: Home,
+    icon: Search,
   },
   {
     title: "WishList",
     url: "#",
     icon: Inbox,
-  },
-  {
-    title: "Explore",
-    url: "#",
-    icon: Search,
   },
   {
     title: "Settings",
