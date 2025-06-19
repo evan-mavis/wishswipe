@@ -125,5 +125,18 @@
   }
 }
 
+@keyframes keyboard-wave {
+  0% {
+    background-position: 200% 50%;
+  }
+  100% {
+    background-position: -200% 50%;
+  }
+}
+
+.animate-keyboard-wave {
+  animation: keyboard-wave 4s linear infinite;
+}
+
 @layer components {
 }
