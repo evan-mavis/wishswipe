@@ -434,7 +434,7 @@ export function Wishlist() {
 					axis="y"
 					values={wishlists}
 					onReorder={reorderMode ? handleReorderLists : undefined}
-					className="grid grid-cols-1 gap-6"
+					className="grid grid-cols-1 gap-6 pl-3"
 				>
 					{wishlists.map((wishlist) => (
 						<Reorder.Item
@@ -445,8 +445,8 @@ export function Wishlist() {
 						>
 							<div className="group relative">
 								{reorderMode && (
-									<div className="absolute top-1/2 left-0 -translate-x-2 -translate-y-1/2 opacity-0 transition-opacity group-hover:opacity-100">
-										<GripVertical className="text-muted-foreground h-4 w-4 cursor-grab" />
+									<div className="absolute top-1/2 -translate-y-1/2 -translate-x-4 opacity-0 transition-opacity group-hover:opacity-100">
+										<GripVertical className="h-4 w-4 cursor-grab text-muted-foreground" />
 									</div>
 								)}
 								<WishlistCard

@@ -90,6 +90,8 @@ export function WishlistCard({
 						deleteMode || reorderMode ? "cursor-default" : "cursor-pointer",
 						deleteMode
 							? "hover:border-red-300"
+							: reorderMode
+							? "hover:border-green-400"
 							: "border-fuchsia-300 hover:shadow-md",
 						isSelected && "border-2 border-red-500",
 						isExpanded && "max-w-full"
@@ -125,20 +127,20 @@ export function WishlistCard({
 										axis="x"
 										values={items}
 										onReorder={handleReorder}
-										className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-4"
+										className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-4 pl-3" // Added pl-3 for left padding
 									>
 										{items.map((listing) => (
 											<Reorder.Item
 												key={listing.id}
 												value={listing}
 												onPointerDown={handleReorderStart}
-												className="snap-center"
+												className="snap-center group/item" // Added group/item for individual hover
 											>
 												<div
-													className="group relative w-[300px]" // Fixed width for each item
+													className="group relative w-[300px]"
 													onClick={(e) => e.stopPropagation()}
 												>
-													<div className="absolute -top-2 -right-2 z-10 opacity-0 transition-opacity group-hover:opacity-100">
+													<div className="absolute -top-2 -right-2 z-10 opacity-0 transition-opacity group-hover/item:opacity-100">
 														<Button
 															variant="ghost"
 															size="sm"
@@ -151,7 +153,7 @@ export function WishlistCard({
 															<Trash2 className="h-4 w-4" />
 														</Button>
 													</div>
-													<div className="absolute top-1/2 -left-2 -translate-y-1/2 opacity-0 transition-opacity group-hover:opacity-100">
+													<div className="absolute top-1/2 -translate-y-1/2 -translate-x-4 opacity-0 transition-opacity group-hover/item:opacity-100">
 														<GripVertical className="text-muted-foreground h-4 w-4 cursor-grab" />
 													</div>
 													<SavedListingCard listing={listing} />
