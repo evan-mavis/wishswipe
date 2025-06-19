@@ -3,7 +3,7 @@ import { ThemeProvider } from "./components/themeProvider/ThemeProvider";
 import { SidebarProvider } from "./components/ui/sidebar";
 import { useAuth } from "./hooks/use-auth";
 import Home from "./pages/home/Home";
-import { Engine } from "./pages/engine/Engine";
+import { SwipeView } from "./pages/swipeView/SwipeView";
 
 function App() {
   const { user } = useAuth();
@@ -13,7 +13,7 @@ function App() {
       {user ? (
         <SidebarProvider>
           <AppSidebar />
-          <Engine />
+          <SwipeView />
         </SidebarProvider>
       ) : (
         <Home />

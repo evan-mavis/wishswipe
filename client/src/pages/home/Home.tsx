@@ -17,7 +17,7 @@ function Home() {
         </h1>
       </div>
 
-      <motion.div className="hidden md:flex flex-col items-center p-6 bg-popover">
+      <motion.div className="hidden md:flex flex-col items-center p-6 bg-zinc-200 dark:bg-popover">
         <div className="h-[60px]" /> {/* Spacer for header */}
         <div className="flex-1 flex items-center">
           <div className="flex flex-col items-center w-[400px]">

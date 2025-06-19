@@ -3,7 +3,7 @@ import { AppHeaderWithLogo } from "@/components/appHeader/AppHeaderWithLogo";
 import { useAuth } from "@/hooks/use-auth";
 import { Listings } from "@/components/listings/Listings";
 
-export function Engine() {
+export function SwipeView() {
   const { user } = useAuth();
 
   return (
@@ -18,6 +18,7 @@ export function Engine() {
               fontSize="text-5xl"
               imageHeight="12"
               imageWidth="12"
+              margin="4"
             />
           </h1>
           <p className="text-center mb-4">
