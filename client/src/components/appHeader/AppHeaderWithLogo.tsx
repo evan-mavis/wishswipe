@@ -16,13 +16,13 @@ export function AppHeaderWithLogo({
 	return (
 		<div className={`flex items-center m-${margin}`}>
 			<img
-				src="wishswipe-logo.png"
+				src="/wishswipe-logo.png"
 				alt="WishSwipe Logo"
 				className={`w-${imageWidth} h-${imageHeight}`}
 			/>
 			<AppHeader fontSize={fontSize} />
 			<img
-				src="wishswipe-logo.png"
+				src="/wishswipe-logo.png"
 				alt="WishSwipe Logo"
 				className={`w-${imageWidth} h-${imageHeight}`}
 			/>

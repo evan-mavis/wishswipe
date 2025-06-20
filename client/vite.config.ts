@@ -15,7 +15,7 @@ export default defineConfig({
 	server: {
 		open: true,
 		proxy: {
-			"/wishswipe": "http://localhost:3000",
+			"/wishswipe/": "http://localhost:3000",
 		},
 	},
 });
