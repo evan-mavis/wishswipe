@@ -21,7 +21,7 @@ app.get("/", (req, res) => {
   res.json({ status: "ok" });
 });
 
-// protect everything under /wishswipe
+// protect everything under /wishswipe with authentication
 app.use("/wishswipe", authenticateUser);
 
 // all routes under /wishswipe are protected
