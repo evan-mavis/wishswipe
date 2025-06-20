@@ -32,12 +32,5 @@
         }
       }
     }
-  ],
-  "compounds": [
-    {
-      "label": "Start Dev Environment",
-      "dependsOn": ["Start Vite Dev Server", "Start Chrome Debug"],
-      "dependsOrder": "sequence"
-    }
   ]
 }
