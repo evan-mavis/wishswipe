@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && cp src/db/index.js dist/db/index.js",
     "start": "node dist/app.js",
-    "dev": "nodemon -r ts-node/register src/app.ts",
+    "dev": "nodemon src/app.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
     "migrate:create": "node-pg-migrate create -c ./node-pg-migrate.config.js --migrations-dir src/db/migrations",
     "migrate:up": "node-pg-migrate up -c ./node-pg-migrate.config.js --migrations-dir src/db/migrations",

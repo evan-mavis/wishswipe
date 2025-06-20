@@ -8,11 +8,26 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import { useAuth } from "@/hooks/use-auth";
+import { loginOrCreateUser } from "@/services/userService";
+import { getAuth } from "firebase/auth";
 
 type LoginFormProps = React.HTMLAttributes<HTMLDivElement>;
 
 export function LoginForm({ className, ...props }: LoginFormProps) {
 	const { signInWithGoogle } = useAuth();
+
+	async function handleGoogleLogin() {
+		const auth = getAuth();
+		await signInWithGoogle();
+		const user = auth.currentUser;
+		if (!user) return;
+		await loginOrCreateUser({
+			firebase_uid: user.uid,
+			email: user.email || "",
+			display_name: user.displayName ?? null,
+			photo_url: user.photoURL ?? null,
+		});
+	}
 
 	return (
 		<div className={cn("flex flex-col gap-6", className)} {...props}>
@@ -30,7 +45,7 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
 						<Button
 							variant="outline"
 							className="w-full"
-							onClick={signInWithGoogle}
+							onClick={handleGoogleLogin}
 						>
 							Login with Google
 						</Button>

@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction, RequestHandler } from "express";
-import * as admin from "firebase-admin";
+import admin from "firebase-admin";
 
 export const authenticateUser: RequestHandler = async (
   req: Request,

@@ -32,7 +32,7 @@ app.use("/wishswipe", authenticateUser);
 
 // all routes under /wishswipe are protected
 app.use("/wishswipe", baseRoutes);
-app.use("/wishswipe/users", userRoutes);
+app.use("/wishswipe/user", userRoutes);
 app.use("/wishswipe/explore", exploreRoutes);
 
 app.listen(PORT, () => {
