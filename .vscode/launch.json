@@ -1,5 +1,12 @@
 {
   "version": "0.2.0",
+  "compounds": [
+    {
+      "name": "Debug Full Stack",
+      "configurations": ["Debug Server", "Debug Client"],
+      "preLaunchTask": "Start All Dev Services"
+    }
+  ],
   "configurations": [
     {
       "type": "node",
@@ -26,13 +33,6 @@
       "sourceMapPathOverrides": {
         "webpack:///src/*": "${webRoot}/src/*"
       }
-    }
-  ],
-  "compounds": [
-    {
-      "name": "Debug Full Stack",
-      "configurations": ["Debug Server", "Debug Client"],
-      "preLaunchTask": "Start All Dev Services"
     }
   ]
 }
