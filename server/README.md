@@ -19,3 +19,30 @@ To debug the server API in VS Code:
 **Tip:**
 
 - Make sure you have installed all dependencies (`npm install`) in the `server` directory before debugging.
+
+## Database Migrations
+
+This project uses [node-pg-migrate](https://github.com/salsita/node-pg-migrate) for managing PostgreSQL database migrations.
+
+### How to Run Migrations
+
+1. **Ensure your environment variables are set** (especially `DATABASE_URL` in your `.env` file).
+2. **Install dependencies** (if you haven't already):
+   ```sh
+   npm install
+   ```
+3. **Create a new migration:**
+   ```sh
+   npm run migrate:create name=your_migration_name
+   ```
+   This will create a new migration file in `src/db/migrations/`.
+4. **Run all pending migrations:**
+   ```sh
+   npm run migrate:up
+   ```
+5. **Revert the last migration:**
+   ```sh
+   npm run migrate:down
+   ```
+
+All migration scripts are located in `src/db/migrations/`.

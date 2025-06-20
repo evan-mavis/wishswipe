@@ -1,12 +1,11 @@
 import express from "express";
 import cors from "cors";
-import userRoutes from "./routes/userRoutes";
-import baseRoutes from "./routes/baseRoutes";
-import admin from "./config/firebase";
-import { serviceAccount } from "./config/firebase";
-import { authenticateUser } from "./middleware/auth";
+import userRoutes from "./routes/userRoutes.js";
+import baseRoutes from "./routes/baseRoutes.js";
+import admin, { serviceAccount } from "./config/firebase.js";
+import { authenticateUser } from "./middleware/auth.js";
 import dotenv from "dotenv";
-import exploreRoutes from "./routes/exploreRoutes";
+import exploreRoutes from "./routes/exploreRoutes.js";
 
 dotenv.config();
 
