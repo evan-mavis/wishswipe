@@ -1,111 +1,34 @@
 import { ArrowDownToLine, Trash2 } from "lucide-react";
 import { ListingCard } from "./components/listingCard/ListingCard";
 import { Progress } from "../ui/progress";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { Listing } from "../../types/listing";
 import { AnimatePresence } from "framer-motion";
 import { DemoListing } from "@/components/demoListing/DemoListing";
-
-const initialListings: Listing[] = [
-	{
-		id: 1,
-		imageUrl: "/test-image-1.jpg",
-		details: {
-			title: "MacBook Pro 14-inch M2 Pro 16GB 512GB",
-			seller: "TechDeals_USA",
-			price: 1999.99,
-			condition: "New",
-		},
-	},
-	{
-		id: 2,
-		imageUrl: "/test-image-2.jpg",
-		details: {
-			title: "PS5 Digital Edition with DualSense Controller",
-			seller: "GameStop_Official",
-			price: 499.99,
-			condition: "New",
-		},
-	},
-	{
-		id: 3,
-		imageUrl: "/test-image-3.jpg",
-		details: {
-			title: 'Samsung 65" QLED 4K Smart TV Q80B Series',
-			seller: "ElectronicsHub",
-			price: 1299.99,
-			condition: "New",
-		},
-	},
-	{
-		id: 4,
-		imageUrl: "/test-image-1.jpg",
-		details: {
-			title: "MacBook Pro 14-inch M2 Pro 16GB 512GB",
-			seller: "TechDeals_USA",
-			price: 1999.99,
-			condition: "New",
-		},
-	},
-	{
-		id: 5,
-		imageUrl: "/test-image-2.jpg",
-		details: {
-			title: "PS5 Digital Edition with DualSense Controller",
-			seller: "GameStop_Official",
-			price: 499.99,
-			condition: "New",
-		},
-	},
-	{
-		id: 6,
-		imageUrl: "/test-image-3.jpg",
-		details: {
-			title: 'Samsung 65" QLED 4K Smart TV Q80B Series',
-			seller: "ElectronicsHub",
-			price: 1299.99,
-			condition: "New",
-		},
-	},
-	{
-		id: 7,
-		imageUrl: "/test-image-1.jpg",
-		details: {
-			title: "MacBook Pro 14-inch M2 Pro 16GB 512GB",
-			seller: "TechDeals_USA",
-			price: 1999.99,
-			condition: "New",
-		},
-	},
-	{
-		id: 8,
-		imageUrl: "/test-image-2.jpg",
-		details: {
-			title: "PS5 Digital Edition with DualSense Controller",
-			seller: "GameStop_Official",
-			price: 499.99,
-			condition: "New",
-		},
-	},
-	{
-		id: 9,
-		imageUrl: "/test-image-3.jpg",
-		details: {
-			title: 'Samsung 65" QLED 4K Smart TV Q80B Series',
-			seller: "ElectronicsHub",
-			price: 1299.99,
-			condition: "New",
-		},
-	},
-];
+import { fetchListings } from "@/services/listingsService";
 
 export function Listings() {
-	const [listings, setListings] = useState(initialListings);
+	const [listings, setListings] = useState<Listing[]>([]);
 	const [progress, setProgress] = useState(50);
 
 	const handleProgressChange = (progress: number) => {
 		setProgress(progress);
 	};
+
+	useEffect(() => {
+		fetchListings()
+			.then((data) => {
+				if (data && Array.isArray(data.listings)) {
+					setListings(data.listings);
+				} else {
+					setListings([]);
+				}
+			})
+			.catch((err) => {
+				console.error(err);
+				setListings([]);
+			});
+	}, []);
 
 	return (
 		<div className="flex h-full max-h-[calc(100vh-180px)] w-full flex-col">

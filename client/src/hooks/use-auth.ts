@@ -20,7 +20,6 @@ export function useAuth() {
 			if (user) {
 				const token = await user.getIdToken(true);
 				setToken(token);
-				console.log("Auth Token for Postman:", token);
 			} else {
 				setToken(null);
 			}

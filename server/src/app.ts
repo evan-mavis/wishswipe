@@ -5,13 +5,14 @@ import baseRoutes from "./routes/baseRoutes";
 import admin from "./config/firebase";
 import { serviceAccount } from "./config/firebase";
 import { authenticateUser } from "./middleware/auth";
-import dotenv from 'dotenv';
+import dotenv from "dotenv";
+import exploreRoutes from "./routes/exploreRoutes";
 
 dotenv.config();
 
 // initialize firebase admin
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount)
+  credential: admin.credential.cert(serviceAccount),
 });
 
 const app = express();
@@ -33,6 +34,7 @@ app.use("/wishswipe", authenticateUser);
 // all routes under /wishswipe are protected
 app.use("/wishswipe", baseRoutes);
 app.use("/wishswipe/users", userRoutes);
+app.use("/wishswipe/explore", exploreRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
