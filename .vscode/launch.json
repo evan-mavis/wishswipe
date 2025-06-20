@@ -3,8 +3,7 @@
   "compounds": [
     {
       "name": "Debug Full Stack",
-      "configurations": ["Debug Server", "Debug Client"],
-      "preLaunchTask": "Start All Dev Services"
+      "configurations": ["Debug Server", "Debug Client"]
     }
   ],
   "configurations": [
@@ -32,7 +31,8 @@
       "webRoot": "${workspaceFolder}/client",
       "sourceMapPathOverrides": {
         "webpack:///src/*": "${webRoot}/src/*"
-      }
+      },
+      "preLaunchTask": "Start Vite Dev Server"
     }
   ]
 }
