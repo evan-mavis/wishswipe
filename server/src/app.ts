@@ -1,4 +1,5 @@
 import express from "express";
+import cors from "cors";
 import userRoutes from "./routes/userRoutes";
 import baseRoutes from "./routes/baseRoutes";
 import * as admin from "firebase-admin";
@@ -13,6 +14,7 @@ const app = express();
 const PORT = 3000;
 
 // middleware
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -21,7 +23,7 @@ app.get("/", (req, res) => {
   res.json({ status: "ok" });
 });
 
-// protect everything under /wishswipe with authentication
+// protect everything under /wishswipe
 app.use("/wishswipe", authenticateUser);
 
 // all routes under /wishswipe are protected

@@ -11,11 +11,19 @@ import { firebaseApp } from "@/auth/firebase";
 export function useAuth() {
 	const [user, setUser] = useState<User | null>(null);
 	const [loading, setLoading] = useState(true);
+	const [token, setToken] = useState<string | null>(null);
 	const auth = getAuth(firebaseApp);
 
 	useEffect(() => {
-		const unsubscribe = auth.onAuthStateChanged((user) => {
+		const unsubscribe = auth.onAuthStateChanged(async (user) => {
 			setUser(user);
+			if (user) {
+				const token = await user.getIdToken();
+				setToken(token);
+				console.log("Auth Token for Postman:", token);
+			} else {
+				setToken(null);
+			}
 			setLoading(false);
 		});
 
@@ -39,5 +47,5 @@ export function useAuth() {
 		}
 	};
 
-	return { user, loading, signInWithGoogle, signOutUser };
+	return { user, loading, token, signInWithGoogle, signOutUser };
 }
