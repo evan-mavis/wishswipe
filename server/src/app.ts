@@ -2,16 +2,20 @@ import express from "express";
 import cors from "cors";
 import userRoutes from "./routes/userRoutes";
 import baseRoutes from "./routes/baseRoutes";
-import * as admin from "firebase-admin";
+import admin from "./config/firebase";
+import { serviceAccount } from "./config/firebase";
 import { authenticateUser } from "./middleware/auth";
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 // initialize firebase admin
 admin.initializeApp({
-  credential: admin.credential.applicationDefault(),
+  credential: admin.credential.cert(serviceAccount)
 });
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 // middleware
 app.use(cors());

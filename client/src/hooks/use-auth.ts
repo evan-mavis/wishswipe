@@ -1,6 +1,6 @@
 import {
 	getAuth,
-	signInWithPopup, // Changed from signInWithRedirect
+	signInWithPopup,
 	GoogleAuthProvider,
 	signOut,
 } from "firebase/auth";
@@ -18,7 +18,7 @@ export function useAuth() {
 		const unsubscribe = auth.onAuthStateChanged(async (user) => {
 			setUser(user);
 			if (user) {
-				const token = await user.getIdToken();
+				const token = await user.getIdToken(true);
 				setToken(token);
 				console.log("Auth Token for Postman:", token);
 			} else {
@@ -33,7 +33,7 @@ export function useAuth() {
 	const signInWithGoogle = async () => {
 		try {
 			const provider = new GoogleAuthProvider();
-			await signInWithPopup(auth, provider); // Changed from signInWithRedirect
+			await signInWithPopup(auth, provider);
 		} catch (error) {
 			console.error("Error signing in with Google:", error);
 		}
