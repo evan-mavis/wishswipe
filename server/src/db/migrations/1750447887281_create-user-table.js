@@ -44,6 +44,10 @@ export const up = (pgm) => {
       notNull: true,
       default: pgm.func("now()"),
     },
+    last_login: {
+      type: "timestamp with time zone",
+      notNull: false,
+    },
   });
 };
 

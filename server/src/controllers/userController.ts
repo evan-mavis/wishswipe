@@ -1,10 +1,50 @@
-import { Request, Response } from "express";
+import type { Request, Response } from "express";
+import { z } from "zod";
+import * as userRepo from "../db/repositories/userRepository.js";
 
-export const getUsers = (req: Request, res: Response) => {
-  res.json({ message: "Get all users" });
-};
+// zod schema for login/create user
+const loginUserSchema = z.object({
+  firebase_uid: z.string().min(1),
+  email: z.string().email(),
+  display_name: z.string().optional().nullable(),
+  photo_url: z.string().url().optional().nullable(),
+});
 
-export const getUser = (req: Request, res: Response) => {
-  const id = req.params.id;
-  res.json({ message: `Get user ${id}` });
+// endpoint to handle google login
+export const loginOrCreateUser = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  const parseResult = loginUserSchema.safeParse(req.body);
+
+  if (!parseResult.success) {
+    res
+      .status(400)
+      .json({ error: "invalid request", details: parseResult.error.flatten() });
+    return;
+  }
+
+  const { firebase_uid, email, display_name, photo_url } = parseResult.data;
+
+  try {
+    const user = await userRepo.findByFirebaseUid(firebase_uid);
+
+    if (user) {
+      const updatedUser = await userRepo.updateLastLogin(user.id);
+      res.json({ user: updatedUser, created: false });
+      return;
+    }
+
+    const newUser = await userRepo.createUser({
+      firebase_uid,
+      email,
+      display_name: display_name ?? undefined,
+      photo_url: photo_url ?? undefined,
+    });
+
+    res.status(201).json({ user: newUser, created: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "internal server error" });
+  }
 };
