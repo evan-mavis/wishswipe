@@ -4,7 +4,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Debug API Server",
+      "name": "Debug Server",
       "cwd": "${workspaceFolder}/server",
       "skipFiles": ["<node_internals>/**"],
       "program": "${workspaceFolder}/server/src/app.ts",
@@ -13,11 +13,26 @@
       "restart": true,
       "env": {
         "NODE_ENV": "development",
-        "NODE_OPTIONS": "--no-warnings",
         "TS_NODE_FILES": "true"
       },
-      "console": "integratedTerminal",
-      "internalConsoleOptions": "neverOpen"
+      "console": "integratedTerminal"
+    },
+    {
+      "type": "chrome",
+      "request": "attach",
+      "name": "Debug Client",
+      "port": 9222,
+      "webRoot": "${workspaceFolder}/client",
+      "sourceMapPathOverrides": {
+        "webpack:///src/*": "${webRoot}/src/*"
+      }
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Debug Full Stack",
+      "configurations": ["Debug Server", "Debug Client"],
+      "preLaunchTask": "Start All Dev Services"
     }
   ]
 }
