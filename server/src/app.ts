@@ -9,7 +9,7 @@ import exploreRoutes from "./routes/exploreRoutes.js";
 
 dotenv.config();
 
-// initialize firebase admin
+// initialize firebase
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
