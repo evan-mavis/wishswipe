@@ -33,8 +33,8 @@ const items = [
 		icon: MessageSquare,
 	},
 	{
-		title: "Settings",
-		url: "/settings",
+		title: "Preferences",
+		url: "/preferences",
 		icon: Settings,
 	},
 ];
