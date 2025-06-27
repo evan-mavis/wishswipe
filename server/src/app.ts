@@ -3,15 +3,15 @@ dotenv.config();
 
 import express from "express";
 import cors from "cors";
+import admin, { getServiceAccount } from "./config/firebase.js";
 import userRoutes from "./routes/userRoutes.js";
 import baseRoutes from "./routes/baseRoutes.js";
-import admin, { serviceAccount } from "./config/firebase.js";
 import { authenticateUser } from "./middleware/auth.js";
 import exploreRoutes from "./routes/exploreRoutes.js";
 
 // initialize firebase
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
+  credential: admin.credential.cert(getServiceAccount()),
 });
 
 const app = express();
