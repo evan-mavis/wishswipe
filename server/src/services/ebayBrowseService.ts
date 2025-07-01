@@ -1,9 +1,10 @@
 import axios from "axios";
 import { getEbayAccessToken } from "./ebayTokenService.js";
+import { EbaySearchOptions } from "../types/ebay.js";
 
 export async function searchEbayItems(
   query: string,
-  options: { limit?: number; offset?: number } = {}
+  options: EbaySearchOptions = {}
 ) {
   const accessToken = await getEbayAccessToken();
 
@@ -12,6 +13,21 @@ export async function searchEbayItems(
 
   if (options.limit) params.append("limit", options.limit.toString());
   if (options.offset) params.append("offset", options.offset.toString());
+  if (options.category) params.append("category_ids", options.category);
+  if (options.condition)
+    params.append("filter", `conditionIds:{${options.condition}}`);
+
+  if (options.minPrice || options.maxPrice) {
+    let priceFilter = "";
+    if (options.minPrice !== undefined && options.maxPrice !== undefined) {
+      priceFilter = `price:[${options.minPrice}..${options.maxPrice}]`;
+    } else if (options.minPrice !== undefined) {
+      priceFilter = `price:[${options.minPrice}..]`;
+    } else if (options.maxPrice !== undefined) {
+      priceFilter = `price:[..${options.maxPrice}]`;
+    }
+    if (priceFilter) params.append("filter", priceFilter);
+  }
 
   const response = await axios.get(
     `${
