@@ -32,6 +32,12 @@ export const up = (pgm) => {
     },
   });
 
+  pgm.createIndex("wishlists", ["user_id"], {
+    name: "unique_favorite_per_user",
+    unique: true,
+    where: "is_favorite = true",
+  });
+
   pgm.createTable("wishlist_items", {
     id: "uuid PRIMARY KEY",
     wishlist_id: {
@@ -68,5 +74,6 @@ export const up = (pgm) => {
  */
 export const down = (pgm) => {
   pgm.dropTable("wishlist_items");
+  pgm.dropIndex("wishlists", ["user_id"], { name: "unique_favorite_per_user" });
   pgm.dropTable("wishlists");
 };

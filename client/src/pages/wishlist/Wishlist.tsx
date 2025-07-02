@@ -134,14 +134,18 @@ export function Wishlist() {
 			const wishlist = wishlists.find((w) => w.id === id);
 			if (!wishlist) return;
 
+			const newFavoriteStatus = !wishlist.isFavorite;
+
 			const updatedWishlist = await wishlistService.updateWishlist(id, {
-				isFavorite: !wishlist.isFavorite,
+				isFavorite: newFavoriteStatus,
 			});
 
+			// Update all wishlists: set the selected one as favorite and clear others
 			setWishlists((prev) =>
-				prev.map((w) =>
-					w.id === id ? { ...w, isFavorite: updatedWishlist.isFavorite } : w
-				)
+				prev.map((w) => ({
+					...w,
+					isFavorite: w.id === id ? updatedWishlist.isFavorite : false,
+				}))
 			);
 		} catch (err) {
 			console.error("Error updating favorite status:", err);

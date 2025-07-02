@@ -124,32 +124,52 @@ export async function createWishlist(
 ): Promise<DbWishlist> {
   const { userId, name, description, isFavorite = false, orderIndex } = data;
 
-  // If no orderIndex provided, get the next highest order
-  let finalOrderIndex = orderIndex;
-  if (finalOrderIndex === undefined) {
-    const { rows } = await pool.query(
-      `SELECT COALESCE(MAX(order_index), 0) + 1 as next_order FROM wishlists WHERE user_id = $1`,
-      [userId]
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+
+    // If setting as favorite, clear any existing favorites
+    if (isFavorite) {
+      await client.query(
+        `UPDATE wishlists SET is_favorite = false WHERE user_id = $1 AND is_favorite = true`,
+        [userId]
+      );
+    }
+
+    // If no orderIndex provided, get the next highest order
+    let finalOrderIndex = orderIndex;
+    if (finalOrderIndex === undefined) {
+      const { rows } = await client.query(
+        `SELECT COALESCE(MAX(order_index), 0) + 1 as next_order FROM wishlists WHERE user_id = $1`,
+        [userId]
+      );
+      finalOrderIndex = rows[0].next_order;
+    }
+
+    const { rows } = await client.query(
+      `INSERT INTO wishlists (id, user_id, name, description, is_favorite, order_index)
+       VALUES (gen_random_uuid(), $1, $2, $3, $4, $5) RETURNING *;`,
+      [userId, name, description || null, isFavorite, finalOrderIndex]
     );
-    finalOrderIndex = rows[0].next_order;
+
+    await client.query("COMMIT");
+
+    return {
+      id: rows[0].id,
+      name: rows[0].name,
+      description: rows[0].description,
+      isFavorite: rows[0].is_favorite,
+      orderIndex: rows[0].order_index || 0,
+      createdAt: rows[0].created_at,
+      updatedAt: rows[0].updated_at,
+      itemCount: 0,
+    };
+  } catch (error) {
+    await client.query("ROLLBACK");
+    throw error;
+  } finally {
+    client.release();
   }
-
-  const { rows } = await pool.query(
-    `INSERT INTO wishlists (id, user_id, name, description, is_favorite, order_index)
-     VALUES (gen_random_uuid(), $1, $2, $3, $4, $5) RETURNING *;`,
-    [userId, name, description || null, isFavorite, finalOrderIndex]
-  );
-
-  return {
-    id: rows[0].id,
-    name: rows[0].name,
-    description: rows[0].description,
-    isFavorite: rows[0].is_favorite,
-    orderIndex: rows[0].order_index || 0,
-    createdAt: rows[0].created_at,
-    updatedAt: rows[0].updated_at,
-    itemCount: 0,
-  };
 }
 
 export async function updateWishlist(
@@ -159,52 +179,72 @@ export async function updateWishlist(
 ): Promise<DbWishlist | null> {
   const { name, description, isFavorite } = data;
 
-  const updates: string[] = [];
-  const values: any[] = [];
-  let paramIndex = 1;
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
 
-  if (name !== undefined) {
-    updates.push(`name = $${paramIndex++}`);
-    values.push(name);
+    // If setting as favorite, clear any existing favorites
+    if (isFavorite === true) {
+      await client.query(
+        `UPDATE wishlists SET is_favorite = false WHERE user_id = $1 AND is_favorite = true AND id != $2`,
+        [userId, wishlistId]
+      );
+    }
+
+    const updates: string[] = [];
+    const values: any[] = [];
+    let paramIndex = 1;
+
+    if (name !== undefined) {
+      updates.push(`name = $${paramIndex++}`);
+      values.push(name);
+    }
+
+    if (description !== undefined) {
+      updates.push(`description = $${paramIndex++}`);
+      values.push(description);
+    }
+
+    if (isFavorite !== undefined) {
+      updates.push(`is_favorite = $${paramIndex++}`);
+      values.push(isFavorite);
+    }
+
+    if (updates.length === 0) {
+      await client.query("ROLLBACK");
+      return null;
+    }
+
+    updates.push(`updated_at = now()`);
+    values.push(wishlistId, userId);
+
+    const { rows } = await client.query(
+      `UPDATE wishlists 
+       SET ${updates.join(", ")}
+       WHERE id = $${paramIndex} AND user_id = $${paramIndex + 1}
+       RETURNING *`,
+      values
+    );
+
+    await client.query("COMMIT");
+
+    return rows.length > 0
+      ? {
+          id: rows[0].id,
+          name: rows[0].name,
+          description: rows[0].description,
+          isFavorite: rows[0].is_favorite,
+          orderIndex: rows[0].order_index || 0,
+          createdAt: rows[0].created_at,
+          updatedAt: rows[0].updated_at,
+        }
+      : null;
+  } catch (error) {
+    await client.query("ROLLBACK");
+    throw error;
+  } finally {
+    client.release();
   }
-
-  if (description !== undefined) {
-    updates.push(`description = $${paramIndex++}`);
-    values.push(description);
-  }
-
-  if (isFavorite !== undefined) {
-    updates.push(`is_favorite = $${paramIndex++}`);
-    values.push(isFavorite);
-  }
-
-  if (updates.length === 0) {
-    return null;
-  }
-
-  updates.push(`updated_at = now()`);
-  values.push(wishlistId, userId);
-
-  const { rows } = await pool.query(
-    `UPDATE wishlists 
-     SET ${updates.join(", ")}
-     WHERE id = $${paramIndex} AND user_id = $${paramIndex + 1}
-     RETURNING *`,
-    values
-  );
-
-  return rows.length > 0
-    ? {
-        id: rows[0].id,
-        name: rows[0].name,
-        description: rows[0].description,
-        isFavorite: rows[0].is_favorite,
-        orderIndex: rows[0].order_index || 0,
-        createdAt: rows[0].created_at,
-        updatedAt: rows[0].updated_at,
-        itemCount: undefined,
-      }
-    : null;
 }
 
 export async function deleteWishlist(

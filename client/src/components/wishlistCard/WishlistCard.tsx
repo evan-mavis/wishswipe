@@ -150,8 +150,8 @@ export function WishlistCard({
 							<TooltipContent>
 								<p>
 									{isFavorite
-										? "Remove as default list"
-										: "Set as default list"}
+										? "Remove as favorite list"
+										: "Set as favorite list"}
 								</p>
 							</TooltipContent>
 						</Tooltip>
@@ -186,8 +186,8 @@ export function WishlistCard({
 															}}
 															className={cn(
 																"text-muted-foreground hover:text-foreground transition-all hover:scale-110 hover:opacity-100",
-																isMobile 
-																	? "opacity-60" 
+																isMobile
+																	? "opacity-60"
 																	: "opacity-0 group-hover/card:opacity-60"
 															)}
 														>
