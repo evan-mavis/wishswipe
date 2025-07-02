@@ -31,7 +31,7 @@ export function ApplyButton({
 						<button
 							onClick={onApply}
 							aria-label="Apply & Search"
-							className="flex h-6 items-center justify-center rounded-tl-none rounded-tr-none rounded-b-xl border-2 border-t-0 border-fuchsia-600 bg-fuchsia-600 text-[0.65rem] font-semibold text-white shadow transition-colors duration-200 hover:bg-fuchsia-700 md:h-7 md:min-w-[90px]"
+							className="flex h-6 items-center justify-center rounded-tl-none rounded-tr-none rounded-b-xl border-2 border-t-0 border-fuchsia-600 bg-fuchsia-600 pr-1 pl-1 text-[0.65rem] font-semibold text-white shadow transition-colors duration-200 hover:bg-fuchsia-700 md:h-7 md:min-w-[90px]"
 							style={{
 								position: "absolute",
 								right: "10px",
