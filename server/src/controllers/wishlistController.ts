@@ -115,3 +115,28 @@ export const addItemToWishlist = async (
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
+export const deleteWishlist = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const { id } = req.params;
+
+    if (!req.dbUser) {
+      res.status(401).json({ error: "User not authenticated" });
+      return;
+    }
+
+    const deleted = await wishlistRepo.deleteWishlist(id, req.dbUser.id);
+
+    if (deleted) {
+      res.status(200).json({ message: "Wishlist deleted successfully" });
+    } else {
+      res.status(404).json({ error: "Wishlist not found or access denied" });
+    }
+  } catch (err) {
+    console.error("Error deleting wishlist:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};

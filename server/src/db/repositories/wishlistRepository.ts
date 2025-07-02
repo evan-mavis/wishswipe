@@ -129,3 +129,14 @@ export async function addItemToWishlist(
   );
   return transformDbRowToWishlistItem(rows[0]);
 }
+
+export async function deleteWishlist(
+  wishlistId: string,
+  userId: string
+): Promise<boolean> {
+  const { rowCount } = await pool.query(
+    `DELETE FROM wishlists WHERE id = $1 AND user_id = $2`,
+    [wishlistId, userId]
+  );
+  return (rowCount ?? 0) > 0;
+}
