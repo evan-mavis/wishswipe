@@ -1,52 +1,75 @@
 import { ArrowDownToLine, Trash2 } from "lucide-react";
 import { ListingCard } from "./components/listingCard/ListingCard";
 import { Progress } from "../ui/progress";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import type { Listing } from "../../types/listing";
 import { AnimatePresence } from "framer-motion";
 import { DemoListing } from "@/components/demoListing/DemoListing";
 import { fetchListings } from "@/services/listingsService";
+import { debounceSearch } from "@/utils/debounce";
 
-export function Listings() {
+interface ListingsProps {
+	searchQuery?: string;
+}
+
+export function Listings({ searchQuery = "trending" }: ListingsProps) {
 	const [listings, setListings] = useState<Listing[]>([]);
 	const [progress, setProgress] = useState(50);
+	const [isLoading, setIsLoading] = useState(false);
 
 	const handleProgressChange = (progress: number) => {
 		setProgress(progress);
 	};
 
-	useEffect(() => {
-		fetchListings()
-			.then((data) => {
-				if (data && Array.isArray(data.listings)) {
-					setListings(data.listings);
-				} else {
-					setListings([]);
-				}
-			})
-			.catch((err) => {
-				console.error(err);
+	const fetchListingsWithQuery = useCallback(async (query: string) => {
+		setIsLoading(true);
+
+		try {
+			const data = await fetchListings(query);
+			if (data && Array.isArray(data.listings)) {
+				setListings(data.listings);
+			} else {
 				setListings([]);
-			});
+			}
+		} catch (err) {
+			console.error(err);
+			setListings([]);
+		} finally {
+			setIsLoading(false);
+		}
 	}, []);
+
+	// Create debounced search function with cleanup - memoized to prevent recreation
+	const { debouncedFunc: debouncedSearch, cleanup } = useMemo(
+		() => debounceSearch(fetchListingsWithQuery, 500),
+		[fetchListingsWithQuery]
+	);
+
+	useEffect(() => {
+		debouncedSearch(searchQuery);
+	}, [searchQuery, debouncedSearch]);
+
+	useEffect(() => {
+		return cleanup;
+	}, [cleanup]);
 
 	return (
 		<div className="flex h-full max-h-[calc(100vh-180px)] w-full flex-col">
 			<div className="grid w-full flex-1 place-items-center overflow-hidden pb-2">
-				{listings.length > 0 ? (
+				{isLoading ? (
+					<DemoListing text="Searching eBay..." />
+				) : listings.length > 0 ? (
 					<AnimatePresence>
 						<ListingCard
 							key={listings[0].id}
-							id={listings[0].id}
-							imageUrl={listings[0].imageUrl}
-							details={listings[0].details}
+							listing={listings[0]}
 							setListings={setListings}
 							onProgressChange={handleProgressChange}
 							index={0}
 						/>
 					</AnimatePresence>
 				) : (
-					<DemoListing text="Come back soon for more listings!" />
+					<DemoListing text="No listings found. Try a different search!" />
 				)}
 			</div>
 			<div className="mx-auto flex w-full max-w-[600px] items-center justify-center px-4 py-4">

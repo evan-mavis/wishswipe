@@ -1,12 +1,16 @@
 import { CornersFrame } from "@/components/contentCornerFrame/CornersFrame";
-import type { ListingDetails } from "@/types/listing";
+import type { Listing } from "@/types/listing";
 
 interface ListingCaptionProps {
 	isActive: boolean;
-	details: ListingDetails;
+	listing: Listing;
 }
 
-export function ListingCaption({ isActive, details }: ListingCaptionProps) {
+export function ListingCaption({ isActive, listing }: ListingCaptionProps) {
+	if (!listing) {
+		return null;
+	}
+
 	return (
 		<div className="mb-1 flex justify-center sm:mb-2">
 			<div
@@ -16,15 +20,15 @@ export function ListingCaption({ isActive, details }: ListingCaptionProps) {
 			>
 				<CornersFrame />
 				<h3 className="truncate text-sm font-semibold sm:text-base md:text-lg">
-					{details.title}
+					{listing.title}
 				</h3>
 				<p className="text-xs text-gray-500 sm:text-sm">
-					Seller: {details.seller}
+					Seller Score: {listing.sellerFeedbackScore}
 				</p>
 				<p className="text-base font-bold sm:text-lg md:text-xl">
-					${details.price.toFixed(2)}
+					${listing.price.value}
 				</p>
-				<p className="text-xs sm:text-sm">Condition: {details.condition}</p>
+				<p className="text-xs sm:text-sm">Condition: {listing.condition}</p>
 			</div>
 		</div>
 	);

@@ -1,21 +1,13 @@
 export interface Listing {
-	id: number;
-	imageUrl: string;
-	details: ListingDetails;
-}
-
-export interface ListingDetails {
-	title: string;
-	seller: string;
-	price: number;
-	condition: string;
-}
-
-export interface WishList {
 	id: string;
+	itemId: string;
 	title: string;
-	description: string;
-	items: Listing[];
-	createdAt: Date;
-	updatedAt: Date;
+	price: {
+		value: string;
+		currency: string;
+	};
+	condition: string;
+	itemWebUrl: string;
+	imageUrl?: string;
+	sellerFeedbackScore: number;
 }

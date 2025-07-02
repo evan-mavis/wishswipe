@@ -7,7 +7,7 @@ import { ActionToolbar } from "@/components/actionToolbar/actionToolbar";
 export function SwipeView() {
 	const { user } = useAuth();
 	const [showWelcome, setShowWelcome] = useState(true);
-	const [search, setSearch] = useState("");
+	const [search, setSearch] = useState("trending");
 
 	useEffect(() => {
 		const timer = setTimeout(() => {
@@ -16,6 +16,10 @@ export function SwipeView() {
 
 		return () => clearTimeout(timer);
 	}, []);
+
+	const handleSearchChange = (value: string) => {
+		setSearch(value);
+	};
 
 	return (
 		<div className="flex min-h-screen">
@@ -36,9 +40,9 @@ export function SwipeView() {
 					Welcome, {user?.displayName || "User"}! Swipe away.
 				</p>
 
-				<ActionToolbar search={search} setSearch={setSearch} />
+				<ActionToolbar search={search} setSearch={handleSearchChange} />
 
-				<Listings />
+				<Listings searchQuery={search} />
 			</div>
 		</div>
 	);

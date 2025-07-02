@@ -1,6 +1,6 @@
 import type { Dispatch, SetStateAction } from "react";
-import type { Listing, ListingDetails } from "../../../../types/listing";
-import { ListingCaption } from "./components/listingCaption/ListingCaption";
+import type { Listing } from "../../../../types/listing";
+import { ListingCaption } from "../listingCaption/ListingCaption";
 import {
 	AnimatePresence,
 	motion,
@@ -10,21 +10,17 @@ import {
 } from "framer-motion";
 
 interface ListingCardProps {
-	id: number;
-	imageUrl: string;
-	details: ListingDetails;
+	listing: Listing;
 	setListings: Dispatch<SetStateAction<Listing[]>>;
 	onProgressChange?: (progress: number) => void;
-	index: number; // Add this new prop
+	index: number;
 }
 
 export function ListingCard({
-	id,
-	imageUrl,
-	details,
+	listing,
 	setListings,
 	onProgressChange,
-	index, // Add this new prop
+	index,
 }: ListingCardProps) {
 	const x = useMotionValue(0);
 	const DRAG_THRESHOLD = 150;
@@ -45,7 +41,7 @@ export function ListingCard({
 	const handleDragEnd = () => {
 		const currentX = x.get();
 		if (Math.abs(currentX) > DRAG_THRESHOLD) {
-			setListings((pv) => pv.filter((v) => v.id !== id));
+			setListings((pv) => pv.filter((v) => v.id !== listing.id));
 			// Ensure progress reset happens after animation
 			requestAnimationFrame(() => {
 				onProgressChange?.(50);
@@ -54,6 +50,8 @@ export function ListingCard({
 			onProgressChange?.(50);
 		}
 	};
+
+	const displayImageUrl = listing.imageUrl || "";
 
 	return (
 		<AnimatePresence>
@@ -78,7 +76,7 @@ export function ListingCard({
 				>
 					<div className="pointer-events-none mx-auto flex h-[35vh] w-[300px] items-center justify-center sm:h-[40vh] sm:w-[400px] md:h-[45vh] md:w-[500px] lg:h-[50vh] lg:w-[600px]">
 						<img
-							src={imageUrl}
+							src={displayImageUrl}
 							alt="eBay product"
 							className="pointer-events-none h-auto max-h-full w-auto max-w-full rounded-4xl object-contain"
 							loading="lazy"
@@ -86,7 +84,7 @@ export function ListingCard({
 						/>
 					</div>
 					<div className="mt-2 sm:mt-4">
-						<ListingCaption isActive={true} details={details} />
+						<ListingCaption isActive={true} listing={listing} />
 					</div>
 				</motion.div>
 			)}

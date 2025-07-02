@@ -1,5 +1,5 @@
 import { Input } from "@/components/ui/input";
-import { Undo2, X, DollarSign, Menu, BadgeCheck } from "lucide-react";
+import { Undo2, X, DollarSign, Menu, BadgeCheck, Search } from "lucide-react";
 import {
 	Menubar,
 	MenubarMenu,
@@ -37,6 +37,7 @@ export function ActionToolbar({
 	const isMobile = useIsMobile();
 	const [priceRange, setPriceRange] = useState<[number, number]>([10, 75]);
 	const [selectedWishlist, setSelectedWishlist] = useState<string>("");
+	const [inputValue, setInputValue] = useState(search);
 	const undoBtnRef = useRef<HTMLButtonElement>(null);
 	const resetBtnRef = useRef<HTMLButtonElement>(null);
 
@@ -48,15 +49,41 @@ export function ActionToolbar({
 		}, 500);
 	}
 
+	const handleSearch = () => {
+		setSearch(inputValue || "trending");
+	};
+
+	const handleKeyDown = (e: React.KeyboardEvent) => {
+		if (e.key === "Enter") {
+			handleSearch();
+		}
+	};
+
 	return (
 		<div className="flex w-full max-w-xl flex-col items-stretch rounded-xl border-2 border-fuchsia-400 sm:max-w-lg md:max-w-2xl lg:max-w-2xl xl:max-w-2xl 2xl:max-w-3xl">
-			<Input
-				type="text"
-				value={search}
-				onChange={(e) => setSearch(e.target.value)}
-				placeholder="Search listings..."
-				className="w-full border-none bg-transparent shadow-none focus:border-none focus:ring-0"
-			/>
+			<div className="flex items-center gap-2 px-2">
+				<Input
+					type="text"
+					value={inputValue}
+					onChange={(e) => setInputValue(e.target.value)}
+					onKeyDown={handleKeyDown}
+					placeholder="Search listings..."
+					className="flex-1 border-none bg-transparent shadow-none focus:border-none focus:ring-0"
+				/>
+				<Tooltip>
+					<TooltipTrigger asChild>
+						<Button
+							onClick={handleSearch}
+							variant="ghost"
+							size="sm"
+							className="px-3 transition duration-150 hover:text-green-500"
+						>
+							<Search size={16} />
+						</Button>
+					</TooltipTrigger>
+					<TooltipContent>Search Listings</TooltipContent>
+				</Tooltip>
+			</div>
 			<div className="mt-1 mb-1 flex w-full flex-wrap items-center gap-2 align-middle text-base">
 				<div className="ml-2 flex min-w-[0] items-center gap-2">
 					<Label
