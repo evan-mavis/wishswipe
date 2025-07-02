@@ -2,7 +2,7 @@ import { AppHeaderWithLogo } from "@/components/appHeader/AppHeaderWithLogo";
 import { useAuth } from "@/hooks/use-auth";
 import { Listings } from "@/components/listings/Listings";
 import { useState, useEffect } from "react";
-import { ActionToolbar } from "@/components/actionToolbar/actionToolbar";
+import { ActionToolbar } from "@/components/actionToolbar/ActionToolbar";
 
 export function SwipeView() {
 	const { user } = useAuth();
