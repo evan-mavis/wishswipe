@@ -11,7 +11,7 @@ export async function fetchListings(filters: SearchFilters = {}) {
 	if (filters.maxPrice) params.append("maxPrice", filters.maxPrice.toString());
 
 	const response = await axiosInstance.get(
-		`/wishswipe/explore/?${params.toString()}`
+		`/wishswipe/explore?${params.toString()}`
 	);
 
 	return response.data;

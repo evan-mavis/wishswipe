@@ -14,7 +14,7 @@ import {
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { SavedListingCard } from "./components/SavedListingCard";
 import { ListingReorderControls } from "./components/ListingReorderControls";
-import type { WishList, Listing } from "@/types/listing";
+import type { WishList, WishlistItem } from "@/types/wishlist";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import React from "react";
@@ -28,17 +28,16 @@ import { useIsMobile } from "@/hooks/use-mobile";
 
 interface WishlistCardProps extends WishList {
 	deleteMode: boolean;
-	reorderMode?: boolean; // Add reorderMode prop
+	reorderMode?: boolean;
 	isSelected: boolean;
 	onSelect: () => void;
-	onUpdateItems?: (id: string, items: Listing[]) => void;
-	isFavorite?: boolean;
+	onUpdateItems?: (id: string, items: WishlistItem[]) => void;
 	onFavorite?: () => void;
 }
 
 export function WishlistCard({
 	id,
-	title,
+	name,
 	description,
 	items: initialItems,
 	deleteMode,
@@ -52,7 +51,7 @@ export function WishlistCard({
 	const isMobile = useIsMobile();
 	const [isExpanded, setIsExpanded] = useState(false);
 	const [items, setItems] = useState(initialItems);
-	const [itemToDelete, setItemToDelete] = useState<number | null>(null);
+	const [itemToDelete, setItemToDelete] = useState<string | null>(null);
 	const [listingReorderMode, setListingReorderMode] = useState(false);
 
 	const handleClick = () => {
@@ -64,7 +63,22 @@ export function WishlistCard({
 		}
 	};
 
-	const handleDeleteItem = (itemId: number) => {
+	// Convert WishlistItem to Listing format for SavedListingCard
+	const convertToListingFormat = (item: WishlistItem) => ({
+		id: item.ebayItemId,
+		itemId: item.ebayItemId,
+		title: item.title || "",
+		price: {
+			value: item.price?.toString() || "0",
+			currency: "USD",
+		},
+		condition: "New", // You might want to add this to your backend data
+		itemWebUrl: item.itemWebUrl || "",
+		imageUrl: item.imageUrl,
+		sellerFeedbackScore: item.sellerFeedbackScore || 0,
+	});
+
+	const handleDeleteItem = (itemId: string) => {
 		const newItems = items.filter((item) => item.id !== itemId);
 		setItems(newItems);
 		onUpdateItems?.(id, newItems);
@@ -151,7 +165,7 @@ export function WishlistCard({
 						<div className="group/card relative">
 							<CardHeader>
 								<div className="flex items-center justify-between">
-									<CardTitle>{title}</CardTitle>
+									<CardTitle>{name}</CardTitle>
 									<div className="flex items-center gap-2">
 										{!deleteMode && !reorderMode && isExpanded && (
 											<>
@@ -204,7 +218,7 @@ export function WishlistCard({
 											<Reorder.Group
 												axis={isMobile ? "y" : "x"}
 												values={items}
-												onReorder={(newOrder: Listing[]) => {
+												onReorder={(newOrder: WishlistItem[]) => {
 													if (listingReorderMode) {
 														setItems(newOrder);
 													}
@@ -236,7 +250,7 @@ export function WishlistCard({
 															onClick={(e) => e.stopPropagation()}
 														>
 															<SavedListingCard
-																listing={listing}
+																listing={convertToListingFormat(listing)}
 																onDelete={
 																	!listingReorderMode
 																		? () => setItemToDelete(listing.id)

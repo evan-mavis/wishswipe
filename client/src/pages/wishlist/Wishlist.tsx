@@ -1,7 +1,7 @@
 import { GripVertical } from "lucide-react";
 import { WishlistCard } from "../../components/wishlistCard/WishlistCard";
-import type { WishList } from "@/types/listing";
-import { useState } from "react";
+import type { WishList } from "@/types/wishlist";
+import { useState, useEffect } from "react";
 import {
 	AlertDialog,
 	AlertDialogContent,
@@ -17,263 +17,54 @@ import { cn } from "@/lib/utils";
 import { WishlistHeader } from "../../components/wishlistCard/components/WishlistHeader";
 import { WishlistActions } from "../../components/wishlistCard/components/WishlistActions";
 import { NewWishlistDialog } from "../../components/wishlistCard/components/NewWishlistDialog";
-
-const mockWishlists: WishList[] = [
-	{
-		id: "1",
-		title: "Tech Gadgets",
-		description: "My tech wishlist",
-		createdAt: new Date(),
-		updatedAt: new Date(),
-		items: [
-			{
-				id: 1,
-				imageUrl: "/test-image-1.jpg",
-				details: {
-					title: "MacBook Pro",
-					seller: "TechDeals_USA",
-					price: 1299.99,
-					condition: "New",
-				},
-			},
-			{
-				id: 2,
-				imageUrl: "/test-image-2.jpg",
-				details: {
-					title: "iPad Pro",
-					seller: "Apple",
-					price: 799.99,
-					condition: "New",
-				},
-			},
-		],
-	},
-	{
-		id: "2",
-		title: "Home Office",
-		description: "Office setup items",
-		createdAt: new Date(),
-		updatedAt: new Date(),
-		items: [
-			{
-				id: 3,
-				imageUrl: "/test-image-3.jpg",
-				details: {
-					title: "Standing Desk",
-					seller: "IKEA",
-					price: 499.99,
-					condition: "New",
-				},
-			},
-		],
-	},
-	{
-		id: "3",
-		title: "Tech Gadgets",
-		description: "My tech wishlist",
-		createdAt: new Date(),
-		updatedAt: new Date(),
-		items: [
-			{
-				id: 1,
-				imageUrl: "/test-image-1.jpg",
-				details: {
-					title: "MacBook Pro",
-					seller: "TechDeals_USA",
-					price: 1299.99,
-					condition: "New",
-				},
-			},
-			{
-				id: 2,
-				imageUrl: "/test-image-2.jpg",
-				details: {
-					title: "iPad Pro",
-					seller: "Apple",
-					price: 799.99,
-					condition: "New",
-				},
-			},
-			{
-				id: 3,
-				imageUrl: "/test-image-1.jpg",
-				details: {
-					title: "MacBook Pro",
-					seller: "TechDeals_USA",
-					price: 1299.99,
-					condition: "New",
-				},
-			},
-			{
-				id: 4,
-				imageUrl: "/test-image-2.jpg",
-				details: {
-					title: "iPad Pro",
-					seller: "Apple",
-					price: 799.99,
-					condition: "New",
-				},
-			},
-
-			{
-				id: 5,
-				imageUrl: "/test-image-2.jpg",
-				details: {
-					title: "iPad Pro",
-					seller: "Apple",
-					price: 799.99,
-					condition: "New",
-				},
-			},
-
-			{
-				id: 6,
-				imageUrl: "/test-image-2.jpg",
-				details: {
-					title: "iPad Pro",
-					seller: "Apple",
-					price: 799.99,
-					condition: "New",
-				},
-			},
-		],
-	},
-	{
-		id: "4",
-		title: "Tech Gadgets",
-		description: "My tech wishlist",
-		createdAt: new Date(),
-		updatedAt: new Date(),
-		items: [
-			{
-				id: 1,
-				imageUrl: "/test-image-1.jpg",
-				details: {
-					title: "MacBook Pro",
-					seller: "TechDeals_USA",
-					price: 1299.99,
-					condition: "New",
-				},
-			},
-			{
-				id: 2,
-				imageUrl: "/test-image-2.jpg",
-				details: {
-					title: "iPad Pro",
-					seller: "Apple",
-					price: 799.99,
-					condition: "New",
-				},
-			},
-		],
-	},
-	{
-		id: "5",
-		title: "Home Office",
-		description: "Office setup items",
-		createdAt: new Date(),
-		updatedAt: new Date(),
-		items: [
-			{
-				id: 3,
-				imageUrl: "/test-image-3.jpg",
-				details: {
-					title: "Standing Desk",
-					seller: "IKEA",
-					price: 499.99,
-					condition: "New",
-				},
-			},
-		],
-	},
-	{
-		id: "6",
-		title: "Tech Gadgets",
-		description: "My tech wishlist",
-		createdAt: new Date(),
-		updatedAt: new Date(),
-		items: [
-			{
-				id: 1,
-				imageUrl: "/test-image-1.jpg",
-				details: {
-					title: "MacBook Pro",
-					seller: "TechDeals_USA",
-					price: 1299.99,
-					condition: "New",
-				},
-			},
-			{
-				id: 2,
-				imageUrl: "/test-image-2.jpg",
-				details: {
-					title: "iPad Pro",
-					seller: "Apple",
-					price: 799.99,
-					condition: "New",
-				},
-			},
-			{
-				id: 3,
-				imageUrl: "/test-image-1.jpg",
-				details: {
-					title: "MacBook Pro",
-					seller: "TechDeals_USA",
-					price: 1299.99,
-					condition: "New",
-				},
-			},
-			{
-				id: 4,
-				imageUrl: "/test-image-2.jpg",
-				details: {
-					title: "iPad Pro",
-					seller: "Apple",
-					price: 799.99,
-					condition: "New",
-				},
-			},
-
-			{
-				id: 5,
-				imageUrl: "/test-image-2.jpg",
-				details: {
-					title: "iPad Pro",
-					seller: "Apple",
-					price: 799.99,
-					condition: "New",
-				},
-			},
-
-			{
-				id: 6,
-				imageUrl: "/test-image-2.jpg",
-				details: {
-					title: "iPad Pro",
-					seller: "Apple",
-					price: 799.99,
-					condition: "New",
-				},
-			},
-		],
-	},
-];
+import * as wishlistService from "../../services/wishlistService";
 
 export function Wishlist() {
-	const [wishlists, setWishlists] = useState(mockWishlists);
+	const [wishlists, setWishlists] = useState<WishList[]>([]);
+	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState<string | null>(null);
 	const [deleteMode, setDeleteMode] = useState(false);
 	const [reorderMode, setReorderMode] = useState(false);
 	const [selectedLists, setSelectedLists] = useState<Set<string>>(new Set());
 	const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 	const [showNewWishlist, setShowNewWishlist] = useState(false);
-	const [favoriteListId, setFavoriteListId] = useState<string | null>(null);
+	const [originalOrder, setOriginalOrder] = useState<WishList[]>([]);
 
-	const handleDeleteConfirm = () => {
-		// Delete selected lists
-		setWishlists((prev) => prev.filter((list) => !selectedLists.has(list.id)));
-		setSelectedLists(new Set());
-		setDeleteMode(false);
-		setShowDeleteConfirm(false);
+	// Fetch wishlists on component mount
+	useEffect(() => {
+		const loadWishlists = async () => {
+			try {
+				setLoading(true);
+				const fetchedWishlists = await wishlistService.fetchWishlists();
+				setWishlists(fetchedWishlists);
+				setOriginalOrder(fetchedWishlists);
+			} catch (err) {
+				console.error("Error fetching wishlists:", err);
+				setError("Failed to load wishlists");
+			} finally {
+				setLoading(false);
+			}
+		};
+
+		loadWishlists();
+	}, []);
+
+	const handleDeleteConfirm = async () => {
+		try {
+			const selectedIds = Array.from(selectedLists);
+			await wishlistService.deleteWishlists(selectedIds);
+
+			// Update local state
+			setWishlists((prev) =>
+				prev.filter((list) => !selectedLists.has(list.id))
+			);
+			setSelectedLists(new Set());
+			setDeleteMode(false);
+			setShowDeleteConfirm(false);
+		} catch (err) {
+			console.error("Error deleting wishlists:", err);
+			setError("Failed to delete wishlists");
+		}
 	};
 
 	const toggleListSelection = (id: string) => {
@@ -299,36 +90,64 @@ export function Wishlist() {
 	};
 
 	const handleReorderCancel = () => {
-		setWishlists(mockWishlists); // Reset to original order
+		setWishlists(originalOrder); // Reset to original order
 		setReorderMode(false);
 	};
 
-	const handleReorderSave = () => {
-		// Here you would typically save the new order to your backend
-		setReorderMode(false);
+	const handleReorderSave = async () => {
+		try {
+			const wishlistIds = wishlists.map((w) => w.id);
+			await wishlistService.reorderWishlists(wishlistIds);
+			setOriginalOrder(wishlists); // Update original order after successful save
+			setReorderMode(false);
+		} catch (err) {
+			console.error("Error reordering wishlists:", err);
+			setError("Failed to reorder wishlists");
+			// Revert to original order on error
+			setWishlists(originalOrder);
+			setReorderMode(false);
+		}
 	};
 
-	const handleCreateWishlist = ({
+	const handleCreateWishlist = async ({
 		title,
 		description,
 	}: {
 		title: string;
 		description: string;
 	}) => {
-		const newWishlist: WishList = {
-			id: String(Date.now()), // temporary ID generation
-			title,
-			description,
-			items: [],
-			createdAt: new Date(),
-			updatedAt: new Date(),
-		};
+		try {
+			const newWishlist = await wishlistService.createWishlist({
+				name: title,
+				description,
+				isFavorite: false,
+			});
 
-		setWishlists((prev) => [...prev, newWishlist]);
+			setWishlists((prev) => [...prev, newWishlist]);
+		} catch (err) {
+			console.error("Error creating wishlist:", err);
+			setError("Failed to create wishlist");
+		}
 	};
 
-	const handleSetFavorite = (id: string) => {
-		setFavoriteListId(id === favoriteListId ? null : id);
+	const handleSetFavorite = async (id: string) => {
+		try {
+			const wishlist = wishlists.find((w) => w.id === id);
+			if (!wishlist) return;
+
+			const updatedWishlist = await wishlistService.updateWishlist(id, {
+				isFavorite: !wishlist.isFavorite,
+			});
+
+			setWishlists((prev) =>
+				prev.map((w) =>
+					w.id === id ? { ...w, isFavorite: updatedWishlist.isFavorite } : w
+				)
+			);
+		} catch (err) {
+			console.error("Error updating favorite status:", err);
+			setError("Failed to update favorite status");
+		}
 	};
 
 	const renderWishlistActions = () => (
@@ -353,6 +172,26 @@ export function Wishlist() {
 			onNewWishlist={() => setShowNewWishlist(true)}
 		/>
 	);
+
+	if (loading) {
+		return (
+			<div className="container mx-auto p-8">
+				<div className="flex h-64 items-center justify-center">
+					<div className="text-lg">Loading wishlists...</div>
+				</div>
+			</div>
+		);
+	}
+
+	if (error) {
+		return (
+			<div className="container mx-auto p-8">
+				<div className="flex h-64 items-center justify-center">
+					<div className="text-lg text-red-500">{error}</div>
+				</div>
+			</div>
+		);
+	}
 
 	return (
 		<>
@@ -393,7 +232,6 @@ export function Wishlist() {
 									reorderMode={reorderMode}
 									isSelected={selectedLists.has(wishlist.id)}
 									onSelect={() => toggleListSelection(wishlist.id)}
-									isFavorite={wishlist.id === favoriteListId}
 									onFavorite={() => handleSetFavorite(wishlist.id)}
 								/>
 							</div>
