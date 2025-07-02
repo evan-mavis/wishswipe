@@ -76,16 +76,20 @@ export function Listings({
 				{isLoading ? (
 					<DemoListing text="Searching eBay..." />
 				) : listings.length > 0 ? (
-					<AnimatePresence>
-						<ListingCard
-							key={listings[0].id}
-							listing={listings[0]}
-							setListings={setListings}
-							onProgressChange={handleProgressChange}
-							index={0}
-							selectedWishlistId={selectedWishlistId}
-						/>
-					</AnimatePresence>
+					<div className="relative h-full w-full">
+						<AnimatePresence mode="popLayout">
+							{listings.map((listing, index) => (
+								<ListingCard
+									key={`${listing.itemId}-${index}`}
+									listing={listing}
+									setListings={setListings}
+									onProgressChange={handleProgressChange}
+									index={index}
+									selectedWishlistId={selectedWishlistId}
+								/>
+							))}
+						</AnimatePresence>
+					</div>
 				) : (
 					<DemoListing text="No listings found. Try a different search!" />
 				)}

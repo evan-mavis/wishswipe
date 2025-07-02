@@ -65,7 +65,7 @@ export function ListingCard({
 			// Swipe left (negative X) - just dismiss (no action needed)
 
 			// Remove the card from the list regardless of swipe direction
-			setListings((pv) => pv.filter((v) => v.id !== listing.id));
+			setListings((pv) => pv.filter((v) => v.itemId !== listing.itemId));
 
 			// Ensure progress reset happens after animation
 			requestAnimationFrame(() => {
@@ -76,7 +76,17 @@ export function ListingCard({
 		}
 	};
 
-	const displayImageUrl = listing.imageUrl || "";
+	const getLargerImageUrl = (imageUrl: string | undefined): string => {
+		if (!imageUrl) return "";
+
+		// eBay image URLs typically have size parameters like s-l225, s-l300, etc.
+		// Replace with larger sizes: s-l500 or s-l640 for better quality
+		return imageUrl
+			.replace(/s-l\d+/g, "s-l450") // Replace any s-l### with s-l500
+			.replace(/~~/g, "~~s-l450~~"); // Some URLs use ~~ format
+	};
+
+	const displayImageUrl = getLargerImageUrl(listing.imageUrl);
 
 	return (
 		<AnimatePresence>
