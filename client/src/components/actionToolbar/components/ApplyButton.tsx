@@ -31,11 +31,11 @@ export function ApplyButton({
 						<button
 							onClick={onApply}
 							aria-label="Apply & Search"
-							className="flex h-6 items-center justify-center rounded-tl-none rounded-tr-none rounded-b-xl border-2 border-t-0 border-fuchsia-600 bg-fuchsia-600 px-3 py-1.5 text-[0.65rem] font-semibold text-white shadow transition-colors duration-200 hover:bg-fuchsia-700 md:h-9 md:min-w-[90px]"
+							className="flex h-6 items-center justify-center rounded-tl-none rounded-tr-none rounded-b-xl border-2 border-t-0 border-fuchsia-600 bg-fuchsia-600 text-[0.65rem] font-semibold text-white shadow transition-colors duration-200 hover:bg-fuchsia-700 md:h-7 md:min-w-[90px]"
 							style={{
 								position: "absolute",
 								right: "10px",
-								bottom: isMobile ? "-26px" : "-36px",
+								bottom: isMobile ? "-26px" : "-30px",
 								maxWidth: "120px",
 								zIndex: 10,
 							}}
