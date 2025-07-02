@@ -10,9 +10,9 @@ export async function searchEbayItems(
 
   const params = new URLSearchParams();
   params.append("q", query);
+  params.append("limit", "50");
+  params.append("offset", "0");
 
-  if (options.limit) params.append("limit", options.limit.toString());
-  if (options.offset) params.append("offset", options.offset.toString());
   if (options.category) params.append("category_ids", options.category);
   if (options.condition)
     params.append("filter", `conditionIds:{${options.condition}}`);

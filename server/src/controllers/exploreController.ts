@@ -8,12 +8,7 @@ export const getEbayListings = async (
 ): Promise<void> => {
   try {
     const query = (req.query.query as string) || "trending";
-    const limit = req.query.limit
-      ? parseInt(req.query.limit as string, 10)
-      : 50;
-    const offset = req.query.offset
-      ? parseInt(req.query.offset as string, 10)
-      : 0;
+
     const condition = req.query.condition as string | undefined;
     const category = req.query.category as string | undefined;
     const minPrice = req.query.minPrice
@@ -24,8 +19,6 @@ export const getEbayListings = async (
       : undefined;
 
     const data = await searchEbayItems(query, {
-      limit,
-      offset,
       condition,
       category,
       minPrice,
@@ -33,20 +26,21 @@ export const getEbayListings = async (
     });
 
     const simplifiedListings: SimplifiedListing[] = data.itemSummaries
-      .map((item) => ({
-        itemId: item.itemId,
-        title: item.title,
-        price: {
-          value: item.price.value,
-          currency: item.price.currency,
-        },
-        condition: item.condition,
-        itemWebUrl: item.itemWebUrl,
-        imageUrl: item.image?.imageUrl,
-        sellerFeedbackScore: item.seller.feedbackScore,
-      }))
-      .filter((item) => item.imageUrl)
-      .slice(0, 10);
+      ? data.itemSummaries
+          .map((item) => ({
+            itemId: item.itemId,
+            title: item.title,
+            price: {
+              value: item.price.value,
+              currency: item.price.currency,
+            },
+            condition: item.condition,
+            itemWebUrl: item.itemWebUrl,
+            imageUrl: item.image?.imageUrl,
+            sellerFeedbackScore: item.seller.feedbackScore,
+          }))
+          .filter((item) => item.imageUrl)
+      : [];
 
     res.json({ listings: simplifiedListings });
   } catch (error) {
