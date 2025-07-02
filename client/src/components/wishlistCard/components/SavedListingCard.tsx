@@ -126,7 +126,7 @@ export function SavedListingCard({
 							</div>
 							<Button
 								className="mt-4 bg-fuchsia-300 hover:bg-fuchsia-400"
-								onClick={() => window.open("https://ebay.com", "_blank")}
+								onClick={() => window.open(listing.itemWebUrl, "_blank")}
 							>
 								View on eBay
 							</Button>
