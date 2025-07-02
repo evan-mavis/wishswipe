@@ -14,7 +14,6 @@ export async function findWishlistsByUserId(
   const { rows } = await pool.query(
     `SELECT 
       w.id,
-      w.user_id,
       w.name,
       w.description,
       w.is_favorite,
@@ -25,14 +24,13 @@ export async function findWishlistsByUserId(
     FROM wishlists w
     LEFT JOIN wishlist_items wi ON w.id = wi.wishlist_id
     WHERE w.user_id = $1
-    GROUP BY w.id, w.user_id, w.name, w.description, w.is_favorite, w.order_index, w.created_at, w.updated_at
+    GROUP BY w.id, w.name, w.description, w.is_favorite, w.order_index, w.created_at, w.updated_at
     ORDER BY w.order_index ASC, w.created_at DESC`,
     [userId]
   );
 
   return rows.map((row) => ({
     id: row.id,
-    userId: row.user_id,
     name: row.name,
     description: row.description,
     isFavorite: row.is_favorite,
@@ -49,7 +47,6 @@ export async function findWishlistsWithItemsByUserId(
   const { rows } = await pool.query(
     `SELECT 
       w.id as wishlist_id,
-      w.user_id,
       w.name as wishlist_name,
       w.description as wishlist_description,
       w.is_favorite,
@@ -85,7 +82,6 @@ export async function findWishlistsWithItemsByUserId(
     if (!wishlistsMap.has(wishlistId)) {
       wishlistsMap.set(wishlistId, {
         id: row.wishlist_id,
-        userId: row.user_id,
         name: row.wishlist_name,
         description: row.wishlist_description,
         isFavorite: row.is_favorite,
@@ -146,7 +142,6 @@ export async function createWishlist(
 
   return {
     id: rows[0].id,
-    userId: rows[0].user_id,
     name: rows[0].name,
     description: rows[0].description,
     isFavorite: rows[0].is_favorite,
@@ -201,7 +196,6 @@ export async function updateWishlist(
   return rows.length > 0
     ? {
         id: rows[0].id,
-        userId: rows[0].user_id,
         name: rows[0].name,
         description: rows[0].description,
         isFavorite: rows[0].is_favorite,
