@@ -300,8 +300,7 @@ export async function removeItemsFromWishlist(
   userId: string
 ): Promise<number> {
   const { rowCount } = await pool.query(
-    `UPDATE wishlist_items 
-     SET is_active = false, updated_at = now()
+    `DELETE FROM wishlist_items 
      WHERE id = ANY($1) 
      AND wishlist_id IN (SELECT id FROM wishlists WHERE user_id = $2)`,
     [itemIds, userId]

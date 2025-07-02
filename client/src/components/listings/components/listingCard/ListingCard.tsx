@@ -1,6 +1,7 @@
 import type { Dispatch, SetStateAction } from "react";
 import type { Listing } from "../../../../types/listing";
 import { ListingCaption } from "../listingCaption/ListingCaption";
+import * as wishlistService from "../../../../services/wishlistService";
 import {
 	AnimatePresence,
 	motion,
@@ -40,10 +41,32 @@ export function ListingCard({
 		[0.2, 1, 0.2]
 	);
 
-	const handleDragEnd = () => {
+	const handleDragEnd = async () => {
 		const currentX = x.get();
 		if (Math.abs(currentX) > DRAG_THRESHOLD) {
+			// Swipe right (positive X) - add to wishlist
+			if (currentX > 0 && selectedWishlistId) {
+				try {
+					await wishlistService.addItemToWishlist({
+						wishlistId: selectedWishlistId,
+						ebayItemId: listing.itemId,
+						title: listing.title,
+						imageUrl: listing.imageUrl,
+						itemWebUrl: listing.itemWebUrl,
+						price: listing.price ? parseFloat(listing.price.value) : undefined,
+						sellerFeedbackScore: listing.sellerFeedbackScore,
+					});
+					console.log("Item added to wishlist successfully");
+				} catch (error) {
+					console.error("Error adding item to wishlist:", error);
+					// Could show a toast notification here for better UX
+				}
+			}
+			// Swipe left (negative X) - just dismiss (no action needed)
+
+			// Remove the card from the list regardless of swipe direction
 			setListings((pv) => pv.filter((v) => v.id !== listing.id));
+
 			// Ensure progress reset happens after animation
 			requestAnimationFrame(() => {
 				onProgressChange?.(50);

@@ -15,6 +15,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { SavedListingCard } from "./components/SavedListingCard";
 import { ListingReorderControls } from "./components/ListingReorderControls";
 import { EditWishlistDialog } from "./components/EditWishlistDialog";
+import * as wishlistService from "../../services/wishlistService";
 import type { WishList, WishlistItem } from "@/types/wishlist";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -82,16 +83,36 @@ export function WishlistCard({
 		sellerFeedbackScore: item.sellerFeedbackScore || 0,
 	});
 
-	const handleDeleteItem = (itemId: string) => {
-		const newItems = items.filter((item) => item.id !== itemId);
-		setItems(newItems);
-		onUpdateItems?.(id, newItems);
-		setItemToDelete(null);
+	const handleDeleteItem = async (itemId: string) => {
+		try {
+			await wishlistService.removeItemsFromWishlist([itemId]);
+
+			// Update local state after successful deletion
+			const newItems = items.filter((item) => item.id !== itemId);
+			setItems(newItems);
+			onUpdateItems?.(id, newItems);
+			setItemToDelete(null);
+		} catch (error) {
+			console.error("Error deleting item from wishlist:", error);
+			// Close the dialog even if there's an error
+			setItemToDelete(null);
+		}
 	};
 
-	const handleListingReorderSave = () => {
-		onUpdateItems?.(id, items);
-		setListingReorderMode(false);
+	const handleListingReorderSave = async () => {
+		try {
+			const itemIds = items.map((item) => item.id);
+			await wishlistService.reorderWishlistItems(itemIds);
+
+			// Update the parent component with the new order
+			onUpdateItems?.(id, items);
+			setListingReorderMode(false);
+		} catch (error) {
+			console.error("Error reordering wishlist items:", error);
+			// Revert to original order on error
+			setItems(initialItems);
+			setListingReorderMode(false);
+		}
 	};
 
 	const handleListingReorderCancel = () => {
