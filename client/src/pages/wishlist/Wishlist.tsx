@@ -149,6 +149,30 @@ export function Wishlist() {
 		}
 	};
 
+	const handleUpdateWishlist = async (
+		id: string,
+		data: { name: string; description: string }
+	) => {
+		try {
+			const updatedWishlist = await wishlistService.updateWishlist(id, data);
+
+			setWishlists((prev) =>
+				prev.map((w) =>
+					w.id === id
+						? {
+								...w,
+								name: updatedWishlist.name,
+								description: updatedWishlist.description,
+							}
+						: w
+				)
+			);
+		} catch (err) {
+			console.error("Error updating wishlist:", err);
+			setError("Failed to update wishlist");
+		}
+	};
+
 	const renderWishlistActions = () => (
 		<WishlistActions
 			reorderMode={reorderMode}
@@ -232,6 +256,7 @@ export function Wishlist() {
 									isSelected={selectedLists.has(wishlist.id)}
 									onSelect={() => toggleListSelection(wishlist.id)}
 									onFavorite={() => handleSetFavorite(wishlist.id)}
+									onUpdate={handleUpdateWishlist}
 								/>
 							</div>
 						</Reorder.Item>

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence, Reorder } from "framer-motion";
-import { ChevronDown, GripVertical, Star } from "lucide-react";
+import { ChevronDown, GripVertical, Star, Pencil } from "lucide-react";
 import {
 	AlertDialog,
 	AlertDialogContent,
@@ -14,6 +14,7 @@ import {
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { SavedListingCard } from "./components/SavedListingCard";
 import { ListingReorderControls } from "./components/ListingReorderControls";
+import { EditWishlistDialog } from "./components/EditWishlistDialog";
 import type { WishList, WishlistItem } from "@/types/wishlist";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -33,6 +34,7 @@ interface WishlistCardProps extends WishList {
 	onSelect: () => void;
 	onUpdateItems?: (id: string, items: WishlistItem[]) => void;
 	onFavorite?: () => void;
+	onUpdate?: (id: string, data: { name: string; description: string }) => void;
 }
 
 export function WishlistCard({
@@ -47,12 +49,14 @@ export function WishlistCard({
 	onUpdateItems,
 	isFavorite,
 	onFavorite,
+	onUpdate,
 }: WishlistCardProps) {
 	const isMobile = useIsMobile();
 	const [isExpanded, setIsExpanded] = useState(false);
 	const [items, setItems] = useState(initialItems);
 	const [itemToDelete, setItemToDelete] = useState<string | null>(null);
 	const [listingReorderMode, setListingReorderMode] = useState(false);
+	const [showEditDialog, setShowEditDialog] = useState(false);
 
 	const handleClick = () => {
 		if (deleteMode) {
@@ -93,6 +97,10 @@ export function WishlistCard({
 	const handleListingReorderCancel = () => {
 		setItems(initialItems);
 		setListingReorderMode(false);
+	};
+
+	const handleEditSubmit = (data: { name: string; description: string }) => {
+		onUpdate?.(id, data);
 	};
 
 	// Add effect to collapse when entering modes
@@ -165,7 +173,34 @@ export function WishlistCard({
 						<div className="group/card relative">
 							<CardHeader>
 								<div className="flex items-center justify-between">
-									<CardTitle>{name}</CardTitle>
+									<div className="flex items-center gap-2">
+										<CardTitle>{name}</CardTitle>
+										{!deleteMode && !reorderMode && (
+											<TooltipProvider>
+												<Tooltip>
+													<TooltipTrigger asChild>
+														<button
+															onClick={(e) => {
+																e.stopPropagation();
+																setShowEditDialog(true);
+															}}
+															className={cn(
+																"text-muted-foreground hover:text-foreground transition-all hover:scale-110 hover:opacity-100",
+																isMobile 
+																	? "opacity-60" 
+																	: "opacity-0 group-hover/card:opacity-60"
+															)}
+														>
+															<Pencil className="h-4 w-4" />
+														</button>
+													</TooltipTrigger>
+													<TooltipContent>
+														<p>Edit wishlist</p>
+													</TooltipContent>
+												</Tooltip>
+											</TooltipProvider>
+										)}
+									</div>
 									<div className="flex items-center gap-2">
 										{!deleteMode && !reorderMode && isExpanded && (
 											<>
@@ -299,6 +334,14 @@ export function WishlistCard({
 					</AlertDialogFooter>
 				</AlertDialogContent>
 			</AlertDialog>
+
+			<EditWishlistDialog
+				open={showEditDialog}
+				onOpenChange={setShowEditDialog}
+				onSubmit={handleEditSubmit}
+				initialName={name}
+				initialDescription={description}
+			/>
 		</>
 	);
 }
