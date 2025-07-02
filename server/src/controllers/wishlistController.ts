@@ -8,7 +8,22 @@ const createWishlistSchema = z.object({
     .string()
     .min(1, "Wishlist name is required")
     .max(255, "Name too long"),
+  description: z.string().max(500, "Description too long").optional(),
   isFavorite: z.boolean().optional().default(false),
+});
+
+// Zod schema for reordering wishlists
+const reorderWishlistsSchema = z.object({
+  wishlistIds: z
+    .array(z.string().uuid("Invalid wishlist ID"))
+    .min(1, "At least one wishlist ID required"),
+});
+
+// Zod schema for deleting wishlists
+const deleteWishlistsSchema = z.object({
+  wishlistIds: z
+    .array(z.string().uuid("Invalid wishlist ID"))
+    .min(1, "At least one wishlist ID required"),
 });
 
 // Zod schema for adding item to wishlist
@@ -57,7 +72,7 @@ export const createWishlist = async (
       return;
     }
 
-    const { name, isFavorite } = parseResult.data;
+    const { name, description, isFavorite } = parseResult.data;
 
     if (!req.dbUser) {
       res.status(401).json({ error: "User not authenticated" });
@@ -67,6 +82,7 @@ export const createWishlist = async (
     const newWishlist = await wishlistRepo.createWishlist({
       userId: req.dbUser.id,
       name,
+      description,
       isFavorite,
     });
 
@@ -116,27 +132,74 @@ export const addItemToWishlist = async (
   }
 };
 
-export const deleteWishlist = async (
+export const deleteWishlists = async (
   req: Request,
   res: Response
 ): Promise<void> => {
   try {
-    const { id } = req.params;
+    const parseResult = deleteWishlistsSchema.safeParse(req.body);
+
+    if (!parseResult.success) {
+      res.status(400).json({
+        error: "Invalid request",
+        details: parseResult.error.flatten(),
+      });
+      return;
+    }
+
+    const { wishlistIds } = parseResult.data;
 
     if (!req.dbUser) {
       res.status(401).json({ error: "User not authenticated" });
       return;
     }
 
-    const deleted = await wishlistRepo.deleteWishlist(id, req.dbUser.id);
+    const deletedCount = await wishlistRepo.deleteWishlists(
+      wishlistIds,
+      req.dbUser.id
+    );
 
-    if (deleted) {
-      res.status(200).json({ message: "Wishlist deleted successfully" });
+    if (deletedCount > 0) {
+      res.status(200).json({
+        message: `${deletedCount} wishlist(s) deleted successfully`,
+        deletedCount,
+      });
     } else {
-      res.status(404).json({ error: "Wishlist not found or access denied" });
+      res.status(404).json({ error: "No wishlists found or access denied" });
     }
   } catch (err) {
-    console.error("Error deleting wishlist:", err);
+    console.error("Error deleting wishlists:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+export const reorderWishlists = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const parseResult = reorderWishlistsSchema.safeParse(req.body);
+
+    if (!parseResult.success) {
+      res.status(400).json({
+        error: "Invalid request",
+        details: parseResult.error.flatten(),
+      });
+      return;
+    }
+
+    const { wishlistIds } = parseResult.data;
+
+    if (!req.dbUser) {
+      res.status(401).json({ error: "User not authenticated" });
+      return;
+    }
+
+    await wishlistRepo.reorderWishlists(req.dbUser.id, wishlistIds);
+
+    res.status(200).json({ message: "Wishlists reordered successfully" });
+  } catch (err) {
+    console.error("Error reordering wishlists:", err);
     res.status(500).json({ error: "Internal server error" });
   }
 };

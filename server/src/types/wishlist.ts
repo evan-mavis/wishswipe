@@ -4,6 +4,7 @@ export interface DbWishlist {
   name: string;
   description?: string;
   isFavorite: boolean;
+  orderIndex: number;
   createdAt: Date;
   updatedAt: Date;
   itemCount?: number;
@@ -32,6 +33,11 @@ export interface CreateWishlistRequest {
   name: string;
   description?: string;
   isFavorite?: boolean;
+  orderIndex?: number;
+}
+
+export interface ReorderWishlistsRequest {
+  wishlistIds: string[];
 }
 
 export interface AddItemToWishlistRequest {

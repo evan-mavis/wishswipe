@@ -19,6 +19,7 @@ export const up = (pgm) => {
     name: { type: "varchar(255)", notNull: true },
     description: { type: "varchar(500)" },
     is_favorite: { type: "boolean", notNull: true, default: false },
+    order_index: { type: "integer", notNull: true, default: 0 },
     created_at: {
       type: "timestamp",
       notNull: true,

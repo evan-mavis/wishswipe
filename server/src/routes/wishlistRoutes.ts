@@ -8,6 +8,8 @@ router.get("/", wishlistController.getWishlists);
 router.post("/", wishlistController.createWishlist);
 router.post("/items", wishlistController.addItemToWishlist);
 
-router.delete("/:id", wishlistController.deleteWishlist);
+router.patch("/reorder", wishlistController.reorderWishlists);
+
+router.delete("/", wishlistController.deleteWishlists);
 
 export default router;
