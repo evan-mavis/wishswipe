@@ -105,7 +105,7 @@ export function ActionToolbar({
 				{getConditionDisplayName(filters.condition) && (
 					<Badge
 						variant="secondary"
-						className="border-fuchsia-600 bg-fuchsia-300 text-xs text-white"
+						className="border-fuchsia-600 bg-fuchsia-600 text-xs text-white"
 					>
 						Condition: {getConditionDisplayName(filters.condition)}
 						<button
@@ -119,7 +119,7 @@ export function ActionToolbar({
 				{getCategoryDisplayName(filters.category) && (
 					<Badge
 						variant="secondary"
-						className="border-fuchsia-600 bg-fuchsia-300 text-xs text-white"
+						className="border-fuchsia-600 bg-fuchsia-600 text-xs text-white"
 					>
 						Category: {getCategoryDisplayName(filters.category)}
 						<button
@@ -133,7 +133,7 @@ export function ActionToolbar({
 				{getPriceDisplayName(filters) && (
 					<Badge
 						variant="secondary"
-						className="border-fuchsia-600 bg-fuchsia-300 text-xs text-white"
+						className="border-fuchsia-600 bg-fuchsia-600 text-xs text-white"
 					>
 						Price: {getPriceDisplayName(filters)}
 						<button
