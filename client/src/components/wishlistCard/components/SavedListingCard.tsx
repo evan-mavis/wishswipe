@@ -60,17 +60,17 @@ export function SavedListingCard({
 						<div className="h-20 w-20 overflow-hidden rounded-md">
 							<img
 								src={listing.imageUrl}
-								alt={listing.details.title}
+								alt={listing.title}
 								className="h-full w-full object-cover"
 							/>
 						</div>
 						<div className="flex flex-1 flex-col justify-center">
-							<h3 className="font-medium">{listing.details.title}</h3>
+							<h3 className="font-medium">{listing.title}</h3>
 							<p className="text-muted-foreground">
-								${listing.details.price.toFixed(2)}
+								{listing.price.value.toString()}
 							</p>
 							<p className="text-muted-foreground text-xs">
-								{listing.details.condition}
+								{listing.condition}
 							</p>
 						</div>
 						<Button
@@ -95,13 +95,13 @@ export function SavedListingCard({
 			<Dialog open={showDetails} onOpenChange={setShowDetails}>
 				<DialogContent className="sm:max-w-[600px]">
 					<DialogHeader>
-						<DialogTitle>{listing.details.title}</DialogTitle>
+						<DialogTitle>{listing.title}</DialogTitle>
 					</DialogHeader>
 					<div className="grid gap-6">
 						<div className="aspect-video w-full overflow-hidden rounded-lg">
 							<img
 								src={listing.imageUrl}
-								alt={listing.details.title}
+								alt={listing.title}
 								className="h-full w-full object-cover"
 							/>
 						</div>
@@ -109,16 +109,20 @@ export function SavedListingCard({
 							<div className="flex justify-between">
 								<span className="text-muted-foreground">Price:</span>
 								<span className="font-medium">
-									${listing.details.price.toFixed(2)}
+									${listing.price.value.toString()}
 								</span>
 							</div>
 							<div className="flex justify-between">
 								<span className="text-muted-foreground">Condition:</span>
-								<span className="font-medium">{listing.details.condition}</span>
+								<span className="font-medium">{listing.condition}</span>
 							</div>
 							<div className="flex justify-between">
-								<span className="text-muted-foreground">Seller:</span>
-								<span className="font-medium">{listing.details.seller}</span>
+								<span className="text-muted-foreground">
+									Seller Feedback Score:
+								</span>
+								<span className="font-medium">
+									{listing.sellerFeedbackScore}
+								</span>
 							</div>
 							<Button
 								className="mt-4 bg-fuchsia-300 hover:bg-fuchsia-400"
