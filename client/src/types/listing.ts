@@ -11,3 +11,13 @@ export interface Listing {
 	imageUrl?: string;
 	sellerFeedbackScore: number;
 }
+
+export interface SearchFilters {
+	query?: string;
+	condition?: string;
+	category?: string;
+	minPrice?: number;
+	maxPrice?: number;
+	limit?: number;
+	offset?: number;
+}

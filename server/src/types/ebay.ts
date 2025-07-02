@@ -1,10 +1,11 @@
-export interface EbaySearchOptions {
-  limit?: number;
-  offset?: number;
-  category?: string;
+export interface SearchFilters {
+  query?: string;
   condition?: string;
+  category?: string;
   minPrice?: number;
   maxPrice?: number;
+  limit?: number;
+  offset?: number;
 }
 
 export interface SimplifiedListing {

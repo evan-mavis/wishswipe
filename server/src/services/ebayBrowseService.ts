@@ -1,10 +1,10 @@
 import axios from "axios";
 import { getEbayAccessToken } from "./ebayTokenService.js";
-import { EbaySearchOptions, EbaySearchResponse } from "../types/ebay.js";
+import { SearchFilters, EbaySearchResponse } from "../types/ebay.js";
 
 export async function searchEbayItems(
   query: string,
-  options: EbaySearchOptions = {}
+  options: SearchFilters = {}
 ): Promise<EbaySearchResponse> {
   const accessToken = await getEbayAccessToken();
 
