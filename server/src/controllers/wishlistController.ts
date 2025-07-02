@@ -26,16 +26,6 @@ const deleteWishlistsSchema = z.object({
     .min(1, "At least one wishlist ID required"),
 });
 
-// Zod schema for adding item to wishlist
-const addItemSchema = z.object({
-  wishlistId: z.string().uuid("Invalid wishlist ID"),
-  ebayItemId: z.string().min(1, "eBay item ID is required"),
-  title: z.string().optional(),
-  imageUrl: z.string().url().optional(),
-  itemWebUrl: z.string().url().optional(),
-  price: z.number().positive().optional(),
-});
-
 export const getWishlists = async (
   req: Request,
   res: Response
@@ -89,45 +79,6 @@ export const createWishlist = async (
     res.status(201).json({ wishlist: newWishlist });
   } catch (err) {
     console.error("Error creating wishlist:", err);
-    res.status(500).json({ error: "Internal server error" });
-  }
-};
-
-export const addItemToWishlist = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
-  try {
-    const parseResult = addItemSchema.safeParse(req.body);
-
-    if (!parseResult.success) {
-      res.status(400).json({
-        error: "Invalid request",
-        details: parseResult.error.flatten(),
-      });
-      return;
-    }
-
-    const { wishlistId, ebayItemId, title, imageUrl, itemWebUrl, price } =
-      parseResult.data;
-
-    if (!req.dbUser) {
-      res.status(401).json({ error: "User not authenticated" });
-      return;
-    }
-
-    const newItem = await wishlistRepo.addItemToWishlist({
-      wishlistId,
-      ebayItemId,
-      title,
-      imageUrl,
-      itemWebUrl,
-      price,
-    });
-
-    res.status(201).json({ item: newItem });
-  } catch (err) {
-    console.error("Error adding item to wishlist:", err);
     res.status(500).json({ error: "Internal server error" });
   }
 };

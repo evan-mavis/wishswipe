@@ -1,12 +1,12 @@
 import pool from "../index.js";
 import {
   DbWishlist,
-  DbWishlistItem,
   DbWishlistWithItems,
   CreateWishlistRequest,
-  AddItemToWishlistRequest,
   ReorderWishlistsRequest,
+  DbWishlistItem,
 } from "../../types/wishlist.js";
+import * as wishlistItemRepo from "./wishlistItemRepository.js";
 
 function transformDbRowToWishlist(row: any): DbWishlist {
   return {
@@ -61,29 +61,6 @@ export async function findWishlistsByUserId(
   return rows.map(transformDbRowToWishlist);
 }
 
-export async function findWishlistItemsByWishlistId(
-  wishlistId: string
-): Promise<DbWishlistItem[]> {
-  const { rows } = await pool.query(
-    `SELECT 
-      id,
-      wishlist_id,
-      ebay_item_id,
-      title,
-      image_url,
-      item_web_url,
-      price,
-      is_active,
-      created_at,
-      updated_at
-    FROM wishlist_items 
-    WHERE wishlist_id = $1 AND is_active = true
-    ORDER BY created_at DESC`,
-    [wishlistId]
-  );
-  return rows.map(transformDbRowToWishlistItem);
-}
-
 export async function findWishlistsWithItemsByUserId(
   userId: string
 ): Promise<DbWishlistWithItems[]> {
@@ -91,7 +68,9 @@ export async function findWishlistsWithItemsByUserId(
 
   const wishlistsWithItems = await Promise.all(
     wishlists.map(async (wishlist) => {
-      const items = await findWishlistItemsByWishlistId(wishlist.id);
+      const items = await wishlistItemRepo.findWishlistItemsByWishlistId(
+        wishlist.id
+      );
       return {
         ...wishlist,
         items,
@@ -123,25 +102,6 @@ export async function createWishlist(
     [userId, name, description || null, isFavorite, finalOrderIndex]
   );
   return transformDbRowToWishlist(rows[0]);
-}
-
-export async function addItemToWishlist(
-  data: AddItemToWishlistRequest
-): Promise<DbWishlistItem> {
-  const { wishlistId, ebayItemId, title, imageUrl, itemWebUrl, price } = data;
-  const { rows } = await pool.query(
-    `INSERT INTO wishlist_items (wishlist_id, ebay_item_id, title, image_url, item_web_url, price)
-     VALUES ($1, $2, $3, $4, $5, $6) RETURNING *;`,
-    [
-      wishlistId,
-      ebayItemId,
-      title || null,
-      imageUrl || null,
-      itemWebUrl || null,
-      price || null,
-    ]
-  );
-  return transformDbRowToWishlistItem(rows[0]);
 }
 
 export async function deleteWishlist(
@@ -190,4 +150,43 @@ export async function reorderWishlists(
   } finally {
     client.release();
   }
+}
+
+export async function getWishlistItems(
+  wishlistId: string,
+  userId: string
+): Promise<DbWishlistItem[]> {
+  const { rows } = await pool.query(
+    `SELECT 
+      wi.id,
+      wi.wishlist_id,
+      wi.ebay_item_id,
+      wi.title,
+      wi.image_url,
+      wi.item_web_url,
+      wi.price,
+      wi.is_active,
+      wi.created_at,
+      wi.updated_at
+    FROM wishlist_items wi
+    JOIN wishlists w ON wi.wishlist_id = w.id
+    WHERE wi.wishlist_id = $1 AND w.user_id = $2 AND wi.is_active = true
+    ORDER BY wi.created_at DESC`,
+    [wishlistId, userId]
+  );
+  return rows.map(transformDbRowToWishlistItem);
+}
+
+export async function removeItemsFromWishlist(
+  itemIds: number[],
+  userId: string
+): Promise<number> {
+  const { rowCount } = await pool.query(
+    `UPDATE wishlist_items 
+     SET is_active = false, updated_at = now()
+     WHERE id = ANY($1) 
+     AND wishlist_id IN (SELECT id FROM wishlists WHERE user_id = $2)`,
+    [itemIds, userId]
+  );
+  return rowCount ?? 0;
 }

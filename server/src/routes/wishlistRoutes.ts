@@ -6,7 +6,6 @@ const router = express.Router();
 router.get("/", wishlistController.getWishlists);
 
 router.post("/", wishlistController.createWishlist);
-router.post("/items", wishlistController.addItemToWishlist);
 
 router.patch("/reorder", wishlistController.reorderWishlists);
 
