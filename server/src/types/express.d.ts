@@ -4,8 +4,8 @@ import { DbUser } from "./user.js";
 declare global {
   namespace Express {
     interface Request {
-      firebaseUserToken?: DecodedIdToken;
-      dbUser?: DbUser;
+      firebaseUserToken: DecodedIdToken;
+      dbUser: DbUser;
     }
   }
 }

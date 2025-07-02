@@ -104,6 +104,46 @@ export async function createWishlist(
   return transformDbRowToWishlist(rows[0]);
 }
 
+export async function updateWishlist(
+  wishlistId: string,
+  userId: string,
+  data: { name?: string; description?: string }
+): Promise<DbWishlist | null> {
+  const { name, description } = data;
+
+  // Build dynamic query based on provided fields
+  const updates: string[] = [];
+  const values: any[] = [];
+  let paramIndex = 1;
+
+  if (name !== undefined) {
+    updates.push(`name = $${paramIndex++}`);
+    values.push(name);
+  }
+
+  if (description !== undefined) {
+    updates.push(`description = $${paramIndex++}`);
+    values.push(description);
+  }
+
+  if (updates.length === 0) {
+    return null;
+  }
+
+  updates.push(`updated_at = now()`);
+  values.push(wishlistId, userId);
+
+  const { rows } = await pool.query(
+    `UPDATE wishlists 
+     SET ${updates.join(", ")}
+     WHERE id = $${paramIndex} AND user_id = $${paramIndex + 1}
+     RETURNING *`,
+    values
+  );
+
+  return rows.length > 0 ? transformDbRowToWishlist(rows[0]) : null;
+}
+
 export async function deleteWishlist(
   wishlistId: string,
   userId: string

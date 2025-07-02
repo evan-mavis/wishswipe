@@ -12,6 +12,16 @@ const createWishlistSchema = z.object({
   isFavorite: z.boolean().optional().default(false),
 });
 
+// Zod schema for updating a wishlist
+const updateWishlistSchema = z.object({
+  name: z
+    .string()
+    .min(1, "Wishlist name is required")
+    .max(255, "Name too long")
+    .optional(),
+  description: z.string().max(500, "Description too long").optional(),
+});
+
 // Zod schema for reordering wishlists
 const reorderWishlistsSchema = z.object({
   wishlistIds: z
@@ -31,11 +41,6 @@ export const getWishlists = async (
   res: Response
 ): Promise<void> => {
   try {
-    if (!req.dbUser) {
-      res.status(401).json({ error: "User not authenticated" });
-      return;
-    }
-
     const wishlists = await wishlistRepo.findWishlistsWithItemsByUserId(
       req.dbUser.id
     );
@@ -63,11 +68,6 @@ export const createWishlist = async (
     }
 
     const { name, description, isFavorite } = parseResult.data;
-
-    if (!req.dbUser) {
-      res.status(401).json({ error: "User not authenticated" });
-      return;
-    }
 
     const newWishlist = await wishlistRepo.createWishlist({
       userId: req.dbUser.id,
@@ -99,11 +99,6 @@ export const deleteWishlists = async (
     }
 
     const { wishlistIds } = parseResult.data;
-
-    if (!req.dbUser) {
-      res.status(401).json({ error: "User not authenticated" });
-      return;
-    }
 
     const deletedCount = await wishlistRepo.deleteWishlists(
       wishlistIds,
@@ -141,16 +136,55 @@ export const reorderWishlists = async (
 
     const { wishlistIds } = parseResult.data;
 
-    if (!req.dbUser) {
-      res.status(401).json({ error: "User not authenticated" });
-      return;
-    }
-
     await wishlistRepo.reorderWishlists(req.dbUser.id, wishlistIds);
 
     res.status(200).json({ message: "Wishlists reordered successfully" });
   } catch (err) {
     console.error("Error reordering wishlists:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+export const updateWishlist = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const parseResult = updateWishlistSchema.safeParse(req.body);
+
+    if (!parseResult.success) {
+      res.status(400).json({
+        error: "Invalid request",
+        details: parseResult.error.flatten(),
+      });
+      return;
+    }
+
+    const { name, description } = parseResult.data;
+    const { wishlistId } = req.params;
+
+    // Check if at least one field is being updated
+    if (!name && description === undefined) {
+      res.status(400).json({
+        error: "At least one field (name or description) must be provided",
+      });
+      return;
+    }
+
+    const updatedWishlist = await wishlistRepo.updateWishlist(
+      wishlistId,
+      req.dbUser.id,
+      { name, description }
+    );
+
+    if (!updatedWishlist) {
+      res.status(404).json({ error: "Wishlist not found or access denied" });
+      return;
+    }
+
+    res.json({ wishlist: updatedWishlist });
+  } catch (err) {
+    console.error("Error updating wishlist:", err);
     res.status(500).json({ error: "Internal server error" });
   }
 };
