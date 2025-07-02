@@ -17,6 +17,7 @@ export const up = (pgm) => {
       onDelete: "cascade",
     },
     name: { type: "varchar(255)", notNull: true },
+    description: { type: "varchar(500)" },
     is_favorite: { type: "boolean", notNull: true, default: false },
     created_at: {
       type: "timestamp",

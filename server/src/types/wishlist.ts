@@ -2,6 +2,7 @@ export interface DbWishlist {
   id: string;
   userId: string;
   name: string;
+  description?: string;
   isFavorite: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -29,6 +30,7 @@ export interface DbWishlistWithItems extends DbWishlist {
 export interface CreateWishlistRequest {
   userId: string;
   name: string;
+  description?: string;
   isFavorite?: boolean;
 }
 

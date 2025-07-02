@@ -12,6 +12,7 @@ function transformDbRowToWishlist(row: any): DbWishlist {
     id: row.id,
     userId: row.user_id,
     name: row.name,
+    description: row.description,
     isFavorite: row.is_favorite,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
@@ -42,6 +43,7 @@ export async function findWishlistsByUserId(
       w.id,
       w.user_id,
       w.name,
+      w.description,
       w.is_favorite,
       w.created_at,
       w.updated_at,
@@ -49,7 +51,7 @@ export async function findWishlistsByUserId(
     FROM wishlists w
     LEFT JOIN wishlist_items wi ON w.id = wi.wishlist_id AND wi.is_active = true
     WHERE w.user_id = $1
-    GROUP BY w.id, w.user_id, w.name, w.is_favorite, w.created_at, w.updated_at
+    GROUP BY w.id, w.user_id, w.name, w.description, w.is_favorite, w.created_at, w.updated_at
     ORDER BY w.is_favorite DESC, w.created_at DESC`,
     [userId]
   );
@@ -100,11 +102,11 @@ export async function findWishlistsWithItemsByUserId(
 export async function createWishlist(
   data: CreateWishlistRequest
 ): Promise<DbWishlist> {
-  const { userId, name, isFavorite = false } = data;
+  const { userId, name, description, isFavorite = false } = data;
   const { rows } = await pool.query(
-    `INSERT INTO wishlists (id, user_id, name, is_favorite)
-     VALUES (gen_random_uuid(), $1, $2, $3) RETURNING *;`,
-    [userId, name, isFavorite]
+    `INSERT INTO wishlists (id, user_id, name, description, is_favorite)
+     VALUES (gen_random_uuid(), $1, $2, $3, $4) RETURNING *;`,
+    [userId, name, description || null, isFavorite]
   );
   return transformDbRowToWishlist(rows[0]);
 }
