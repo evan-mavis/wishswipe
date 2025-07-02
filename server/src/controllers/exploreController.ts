@@ -45,8 +45,8 @@ export const getEbayListings = async (
         imageUrl: item.image?.imageUrl,
         sellerFeedbackScore: item.seller.feedbackScore,
       }))
-      .filter((item) => item.imageUrl) 
-      .slice(0, 10); 
+      .filter((item) => item.imageUrl)
+      .slice(0, 10);
 
     res.json({ listings: simplifiedListings });
   } catch (error) {
