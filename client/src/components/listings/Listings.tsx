@@ -18,7 +18,7 @@ interface ListingsProps {
 	};
 }
 
-export function Listings({ searchQuery = "trending" }: ListingsProps) {
+export function Listings({ searchQuery = "", filters = {} }: ListingsProps) {
 	const [listings, setListings] = useState<Listing[]>([]);
 	const [progress, setProgress] = useState(50);
 	const [isLoading, setIsLoading] = useState(false);
@@ -27,25 +27,29 @@ export function Listings({ searchQuery = "trending" }: ListingsProps) {
 		setProgress(progress);
 	};
 
-	const fetchListingsWithQuery = useCallback(async (query: string) => {
-		setIsLoading(true);
+	const fetchListingsWithQuery = useCallback(
+		async (query: string) => {
+			setIsLoading(true);
 
-		try {
-			const data = await fetchListings({
-				query,
-			});
-			if (data && Array.isArray(data.listings)) {
-				setListings(data.listings);
-			} else {
+			try {
+				const data = await fetchListings({
+					query,
+					...filters,
+				});
+				if (data && Array.isArray(data.listings)) {
+					setListings(data.listings);
+				} else {
+					setListings([]);
+				}
+			} catch (err) {
+				console.error(err);
 				setListings([]);
+			} finally {
+				setIsLoading(false);
 			}
-		} catch (err) {
-			console.error(err);
-			setListings([]);
-		} finally {
-			setIsLoading(false);
-		}
-	}, []);
+		},
+		[filters]
+	);
 
 	// Create debounced search function with cleanup - memoized to prevent recreation
 	const { debouncedFunc: debouncedSearch, cleanup } = useMemo(

@@ -7,7 +7,13 @@ import { ActionToolbar } from "@/components/actionToolbar/actionToolbar";
 export function SwipeView() {
 	const { user } = useAuth();
 	const [showWelcome, setShowWelcome] = useState(true);
-	const [search, setSearch] = useState("trending");
+	const [search, setSearch] = useState("");
+	const [filters, setFilters] = useState<{
+		condition?: string;
+		category?: string;
+		minPrice?: number;
+		maxPrice?: number;
+	}>({});
 
 	useEffect(() => {
 		const timer = setTimeout(() => {
@@ -40,9 +46,14 @@ export function SwipeView() {
 					Welcome, {user?.displayName || "User"}! Swipe away.
 				</p>
 
-				<ActionToolbar search={search} setSearch={handleSearchChange} />
+				<ActionToolbar
+					search={search}
+					setSearch={handleSearchChange}
+					filters={filters}
+					setFilters={setFilters}
+				/>
 
-				<Listings searchQuery={search} />
+				<Listings searchQuery={search} filters={filters} />
 			</div>
 		</div>
 	);
