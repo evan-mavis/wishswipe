@@ -11,13 +11,15 @@ export interface DbWishlist {
 }
 
 export interface DbWishlistItem {
-  id: number;
+  id: string;
   wishlistId: string;
   ebayItemId: string;
   title?: string;
   imageUrl?: string;
   itemWebUrl?: string;
   price?: number;
+  sellerFeedbackScore?: number;
+  orderIndex: number;
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -40,6 +42,10 @@ export interface ReorderWishlistsRequest {
   wishlistIds: string[];
 }
 
+export interface ReorderWishlistItemsRequest {
+  itemIds: string[];
+}
+
 export interface AddItemToWishlistRequest {
   wishlistId: string;
   ebayItemId: string;
@@ -47,4 +53,5 @@ export interface AddItemToWishlistRequest {
   imageUrl?: string;
   itemWebUrl?: string;
   price?: number;
+  sellerFeedbackScore?: number;
 }

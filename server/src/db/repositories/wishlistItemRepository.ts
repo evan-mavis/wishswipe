@@ -14,6 +14,8 @@ function transformDbRowToWishlistItem(row: any): DbWishlistItem {
     imageUrl: row.image_url,
     itemWebUrl: row.item_web_url,
     price: row.price ? parseFloat(row.price) : undefined,
+    sellerFeedbackScore: row.seller_feedback_score,
+    orderIndex: row.order_index || 0,
     isActive: row.is_active,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
@@ -32,12 +34,14 @@ export async function findWishlistItemsByWishlistId(
       image_url,
       item_web_url,
       price,
+      seller_feedback_score,
+      order_index,
       is_active,
       created_at,
       updated_at
     FROM wishlist_items 
     WHERE wishlist_id = $1 AND is_active = true
-    ORDER BY created_at DESC`,
+    ORDER BY order_index ASC, created_at DESC`,
     [wishlistId]
   );
   return rows.map(transformDbRowToWishlistItem);
@@ -46,10 +50,28 @@ export async function findWishlistItemsByWishlistId(
 export async function addItemToWishlist(
   data: AddItemToWishlistRequest
 ): Promise<DbWishlistItem> {
-  const { wishlistId, ebayItemId, title, imageUrl, itemWebUrl, price } = data;
+  const {
+    wishlistId,
+    ebayItemId,
+    title,
+    imageUrl,
+    itemWebUrl,
+    price,
+    sellerFeedbackScore,
+  } = data;
+
+  // Get the next highest order index for this wishlist
+  const { rows: orderRows } = await pool.query(
+    `SELECT COALESCE(MAX(order_index), -1) + 1 as next_order 
+     FROM wishlist_items 
+     WHERE wishlist_id = $1 AND is_active = true`,
+    [wishlistId]
+  );
+  const nextOrderIndex = orderRows[0].next_order;
+
   const { rows } = await pool.query(
-    `INSERT INTO wishlist_items (wishlist_id, ebay_item_id, title, image_url, item_web_url, price)
-     VALUES ($1, $2, $3, $4, $5, $6) RETURNING *;`,
+    `INSERT INTO wishlist_items (id, wishlist_id, ebay_item_id, title, image_url, item_web_url, price, seller_feedback_score, order_index)
+     VALUES (gen_random_uuid(), $1, $2, $3, $4, $5, $6, $7, $8) RETURNING *;`,
     [
       wishlistId,
       ebayItemId,
@@ -57,13 +79,15 @@ export async function addItemToWishlist(
       imageUrl || null,
       itemWebUrl || null,
       price || null,
+      sellerFeedbackScore || null,
+      nextOrderIndex,
     ]
   );
   return transformDbRowToWishlistItem(rows[0]);
 }
 
 export async function removeItemFromWishlist(
-  itemId: number,
+  itemId: string,
   userId: string
 ): Promise<boolean> {
   const { rowCount } = await pool.query(

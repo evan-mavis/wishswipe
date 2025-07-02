@@ -31,6 +31,8 @@ function transformDbRowToWishlistItem(row: any): DbWishlistItem {
     imageUrl: row.image_url,
     itemWebUrl: row.item_web_url,
     price: row.price ? parseFloat(row.price) : undefined,
+    sellerFeedbackScore: row.seller_feedback_score,
+    orderIndex: row.order_index || 0,
     isActive: row.is_active,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
@@ -205,20 +207,22 @@ export async function getWishlistItems(
       wi.image_url,
       wi.item_web_url,
       wi.price,
+      wi.seller_feedback_score,
+      wi.order_index,
       wi.is_active,
       wi.created_at,
       wi.updated_at
     FROM wishlist_items wi
     JOIN wishlists w ON wi.wishlist_id = w.id
     WHERE wi.wishlist_id = $1 AND w.user_id = $2 AND wi.is_active = true
-    ORDER BY wi.created_at DESC`,
+    ORDER BY wi.order_index ASC, wi.created_at DESC`,
     [wishlistId, userId]
   );
   return rows.map(transformDbRowToWishlistItem);
 }
 
 export async function removeItemsFromWishlist(
-  itemIds: number[],
+  itemIds: string[],
   userId: string
 ): Promise<number> {
   const { rowCount } = await pool.query(
@@ -229,4 +233,32 @@ export async function removeItemsFromWishlist(
     [itemIds, userId]
   );
   return rowCount ?? 0;
+}
+
+export async function reorderWishlistItems(
+  userId: string,
+  itemIds: string[]
+): Promise<boolean> {
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+
+    for (let i = 0; i < itemIds.length; i++) {
+      await client.query(
+        `UPDATE wishlist_items 
+         SET order_index = $1, updated_at = now() 
+         WHERE id = $2 
+         AND wishlist_id IN (SELECT id FROM wishlists WHERE user_id = $3)`,
+        [i, itemIds[i], userId]
+      );
+    }
+
+    await client.query("COMMIT");
+    return true;
+  } catch (error) {
+    await client.query("ROLLBACK");
+    throw error;
+  } finally {
+    client.release();
+  }
 }

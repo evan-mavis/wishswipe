@@ -33,7 +33,7 @@ export const up = (pgm) => {
   });
 
   pgm.createTable("wishlist_items", {
-    id: "id",
+    id: "uuid PRIMARY KEY",
     wishlist_id: {
       type: "uuid",
       notNull: true,
@@ -45,6 +45,8 @@ export const up = (pgm) => {
     image_url: { type: "varchar(512)" },
     item_web_url: { type: "varchar(512)" },
     price: { type: "numeric" },
+    seller_feedback_score: { type: "integer" },
+    order_index: { type: "integer", notNull: true, default: 0 },
     is_active: { type: "boolean", notNull: true, default: true },
     created_at: {
       type: "timestamp",

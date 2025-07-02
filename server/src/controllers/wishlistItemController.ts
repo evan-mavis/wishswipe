@@ -11,12 +11,20 @@ const addItemSchema = z.object({
   imageUrl: z.string().url().optional(),
   itemWebUrl: z.string().url().optional(),
   price: z.number().positive().optional(),
+  sellerFeedbackScore: z.number().int().nonnegative().optional(),
 });
 
 // Zod schema for removing items from wishlist
 const removeItemsSchema = z.object({
   itemIds: z
-    .array(z.number().int().positive("Invalid item ID"))
+    .array(z.string().uuid("Invalid item ID"))
+    .min(1, "At least one item ID required"),
+});
+
+// Zod schema for reordering wishlist items
+const reorderItemsSchema = z.object({
+  itemIds: z
+    .array(z.string().uuid("Invalid item ID"))
     .min(1, "At least one item ID required"),
 });
 
@@ -35,13 +43,15 @@ export const addItemToWishlist = async (
       return;
     }
 
-    const { wishlistId, ebayItemId, title, imageUrl, itemWebUrl, price } =
-      parseResult.data;
-
-    if (!req.dbUser) {
-      res.status(401).json({ error: "User not authenticated" });
-      return;
-    }
+    const {
+      wishlistId,
+      ebayItemId,
+      title,
+      imageUrl,
+      itemWebUrl,
+      price,
+      sellerFeedbackScore,
+    } = parseResult.data;
 
     const newItem = await wishlistItemRepo.addItemToWishlist({
       wishlistId,
@@ -50,6 +60,7 @@ export const addItemToWishlist = async (
       imageUrl,
       itemWebUrl,
       price,
+      sellerFeedbackScore,
     });
 
     res.status(201).json({ item: newItem });
@@ -76,11 +87,6 @@ export const removeItemsFromWishlist = async (
 
     const { itemIds } = parseResult.data;
 
-    if (!req.dbUser) {
-      res.status(401).json({ error: "User not authenticated" });
-      return;
-    }
-
     const removedCount = await wishlistRepo.removeItemsFromWishlist(
       itemIds,
       req.dbUser.id
@@ -96,6 +102,32 @@ export const removeItemsFromWishlist = async (
     }
   } catch (err) {
     console.error("Error removing items from wishlist:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+export const reorderWishlistItems = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const parseResult = reorderItemsSchema.safeParse(req.body);
+
+    if (!parseResult.success) {
+      res.status(400).json({
+        error: "Invalid request",
+        details: parseResult.error.flatten(),
+      });
+      return;
+    }
+
+    const { itemIds } = parseResult.data;
+
+    await wishlistRepo.reorderWishlistItems(req.dbUser.id, itemIds);
+
+    res.status(200).json({ message: "Wishlist items reordered successfully" });
+  } catch (err) {
+    console.error("Error reordering wishlist items:", err);
     res.status(500).json({ error: "Internal server error" });
   }
 };
