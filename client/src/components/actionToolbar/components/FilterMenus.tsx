@@ -96,7 +96,7 @@ export function FilterMenus({
 				</MenubarTrigger>
 				<MenubarContent>
 					<div className="flex flex-col">
-						<Label htmlFor="priceRange" className="text-sm text-gray-600">
+						<Label htmlFor="priceRange" className="mb-2 text-sm text-gray-600">
 							Price Range
 						</Label>
 						<Slider
@@ -117,9 +117,12 @@ export function FilterMenus({
 								});
 							}}
 						/>
-						<div className="flex justify-between text-sm text-gray-500">
+						<div className="mt-2 flex justify-between text-sm text-gray-500">
 							<span>${priceRange[0]}</span>
-							<span>${priceRange[1]}+</span>
+							<span>
+								${priceRange[1]}
+								{priceRange[1] === 200 ? "+" : ""}
+							</span>
 						</div>
 					</div>
 				</MenubarContent>

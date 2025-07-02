@@ -34,41 +34,53 @@ export function ActionToolbar({
 	const [priceRange, setPriceRange] = useState<[number, number]>([10, 75]);
 	const [selectedWishlist, setSelectedWishlist] = useState<string>("");
 	const [inputValue, setInputValue] = useState(search);
+	const [localFilters, setLocalFilters] = useState(filters);
 	const [showApply, setShowApply] = useState(false);
 	const undoBtnRef = useRef<HTMLButtonElement>(null);
 	const clearFiltersBtnRef = useRef<HTMLButtonElement>(null);
 
 	useEffect(() => {
-		setShowApply(true);
-	}, [
-		inputValue,
-		priceRange,
-		filters.condition,
-		filters.category,
-		filters.minPrice,
-		filters.maxPrice,
-	]);
+		setInputValue(search);
+	}, [search]);
+
+	useEffect(() => {
+		setLocalFilters(filters);
+	}, [filters]);
+
+	useEffect(() => {
+		const hasChanges =
+			inputValue !== search ||
+			localFilters.condition !== filters.condition ||
+			localFilters.category !== filters.category ||
+			localFilters.minPrice !== filters.minPrice ||
+			localFilters.maxPrice !== filters.maxPrice;
+
+		setShowApply(hasChanges);
+	}, [inputValue, search, localFilters, filters]);
 
 	const clearCondition = () => {
-		setFilters({ ...filters, condition: undefined });
+		setLocalFilters({ ...localFilters, condition: undefined });
 	};
 
 	const clearCategory = () => {
-		setFilters({ ...filters, category: undefined });
+		setLocalFilters({ ...localFilters, category: undefined });
 	};
 
 	const clearPrice = () => {
-		setFilters({ ...filters, minPrice: undefined, maxPrice: undefined });
+		setLocalFilters({
+			...localFilters,
+			minPrice: undefined,
+			maxPrice: undefined,
+		});
 		setPriceRange([10, 75]);
 	};
 
 	const clearSearch = () => {
 		setInputValue("");
-		setSearch("");
 	};
 
 	const clearAllFilters = () => {
-		setFilters({
+		setLocalFilters({
 			condition: undefined,
 			category: undefined,
 			minPrice: undefined,
@@ -87,6 +99,7 @@ export function ActionToolbar({
 
 	const handleApply = () => {
 		setSearch(inputValue);
+		setFilters(localFilters);
 		setShowApply(false);
 	};
 
@@ -102,7 +115,7 @@ export function ActionToolbar({
 		>
 			{!isMobile && (
 				<FilterBadges
-					filters={filters}
+					filters={localFilters}
 					onClearCondition={clearCondition}
 					onClearCategory={clearCategory}
 					onClearPrice={clearPrice}
@@ -123,8 +136,8 @@ export function ActionToolbar({
 				<div className="flex min-w-0 flex-1 flex-wrap items-center">
 					<FilterMenus
 						isMobile={isMobile}
-						filters={filters}
-						setFilters={setFilters}
+						filters={localFilters}
+						setFilters={setLocalFilters}
 						priceRange={priceRange}
 						setPriceRange={setPriceRange}
 					/>

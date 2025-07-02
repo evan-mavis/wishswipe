@@ -9,8 +9,6 @@ export async function fetchListings(filters: SearchFilters = {}) {
 	if (filters.category) params.append("category", filters.category);
 	if (filters.minPrice) params.append("minPrice", filters.minPrice.toString());
 	if (filters.maxPrice) params.append("maxPrice", filters.maxPrice.toString());
-	if (filters.limit) params.append("limit", filters.limit.toString());
-	if (filters.offset) params.append("offset", filters.offset.toString());
 
 	const response = await axiosInstance.get(
 		`/wishswipe/explore/?${params.toString()}`
