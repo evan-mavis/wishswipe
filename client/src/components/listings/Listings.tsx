@@ -16,9 +16,14 @@ interface ListingsProps {
 		minPrice?: number;
 		maxPrice?: number;
 	};
+	selectedWishlistId?: string;
 }
 
-export function Listings({ searchQuery = "", filters = {} }: ListingsProps) {
+export function Listings({
+	searchQuery = "",
+	filters = {},
+	selectedWishlistId,
+}: ListingsProps) {
 	const [listings, setListings] = useState<Listing[]>([]);
 	const [progress, setProgress] = useState(50);
 	const [isLoading, setIsLoading] = useState(false);
@@ -78,6 +83,7 @@ export function Listings({ searchQuery = "", filters = {} }: ListingsProps) {
 							setListings={setListings}
 							onProgressChange={handleProgressChange}
 							index={0}
+							selectedWishlistId={selectedWishlistId}
 						/>
 					</AnimatePresence>
 				) : (

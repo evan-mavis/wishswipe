@@ -14,6 +14,7 @@ interface ListingCardProps {
 	setListings: Dispatch<SetStateAction<Listing[]>>;
 	onProgressChange?: (progress: number) => void;
 	index: number;
+	selectedWishlistId?: string;
 }
 
 export function ListingCard({
@@ -21,6 +22,7 @@ export function ListingCard({
 	setListings,
 	onProgressChange,
 	index,
+	selectedWishlistId,
 }: ListingCardProps) {
 	const x = useMotionValue(0);
 	const DRAG_THRESHOLD = 150;

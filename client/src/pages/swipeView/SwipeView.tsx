@@ -8,6 +8,7 @@ export function SwipeView() {
 	const { user } = useAuth();
 	const [showWelcome, setShowWelcome] = useState(true);
 	const [search, setSearch] = useState("");
+	const [selectedWishlist, setSelectedWishlist] = useState<string>("");
 	const [filters, setFilters] = useState<{
 		condition?: string;
 		category?: string;
@@ -51,9 +52,15 @@ export function SwipeView() {
 					setSearch={handleSearchChange}
 					filters={filters}
 					setFilters={setFilters}
+					selectedWishlist={selectedWishlist}
+					onWishlistChange={setSelectedWishlist}
 				/>
 
-				<Listings searchQuery={search} filters={filters} />
+				<Listings
+					searchQuery={search}
+					filters={filters}
+					selectedWishlistId={selectedWishlist}
+				/>
 			</div>
 		</div>
 	);

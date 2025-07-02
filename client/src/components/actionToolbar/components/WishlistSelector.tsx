@@ -6,6 +6,8 @@ import {
 	SelectItem,
 	SelectValue,
 } from "@/components/ui/select";
+import { useState, useEffect } from "react";
+import * as wishlistService from "@/services/wishlistService";
 
 interface WishlistSelectorProps {
 	value: string;
@@ -13,6 +15,39 @@ interface WishlistSelectorProps {
 }
 
 export function WishlistSelector({ value, onChange }: WishlistSelectorProps) {
+	const [wishlists, setWishlists] = useState<wishlistService.WishlistOption[]>(
+		[]
+	);
+	const [loading, setLoading] = useState(true);
+	const [hasSetDefault, setHasSetDefault] = useState(false);
+
+	useEffect(() => {
+		const fetchWishlists = async () => {
+			try {
+				const options = await wishlistService.fetchWishlistOptions();
+				setWishlists(options);
+			} catch (error) {
+				console.error("Error fetching wishlists:", error);
+			} finally {
+				setLoading(false);
+			}
+		};
+
+		fetchWishlists();
+	}, []); // Only run once on mount
+
+	// Separate effect to handle default selection
+	useEffect(() => {
+		if (!loading && !hasSetDefault && !value && wishlists.length > 0) {
+			// Find the favorite wishlist first, otherwise use the first one
+			const favoriteWishlist = wishlists.find((w) => w.isFavorite);
+			const defaultWishlist = favoriteWishlist || wishlists[0];
+
+			onChange(defaultWishlist.id);
+			setHasSetDefault(true);
+		}
+	}, [loading, hasSetDefault, value, wishlists, onChange]);
+
 	return (
 		<div className="ml-2 flex min-w-[0] items-center gap-2">
 			<Label
@@ -21,14 +56,21 @@ export function WishlistSelector({ value, onChange }: WishlistSelectorProps) {
 			>
 				Wishlist:
 			</Label>
-			<Select value={value} onValueChange={onChange}>
+			<Select value={value} onValueChange={onChange} disabled={loading}>
 				<SelectTrigger id="wishlist-select" className="w-[120px]">
-					<SelectValue placeholder="Choose..." />
+					<SelectValue placeholder={loading ? "Loading..." : "Choose..."} />
 				</SelectTrigger>
 				<SelectContent>
-					<SelectItem value="main">Main</SelectItem>
-					<SelectItem value="birthday">Birthday</SelectItem>
-					<SelectItem value="holiday">Holiday</SelectItem>
+					{wishlists.map((wishlist) => (
+						<SelectItem key={wishlist.id} value={wishlist.id}>
+							{wishlist.name}
+						</SelectItem>
+					))}
+					{wishlists.length === 0 && !loading && (
+						<SelectItem value="" disabled>
+							No wishlists found
+						</SelectItem>
+					)}
 				</SelectContent>
 			</Select>
 		</div>

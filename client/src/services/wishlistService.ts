@@ -21,6 +21,16 @@ export interface SingleWishlistResponse {
 	wishlist: WishList;
 }
 
+export interface WishlistOption {
+	id: string;
+	name: string;
+	isFavorite: boolean;
+}
+
+export interface WishlistOptionsResponse {
+	wishlists: WishlistOption[];
+}
+
 export async function fetchWishlists(): Promise<WishList[]> {
 	const response = await axiosInstance.get<WishlistResponse>(
 		"/wishswipe/wishlist"
@@ -59,4 +69,11 @@ export async function reorderWishlists(wishlistIds: string[]): Promise<void> {
 	await axiosInstance.patch("/wishswipe/wishlist/reorder", {
 		wishlistIds,
 	});
+}
+
+export async function fetchWishlistOptions(): Promise<WishlistOption[]> {
+	const response = await axiosInstance.get<WishlistOptionsResponse>(
+		"/wishswipe/wishlist/options"
+	);
+	return response.data.wishlists;
 }

@@ -192,3 +192,23 @@ export const updateWishlist = async (
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
+export const getWishlistOptions = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const wishlists = await wishlistRepo.findWishlistsByUserId(req.dbUser.id);
+
+    const options = wishlists.map((wishlist) => ({
+      id: wishlist.id,
+      name: wishlist.name,
+      isFavorite: wishlist.isFavorite,
+    }));
+
+    res.json({ wishlists: options });
+  } catch (err) {
+    console.error("Error fetching wishlist options:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};

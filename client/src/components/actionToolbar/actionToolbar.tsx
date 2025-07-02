@@ -22,6 +22,8 @@ interface SearchAndFilterToolbarProps {
 		minPrice?: number;
 		maxPrice?: number;
 	}) => void;
+	selectedWishlist?: string;
+	onWishlistChange?: (wishlistId: string) => void;
 }
 
 export function ActionToolbar({
@@ -29,15 +31,22 @@ export function ActionToolbar({
 	setSearch,
 	filters,
 	setFilters,
+	selectedWishlist: externalSelectedWishlist,
+	onWishlistChange,
 }: SearchAndFilterToolbarProps) {
 	const isMobile = useIsMobile();
 	const [priceRange, setPriceRange] = useState<[number, number]>([10, 75]);
-	const [selectedWishlist, setSelectedWishlist] = useState<string>("");
+	const [internalSelectedWishlist, setInternalSelectedWishlist] =
+		useState<string>("");
 	const [inputValue, setInputValue] = useState(search);
 	const [localFilters, setLocalFilters] = useState(filters);
 	const [showApply, setShowApply] = useState(false);
 	const undoBtnRef = useRef<HTMLButtonElement>(null);
 	const clearFiltersBtnRef = useRef<HTMLButtonElement>(null);
+
+	// Use external state if provided, otherwise use internal state
+	const selectedWishlist = externalSelectedWishlist ?? internalSelectedWishlist;
+	const setSelectedWishlist = onWishlistChange ?? setInternalSelectedWishlist;
 
 	useEffect(() => {
 		setInputValue(search);
