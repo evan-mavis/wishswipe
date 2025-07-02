@@ -1,22 +1,42 @@
 import { Request, Response } from "express";
+import { z } from "zod";
 import { searchEbayItems } from "../services/ebayBrowseService.js";
 import { SimplifiedListing, SearchFilters } from "../types/ebay.js";
+
+const exploreQuerySchema = z.object({
+  query: z.string().optional().default("trending"),
+  condition: z.string().optional(),
+  category: z.string().optional(),
+  minPrice: z
+    .string()
+    .regex(/^\d*\.?\d+$/, "Invalid price format")
+    .transform((val) => parseFloat(val))
+    .optional(),
+  maxPrice: z
+    .string()
+    .regex(/^\d*\.?\d+$/, "Invalid price format")
+    .transform((val) => parseFloat(val))
+    .optional(),
+});
 
 export const getEbayListings = async (
   req: Request,
   res: Response
 ): Promise<void> => {
   try {
-    const query = (req.query.query as string) || "trending";
+    const parseResult = exploreQuerySchema.safeParse(req.query);
 
-    const condition = req.query.condition as string | undefined;
-    const category = req.query.category as string | undefined;
-    const minPrice = req.query.minPrice
-      ? parseFloat(req.query.minPrice as string)
-      : undefined;
-    const maxPrice = req.query.maxPrice
-      ? parseFloat(req.query.maxPrice as string)
-      : undefined;
+    if (!parseResult.success) {
+      res
+        .status(400)
+        .json({
+          error: "Invalid query parameters",
+          details: parseResult.error.flatten(),
+        });
+      return;
+    }
+
+    const { query, condition, category, minPrice, maxPrice } = parseResult.data;
 
     const data = await searchEbayItems(query, {
       condition,

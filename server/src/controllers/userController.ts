@@ -36,10 +36,10 @@ export const loginOrCreateUser = async (
     }
 
     const newUser = await userRepo.createUser({
-      firebase_uid,
+      firebaseUid: firebase_uid,
       email,
-      display_name: display_name ?? undefined,
-      photo_url: photo_url ?? undefined,
+      displayName: display_name ?? undefined,
+      photoUrl: photo_url ?? undefined,
     });
 
     res.status(201).json({ user: newUser, created: true });

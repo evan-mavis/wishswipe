@@ -8,6 +8,7 @@ import userRoutes from "./routes/userRoutes.js";
 import baseRoutes from "./routes/baseRoutes.js";
 import { authenticateUser } from "./middleware/auth.js";
 import exploreRoutes from "./routes/exploreRoutes.js";
+import wishlistRoutes from "./routes/wishlistRoutes.js";
 
 // initialize firebase
 admin.initializeApp({
@@ -34,6 +35,7 @@ app.use("/wishswipe", authenticateUser);
 app.use("/wishswipe", baseRoutes);
 app.use("/wishswipe/user", userRoutes);
 app.use("/wishswipe/explore", exploreRoutes);
+app.use("/wishswipe/wishlist", wishlistRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);

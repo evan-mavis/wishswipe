@@ -1,9 +1,11 @@
 import { DecodedIdToken } from "firebase-admin/auth";
+import { DbUser } from "./user.js";
 
 declare global {
   namespace Express {
     interface Request {
-      user?: DecodedIdToken;
+      firebaseUserToken?: DecodedIdToken;
+      dbUser?: DbUser;
     }
   }
 }
