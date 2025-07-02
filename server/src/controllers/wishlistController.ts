@@ -20,6 +20,7 @@ const updateWishlistSchema = z.object({
     .max(255, "Name too long")
     .optional(),
   description: z.string().max(500, "Description too long").optional(),
+  isFavorite: z.boolean().optional(),
 });
 
 // Zod schema for reordering wishlists
@@ -64,6 +65,7 @@ export const createWishlist = async (
         error: "Invalid request",
         details: parseResult.error.flatten(),
       });
+
       return;
     }
 
@@ -160,21 +162,23 @@ export const updateWishlist = async (
       return;
     }
 
-    const { name, description } = parseResult.data;
+    const { name, description, isFavorite } = parseResult.data;
     const { wishlistId } = req.params;
 
     // Check if at least one field is being updated
-    if (!name && description === undefined) {
+    if (!name && description === undefined && isFavorite === undefined) {
       res.status(400).json({
-        error: "At least one field (name or description) must be provided",
+        error:
+          "At least one field (name, description, or isFavorite) must be provided",
       });
+
       return;
     }
 
     const updatedWishlist = await wishlistRepo.updateWishlist(
       wishlistId,
       req.dbUser.id,
-      { name, description }
+      { name, description, isFavorite }
     );
 
     if (!updatedWishlist) {

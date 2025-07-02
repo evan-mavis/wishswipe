@@ -38,6 +38,12 @@ export interface CreateWishlistRequest {
   orderIndex?: number;
 }
 
+export interface UpdateWishlistRequest {
+  name?: string;
+  description?: string;
+  isFavorite?: boolean;
+}
+
 export interface ReorderWishlistsRequest {
   wishlistIds: string[];
 }

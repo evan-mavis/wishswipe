@@ -4,24 +4,6 @@ import {
   AddItemToWishlistRequest,
 } from "../../types/wishlist.js";
 
-// Transform database row (snake_case) to TypeScript interface (camelCase)
-function transformDbRowToWishlistItem(row: any): DbWishlistItem {
-  return {
-    id: row.id,
-    wishlistId: row.wishlist_id,
-    ebayItemId: row.ebay_item_id,
-    title: row.title,
-    imageUrl: row.image_url,
-    itemWebUrl: row.item_web_url,
-    price: row.price ? parseFloat(row.price) : undefined,
-    sellerFeedbackScore: row.seller_feedback_score,
-    orderIndex: row.order_index || 0,
-    isActive: row.is_active,
-    createdAt: row.created_at,
-    updatedAt: row.updated_at,
-  };
-}
-
 export async function findWishlistItemsByWishlistId(
   wishlistId: string
 ): Promise<DbWishlistItem[]> {
@@ -44,7 +26,21 @@ export async function findWishlistItemsByWishlistId(
     ORDER BY order_index ASC, created_at DESC`,
     [wishlistId]
   );
-  return rows.map(transformDbRowToWishlistItem);
+
+  return rows.map((row) => ({
+    id: row.id,
+    wishlistId: row.wishlist_id,
+    ebayItemId: row.ebay_item_id,
+    title: row.title,
+    imageUrl: row.image_url,
+    itemWebUrl: row.item_web_url,
+    price: row.price ? parseFloat(row.price) : undefined,
+    sellerFeedbackScore: row.seller_feedback_score,
+    orderIndex: row.order_index || 0,
+    isActive: row.is_active,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  }));
 }
 
 export async function addItemToWishlist(
@@ -83,7 +79,21 @@ export async function addItemToWishlist(
       nextOrderIndex,
     ]
   );
-  return transformDbRowToWishlistItem(rows[0]);
+
+  return {
+    id: rows[0].id,
+    wishlistId: rows[0].wishlist_id,
+    ebayItemId: rows[0].ebay_item_id,
+    title: rows[0].title,
+    imageUrl: rows[0].image_url,
+    itemWebUrl: rows[0].item_web_url,
+    price: rows[0].price ? parseFloat(rows[0].price) : undefined,
+    sellerFeedbackScore: rows[0].seller_feedback_score,
+    orderIndex: rows[0].order_index || 0,
+    isActive: rows[0].is_active,
+    createdAt: rows[0].created_at,
+    updatedAt: rows[0].updated_at,
+  };
 }
 
 export async function removeItemFromWishlist(

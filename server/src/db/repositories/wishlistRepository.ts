@@ -3,41 +3,10 @@ import {
   DbWishlist,
   DbWishlistWithItems,
   CreateWishlistRequest,
-  ReorderWishlistsRequest,
+  UpdateWishlistRequest,
   DbWishlistItem,
 } from "../../types/wishlist.js";
 import * as wishlistItemRepo from "./wishlistItemRepository.js";
-
-function transformDbRowToWishlist(row: any): DbWishlist {
-  return {
-    id: row.id,
-    userId: row.user_id,
-    name: row.name,
-    description: row.description,
-    isFavorite: row.is_favorite,
-    orderIndex: row.order_index || 0,
-    createdAt: row.created_at,
-    updatedAt: row.updated_at,
-    itemCount: row.item_count ? parseInt(row.item_count) : undefined,
-  };
-}
-
-function transformDbRowToWishlistItem(row: any): DbWishlistItem {
-  return {
-    id: row.id,
-    wishlistId: row.wishlist_id,
-    ebayItemId: row.ebay_item_id,
-    title: row.title,
-    imageUrl: row.image_url,
-    itemWebUrl: row.item_web_url,
-    price: row.price ? parseFloat(row.price) : undefined,
-    sellerFeedbackScore: row.seller_feedback_score,
-    orderIndex: row.order_index || 0,
-    isActive: row.is_active,
-    createdAt: row.created_at,
-    updatedAt: row.updated_at,
-  };
-}
 
 export async function findWishlistsByUserId(
   userId: string
@@ -54,33 +23,104 @@ export async function findWishlistsByUserId(
       w.updated_at,
       COUNT(wi.id) as item_count
     FROM wishlists w
-    LEFT JOIN wishlist_items wi ON w.id = wi.wishlist_id AND wi.is_active = true
+    LEFT JOIN wishlist_items wi ON w.id = wi.wishlist_id
     WHERE w.user_id = $1
     GROUP BY w.id, w.user_id, w.name, w.description, w.is_favorite, w.order_index, w.created_at, w.updated_at
     ORDER BY w.order_index ASC, w.created_at DESC`,
     [userId]
   );
-  return rows.map(transformDbRowToWishlist);
+
+  return rows.map((row) => ({
+    id: row.id,
+    userId: row.user_id,
+    name: row.name,
+    description: row.description,
+    isFavorite: row.is_favorite,
+    orderIndex: row.order_index || 0,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+    itemCount: row.item_count ? parseInt(row.item_count) : undefined,
+  }));
 }
 
 export async function findWishlistsWithItemsByUserId(
   userId: string
 ): Promise<DbWishlistWithItems[]> {
-  const wishlists = await findWishlistsByUserId(userId);
-
-  const wishlistsWithItems = await Promise.all(
-    wishlists.map(async (wishlist) => {
-      const items = await wishlistItemRepo.findWishlistItemsByWishlistId(
-        wishlist.id
-      );
-      return {
-        ...wishlist,
-        items,
-      };
-    })
+  const { rows } = await pool.query(
+    `SELECT 
+      w.id as wishlist_id,
+      w.user_id,
+      w.name as wishlist_name,
+      w.description as wishlist_description,
+      w.is_favorite,
+      w.order_index as wishlist_order_index,
+      w.created_at as wishlist_created_at,
+      w.updated_at as wishlist_updated_at,
+      wi.id as item_id,
+      wi.wishlist_id as item_wishlist_id,
+      wi.ebay_item_id,
+      wi.title as item_title,
+      wi.image_url,
+      wi.item_web_url,
+      wi.price,
+      wi.seller_feedback_score,
+      wi.order_index as item_order_index,
+      wi.is_active,
+      wi.created_at as item_created_at,
+      wi.updated_at as item_updated_at
+    FROM wishlists w
+    LEFT JOIN wishlist_items wi ON w.id = wi.wishlist_id
+    WHERE w.user_id = $1
+    ORDER BY w.order_index ASC, w.created_at DESC, wi.order_index ASC, wi.created_at DESC`,
+    [userId]
   );
 
-  return wishlistsWithItems;
+  // Group the results by wishlist
+  const wishlistsMap = new Map<string, DbWishlistWithItems>();
+
+  rows.forEach((row) => {
+    const wishlistId = row.wishlist_id;
+
+    // If we haven't seen this wishlist yet, create it
+    if (!wishlistsMap.has(wishlistId)) {
+      wishlistsMap.set(wishlistId, {
+        id: row.wishlist_id,
+        userId: row.user_id,
+        name: row.wishlist_name,
+        description: row.wishlist_description,
+        isFavorite: row.is_favorite,
+        orderIndex: row.wishlist_order_index || 0,
+        createdAt: row.wishlist_created_at,
+        updatedAt: row.wishlist_updated_at,
+        items: [],
+      });
+    }
+
+    // If there's an item for this wishlist, add it
+    if (row.item_id) {
+      const wishlist = wishlistsMap.get(wishlistId)!;
+      wishlist.items.push({
+        id: row.item_id,
+        wishlistId: row.item_wishlist_id,
+        ebayItemId: row.ebay_item_id,
+        title: row.item_title,
+        imageUrl: row.image_url,
+        itemWebUrl: row.item_web_url,
+        price: row.price ? parseFloat(row.price) : undefined,
+        sellerFeedbackScore: row.seller_feedback_score,
+        orderIndex: row.item_order_index || 0,
+        isActive: row.is_active,
+        createdAt: row.item_created_at,
+        updatedAt: row.item_updated_at,
+      });
+    }
+  });
+
+  // Convert map to array and add item counts
+  return Array.from(wishlistsMap.values()).map((wishlist) => ({
+    ...wishlist,
+    itemCount: wishlist.items.length,
+  }));
 }
 
 export async function createWishlist(
@@ -103,17 +143,27 @@ export async function createWishlist(
      VALUES (gen_random_uuid(), $1, $2, $3, $4, $5) RETURNING *;`,
     [userId, name, description || null, isFavorite, finalOrderIndex]
   );
-  return transformDbRowToWishlist(rows[0]);
+
+  return {
+    id: rows[0].id,
+    userId: rows[0].user_id,
+    name: rows[0].name,
+    description: rows[0].description,
+    isFavorite: rows[0].is_favorite,
+    orderIndex: rows[0].order_index || 0,
+    createdAt: rows[0].created_at,
+    updatedAt: rows[0].updated_at,
+    itemCount: 0,
+  };
 }
 
 export async function updateWishlist(
   wishlistId: string,
   userId: string,
-  data: { name?: string; description?: string }
+  data: UpdateWishlistRequest
 ): Promise<DbWishlist | null> {
-  const { name, description } = data;
+  const { name, description, isFavorite } = data;
 
-  // Build dynamic query based on provided fields
   const updates: string[] = [];
   const values: any[] = [];
   let paramIndex = 1;
@@ -126,6 +176,11 @@ export async function updateWishlist(
   if (description !== undefined) {
     updates.push(`description = $${paramIndex++}`);
     values.push(description);
+  }
+
+  if (isFavorite !== undefined) {
+    updates.push(`is_favorite = $${paramIndex++}`);
+    values.push(isFavorite);
   }
 
   if (updates.length === 0) {
@@ -143,7 +198,19 @@ export async function updateWishlist(
     values
   );
 
-  return rows.length > 0 ? transformDbRowToWishlist(rows[0]) : null;
+  return rows.length > 0
+    ? {
+        id: rows[0].id,
+        userId: rows[0].user_id,
+        name: rows[0].name,
+        description: rows[0].description,
+        isFavorite: rows[0].is_favorite,
+        orderIndex: rows[0].order_index || 0,
+        createdAt: rows[0].created_at,
+        updatedAt: rows[0].updated_at,
+        itemCount: undefined,
+      }
+    : null;
 }
 
 export async function deleteWishlist(
@@ -192,33 +259,6 @@ export async function reorderWishlists(
   } finally {
     client.release();
   }
-}
-
-export async function getWishlistItems(
-  wishlistId: string,
-  userId: string
-): Promise<DbWishlistItem[]> {
-  const { rows } = await pool.query(
-    `SELECT 
-      wi.id,
-      wi.wishlist_id,
-      wi.ebay_item_id,
-      wi.title,
-      wi.image_url,
-      wi.item_web_url,
-      wi.price,
-      wi.seller_feedback_score,
-      wi.order_index,
-      wi.is_active,
-      wi.created_at,
-      wi.updated_at
-    FROM wishlist_items wi
-    JOIN wishlists w ON wi.wishlist_id = w.id
-    WHERE wi.wishlist_id = $1 AND w.user_id = $2 AND wi.is_active = true
-    ORDER BY wi.order_index ASC, wi.created_at DESC`,
-    [wishlistId, userId]
-  );
-  return rows.map(transformDbRowToWishlistItem);
 }
 
 export async function removeItemsFromWishlist(
