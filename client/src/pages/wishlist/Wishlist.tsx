@@ -30,7 +30,6 @@ export function Wishlist() {
 	const [showNewWishlist, setShowNewWishlist] = useState(false);
 	const [originalOrder, setOriginalOrder] = useState<WishList[]>([]);
 
-	// Fetch wishlists on component mount
 	useEffect(() => {
 		const loadWishlists = async () => {
 			try {
