@@ -8,14 +8,20 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useState, useEffect } from "react";
 
 interface EditWishlistDialogProps {
 	open: boolean;
 	onOpenChange: (open: boolean) => void;
-	onSubmit: (data: { name: string; description: string }) => void;
+	onSubmit: (data: {
+		name: string;
+		description: string;
+		isFavorite: boolean;
+	}) => void;
 	initialName: string;
 	initialDescription?: string;
+	initialIsFavorite?: boolean;
 }
 
 export function EditWishlistDialog({
@@ -24,22 +30,25 @@ export function EditWishlistDialog({
 	onSubmit,
 	initialName,
 	initialDescription = "",
+	initialIsFavorite = false,
 }: EditWishlistDialogProps) {
 	const [name, setName] = useState(initialName);
 	const [description, setDescription] = useState(initialDescription);
+	const [isFavorite, setIsFavorite] = useState(initialIsFavorite);
 
 	// Reset form when dialog opens
 	useEffect(() => {
 		if (open) {
 			setName(initialName);
 			setDescription(initialDescription);
+			setIsFavorite(initialIsFavorite);
 		}
-	}, [open, initialName, initialDescription]);
+	}, [open, initialName, initialDescription, initialIsFavorite]);
 
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
 		if (name.trim()) {
-			onSubmit({ name, description });
+			onSubmit({ name, description, isFavorite });
 			onOpenChange(false);
 		}
 	};
@@ -70,6 +79,19 @@ export function EditWishlistDialog({
 							placeholder="Add a description (optional)"
 							className="resize-none"
 						/>
+					</div>
+					<div className="flex items-center space-x-2">
+						<Checkbox
+							id="edit-favorite"
+							checked={isFavorite}
+							onCheckedChange={(checked) => setIsFavorite(checked as boolean)}
+						/>
+						<Label
+							htmlFor="edit-favorite"
+							className="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+						>
+							Favorite wishlist
+						</Label>
 					</div>
 					<div className="flex justify-end gap-2">
 						<Button

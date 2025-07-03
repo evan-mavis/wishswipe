@@ -1,13 +1,6 @@
 import { useState, useMemo } from "react";
-import { motion, AnimatePresence, Reorder } from "framer-motion";
-import {
-	ChevronDown,
-	GripVertical,
-	Star,
-	Pencil,
-	Search,
-	X,
-} from "lucide-react";
+import { motion } from "framer-motion";
+import { Star } from "lucide-react";
 import {
 	AlertDialog,
 	AlertDialogContent,
@@ -18,22 +11,20 @@ import {
 	AlertDialogHeader,
 	AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { SavedListingCard } from "./components/SavedListingCard";
-import { ListingReorderControls } from "./components/ListingReorderControls";
-import { EditWishlistDialog } from "./components/EditWishlistDialog";
-import * as wishlistService from "../../services/wishlistService";
-import type { WishList, WishlistItem } from "@/types/wishlist";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import React from "react";
+import { Card } from "@/components/ui/card";
 import {
 	Tooltip,
 	TooltipContent,
 	TooltipProvider,
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { WishlistCardHeader } from "./components/WishlistCardHeader";
+import { WishlistCardContent } from "./components/WishlistCardContent";
+import { EditWishlistDialog } from "./components/EditWishlistDialog";
+import * as wishlistService from "../../services/wishlistService";
+import type { WishList, WishlistItem } from "@/types/wishlist";
+import { cn } from "@/lib/utils";
+import React from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 interface WishlistCardProps extends WishList {
@@ -42,8 +33,10 @@ interface WishlistCardProps extends WishList {
 	isSelected: boolean;
 	onSelect: () => void;
 	onUpdateItems?: (id: string, items: WishlistItem[]) => void;
-	onFavorite?: () => void;
-	onUpdate?: (id: string, data: { name: string; description: string }) => void;
+	onUpdate?: (
+		id: string,
+		data: { name: string; description: string; isFavorite: boolean }
+	) => void;
 }
 
 export function WishlistCard({
@@ -57,7 +50,6 @@ export function WishlistCard({
 	onSelect,
 	onUpdateItems,
 	isFavorite,
-	onFavorite,
 	onUpdate,
 }: WishlistCardProps) {
 	const isMobile = useIsMobile();
@@ -152,8 +144,18 @@ export function WishlistCard({
 		setListingReorderMode(false);
 	};
 
-	const handleEditSubmit = (data: { name: string; description: string }) => {
+	const handleEditSubmit = (data: {
+		name: string;
+		description: string;
+		isFavorite: boolean;
+	}) => {
 		onUpdate?.(id, data);
+	};
+
+	const handleReorderItems = (newOrder: WishlistItem[]) => {
+		if (listingReorderMode && filteredItems.length === items.length) {
+			setItems(newOrder);
+		}
 	};
 
 	// Add effect to collapse when entering modes
@@ -186,36 +188,22 @@ export function WishlistCard({
 				transition={{ duration: 0.5, ease: "easeInOut" }}
 			>
 				<div className="relative">
-					<TooltipProvider>
-						<Tooltip>
-							<TooltipTrigger asChild>
-								<button
-									onClick={(e) => {
-										e.stopPropagation();
-										onFavorite?.();
-									}}
-									className={cn(
-										"bg-background ring-border absolute -top-3 -right-3 z-10 rounded-full p-1.5 shadow-sm ring-1 transition-all hover:scale-110",
-										!isFavorite &&
-											"opacity-0 group-hover/card:opacity-60 hover:opacity-100",
-										isFavorite && "text-amber-300"
-									)}
-								>
-									<Star
-										className="h-4 w-4"
-										fill={isFavorite ? "currentColor" : "none"}
-									/>
-								</button>
-							</TooltipTrigger>
-							<TooltipContent>
-								<p>
-									{isFavorite
-										? "Remove as favorite list"
-										: "Set as favorite list"}
-								</p>
-							</TooltipContent>
-						</Tooltip>
-					</TooltipProvider>
+					{/* Favorite Icon - only shown when wishlist is favorite */}
+					{isFavorite && (
+						<TooltipProvider>
+							<Tooltip>
+								<TooltipTrigger asChild>
+									<div className="bg-background ring-border absolute -top-3 -right-3 z-10 rounded-full p-1.5 text-amber-300 shadow-sm ring-1">
+										<Star className="h-4 w-4" fill="currentColor" />
+									</div>
+								</TooltipTrigger>
+								<TooltipContent>
+									<p>Favorite wishlist</p>
+								</TooltipContent>
+							</Tooltip>
+						</TooltipProvider>
+					)}
+
 					<Card
 						className={cn(
 							"transition-all duration-200",
@@ -231,236 +219,46 @@ export function WishlistCard({
 						onClick={handleClick}
 					>
 						<div className="group/card relative">
-							<CardHeader>
-								<div className="flex items-center justify-between">
-									<div className="flex items-center gap-2">
-										<CardTitle>{name}</CardTitle>
-										{!deleteMode && !reorderMode && (
-											<TooltipProvider>
-												<Tooltip>
-													<TooltipTrigger asChild>
-														<button
-															onClick={(e) => {
-																e.stopPropagation();
-																setShowEditDialog(true);
-															}}
-															className={cn(
-																"text-muted-foreground hover:text-foreground rounded-full p-2 transition-all duration-200 hover:scale-110 hover:bg-slate-100 hover:opacity-100 dark:hover:bg-slate-800",
-																isMobile || isExpanded
-																	? "opacity-60"
-																	: "opacity-0 group-hover/card:opacity-60"
-															)}
-														>
-															<Pencil className="h-4 w-4" />
-														</button>
-													</TooltipTrigger>
-													<TooltipContent>
-														<p>Edit wishlist</p>
-													</TooltipContent>
-												</Tooltip>
-											</TooltipProvider>
-										)}
-									</div>
-									<div className="flex items-center gap-2">
-										{!deleteMode &&
-											!reorderMode &&
-											isExpanded &&
-											canReorder && (
-												<>
-													{listingReorderMode ? (
-														<ListingReorderControls
-															onCancel={(e) => {
-																e.stopPropagation();
-																handleListingReorderCancel();
-															}}
-															onSave={(e) => {
-																e.stopPropagation();
-																handleListingReorderSave();
-															}}
-														/>
-													) : (
-														<TooltipProvider>
-															<Tooltip>
-																<TooltipTrigger asChild>
-																	<Button
-																		variant="ghost"
-																		size="sm"
-																		onClick={(e) => {
-																			e.stopPropagation();
-																			setListingReorderMode(true);
-																		}}
-																		className="transition-all duration-200 hover:scale-110 hover:bg-green-100 hover:text-green-700 dark:hover:bg-green-900 dark:hover:text-green-300"
-																	>
-																		<GripVertical className="h-4 w-4" />
-																	</Button>
-																</TooltipTrigger>
-																<TooltipContent>
-																	<p>Reorder wishlist items</p>
-																</TooltipContent>
-															</Tooltip>
-														</TooltipProvider>
-													)}
-												</>
-											)}
-										<motion.div
-											animate={{
-												rotate: isExpanded
-													? isMobile
-														? 0
-														: 90
-													: isMobile
-														? 180
-														: -90,
-											}}
-											transition={{ duration: 0.4 }}
-											className="cursor-pointer rounded-full p-2 transition-all duration-200 hover:scale-110 hover:bg-slate-100 dark:hover:bg-slate-800"
-											onClick={handleChevronClick}
-										>
-											<ChevronDown className="h-5 w-5" />
-										</motion.div>
-									</div>
-								</div>
-								<p className="text-muted-foreground mb-2 text-sm">
-									{description}
-								</p>
-								{!deleteMode &&
-									!reorderMode &&
-									isExpanded &&
-									items.length > 3 && (
-										<div className="relative mb-4">
-											<Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
-											<Input
-												placeholder="Search items..."
-												value={searchQuery}
-												onChange={(e) => setSearchQuery(e.target.value)}
-												className="pr-10 pl-10"
-												onClick={(e) => e.stopPropagation()}
-											/>
-											{searchQuery && (
-												<button
-													onClick={(e) => {
-														e.stopPropagation();
-														setSearchQuery("");
-													}}
-													className="text-muted-foreground hover:text-foreground absolute top-1/2 right-3 -translate-y-1/2"
-												>
-													<X className="h-4 w-4" />
-												</button>
-											)}
-										</div>
-									)}
-							</CardHeader>
-							<AnimatePresence>
-								{isExpanded && (
-									<motion.div
-										initial={{ opacity: 0, height: 0 }}
-										animate={{ opacity: 1, height: "auto" }}
-										exit={{ opacity: 0, height: 0 }}
-										transition={{ duration: 0.4, ease: "easeInOut" }}
-										className="overflow-hidden"
-									>
-										<CardContent>
-											{!deleteMode &&
-												!reorderMode &&
-												isExpanded &&
-												searchQuery && (
-													<div className="text-muted-foreground mb-4 text-sm">
-														Showing {filteredItems.length} of {items.length}{" "}
-														items
-														{filteredItems.length === 0 &&
-															" - try a different search term"}
-													</div>
-												)}
-											<div
-												className={cn(
-													"min-h-[200px]", // Minimum height to prevent dramatic resizing
-													filteredItems.length === 0 &&
-														searchQuery &&
-														"flex items-center justify-center"
-												)}
-											>
-												{filteredItems.length === 0 && searchQuery ? (
-													<div className="text-muted-foreground py-8 text-center">
-														<div className="mb-2 text-lg">No items found</div>
-														<div className="text-sm">
-															Try a different search term or clear the search
-														</div>
-													</div>
-												) : (
-													<Reorder.Group
-														axis={isMobile ? "y" : "x"}
-														values={filteredItems}
-														onReorder={(newOrder: WishlistItem[]) => {
-															if (
-																listingReorderMode &&
-																filteredItems.length === items.length
-															) {
-																setItems(newOrder);
-															}
-														}}
-														className={cn(
-															"overflow-auto scroll-smooth pb-4 pl-3",
-															isMobile
-																? "flex flex-col gap-4"
-																: listingReorderMode
-																	? "flex gap-2" // Reduced gap for reorder mode
-																	: "flex snap-x snap-mandatory gap-4"
-														)}
-														style={{
-															scrollBehavior: listingReorderMode
-																? "auto"
-																: "smooth",
-														}}
-													>
-														{filteredItems.map((listing) => (
-															<Reorder.Item
-																key={listing.id}
-																value={listing}
-																className={cn(
-																	"group/item",
-																	!isMobile &&
-																		!listingReorderMode &&
-																		"snap-center",
-																	listingReorderMode &&
-																		"cursor-grab active:cursor-grabbing"
-																)}
-																drag={listingReorderMode}
-															>
-																<div
-																	className={cn(
-																		"group relative",
-																		listingReorderMode
-																			? "w-[120px] transition-none" // Even smaller in reorder mode
-																			: isMobile
-																				? "w-full transition-all duration-300 ease-in-out"
-																				: "w-[300px] transition-all duration-300 ease-in-out"
-																	)}
-																	onClick={(e) => e.stopPropagation()}
-																>
-																	<SavedListingCard
-																		listing={convertToListingFormat(listing)}
-																		onDelete={
-																			!listingReorderMode
-																				? () => setItemToDelete(listing.id)
-																				: undefined
-																		}
-																		isReorderMode={listingReorderMode}
-																	/>
-																	{listingReorderMode && (
-																		<div className="absolute top-1/2 -translate-x-3 -translate-y-1/2 opacity-0 transition-opacity group-hover/item:opacity-100">
-																			<GripVertical className="text-muted-foreground h-3 w-3 cursor-grab active:cursor-grabbing" />
-																		</div>
-																	)}
-																</div>
-															</Reorder.Item>
-														))}
-													</Reorder.Group>
-												)}
-											</div>
-										</CardContent>
-									</motion.div>
-								)}
-							</AnimatePresence>
+							<WishlistCardHeader
+								name={name}
+								description={description || ""}
+								isExpanded={isExpanded}
+								deleteMode={deleteMode}
+								reorderMode={reorderMode}
+								listingReorderMode={listingReorderMode}
+								canReorder={canReorder}
+								isMobile={isMobile}
+								onEdit={() => setShowEditDialog(true)}
+								onChevronClick={handleChevronClick}
+								onReorderStart={(e) => {
+									e.stopPropagation();
+									setListingReorderMode(true);
+								}}
+								onReorderCancel={(e) => {
+									e.stopPropagation();
+									handleListingReorderCancel();
+								}}
+								onReorderSave={(e) => {
+									e.stopPropagation();
+									handleListingReorderSave();
+								}}
+							/>
+
+							<WishlistCardContent
+								isExpanded={isExpanded}
+								deleteMode={deleteMode}
+								reorderMode={reorderMode}
+								items={items}
+								filteredItems={filteredItems}
+								searchQuery={searchQuery}
+								listingReorderMode={listingReorderMode}
+								isMobile={isMobile}
+								onSearchChange={setSearchQuery}
+								onClearSearch={() => setSearchQuery("")}
+								onReorderItems={handleReorderItems}
+								onDeleteItem={setItemToDelete}
+								convertToListingFormat={convertToListingFormat}
+							/>
 						</div>
 					</Card>
 				</div>
@@ -496,6 +294,7 @@ export function WishlistCard({
 				onSubmit={handleEditSubmit}
 				initialName={name}
 				initialDescription={description}
+				initialIsFavorite={isFavorite}
 			/>
 		</>
 	);

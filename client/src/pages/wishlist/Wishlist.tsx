@@ -129,33 +129,9 @@ export function Wishlist() {
 		}
 	};
 
-	const handleSetFavorite = async (id: string) => {
-		try {
-			const wishlist = wishlists.find((w) => w.id === id);
-			if (!wishlist) return;
-
-			const newFavoriteStatus = !wishlist.isFavorite;
-
-			const updatedWishlist = await wishlistService.updateWishlist(id, {
-				isFavorite: newFavoriteStatus,
-			});
-
-			// Update all wishlists: set the selected one as favorite and clear others
-			setWishlists((prev) =>
-				prev.map((w) => ({
-					...w,
-					isFavorite: w.id === id ? updatedWishlist.isFavorite : false,
-				}))
-			);
-		} catch (err) {
-			console.error("Error updating favorite status:", err);
-			setError("Failed to update favorite status");
-		}
-	};
-
 	const handleUpdateWishlist = async (
 		id: string,
-		data: { name: string; description: string }
+		data: { name: string; description: string; isFavorite: boolean }
 	) => {
 		try {
 			const updatedWishlist = await wishlistService.updateWishlist(id, data);
@@ -167,8 +143,11 @@ export function Wishlist() {
 								...w,
 								name: updatedWishlist.name,
 								description: updatedWishlist.description,
+								isFavorite: updatedWishlist.isFavorite,
 							}
-						: w
+						: w.id !== id && updatedWishlist.isFavorite
+							? { ...w, isFavorite: false } // Clear other favorites if this one becomes favorite
+							: w
 				)
 			);
 		} catch (err) {
@@ -259,7 +238,6 @@ export function Wishlist() {
 									reorderMode={reorderMode}
 									isSelected={selectedLists.has(wishlist.id)}
 									onSelect={() => toggleListSelection(wishlist.id)}
-									onFavorite={() => handleSetFavorite(wishlist.id)}
 									onUpdate={handleUpdateWishlist}
 								/>
 							</div>
