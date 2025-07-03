@@ -12,6 +12,7 @@ import { useState } from "react";
 import { Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { getLargerImageUrl } from "@/lib/image";
 
 interface SavedListingCardProps {
 	listing: Listing;
@@ -26,6 +27,8 @@ export function SavedListingCard({
 }: SavedListingCardProps) {
 	const [showDetails, setShowDetails] = useState(false);
 	const isMobile = useIsMobile();
+
+	const displayImageUrl = getLargerImageUrl(listing.imageUrl);
 
 	if (!listing) return null;
 
@@ -56,22 +59,23 @@ export function SavedListingCard({
 							<Trash2 className="h-4 w-4" />
 						</Button>
 					)}
-					<div className={cn("flex gap-4 p-4", isMobile && "items-center")}>
-						<div className="h-20 w-20 overflow-hidden rounded-md">
-							<img
-								src={listing.imageUrl}
-								alt={listing.title}
-								className="h-full w-full object-cover"
-							/>
-						</div>
-						<div className="flex flex-1 flex-col justify-center">
-							<h3 className="font-medium">{listing.title}</h3>
-							<p className="text-muted-foreground">
-								{listing.price.value.toString()}
-							</p>
-							<p className="text-muted-foreground text-xs">
-								{listing.condition}
-							</p>
+					<div className={cn("p-4", isMobile && "w-full")}>
+						<div className="space-y-3">
+							<div className="relative">
+								<img
+									src={displayImageUrl}
+									alt={listing.title}
+									className="h-full w-full rounded-md object-cover"
+								/>
+							</div>
+							<div className="space-y-1">
+								<h3 className="line-clamp-2 text-sm font-medium">
+									{listing.title}
+								</h3>
+								<p className="text-muted-foreground font-semibold">
+									${listing.price.value.toString()}
+								</p>
+							</div>
 						</div>
 						<Button
 							variant="ghost"
@@ -100,9 +104,9 @@ export function SavedListingCard({
 					<div className="grid gap-6">
 						<div className="aspect-video w-full overflow-hidden rounded-lg">
 							<img
-								src={listing.imageUrl}
+								src={displayImageUrl}
 								alt={listing.title}
-								className="h-full w-full object-cover"
+								className="h-full w-full object-contain"
 							/>
 						</div>
 						<div className="grid gap-2">

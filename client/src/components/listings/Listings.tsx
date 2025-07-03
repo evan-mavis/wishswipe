@@ -6,7 +6,7 @@ import type { Listing } from "../../types/listing";
 import { AnimatePresence } from "framer-motion";
 import { DemoListing } from "@/components/demoListing/DemoListing";
 import { fetchListings } from "@/services/listingsService";
-import { debounceSearch } from "@/utils/debounce";
+import { debounceSearch } from "@/lib/debounce";
 
 interface ListingsProps {
 	searchQuery?: string;

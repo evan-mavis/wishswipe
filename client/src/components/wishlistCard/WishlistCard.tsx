@@ -259,7 +259,9 @@ export function WishlistCard({
 										</motion.div>
 									</div>
 								</div>
-								<p className="text-muted-foreground text-sm">{description}</p>
+								<p className="text-muted-foreground mb-2 text-sm">
+									{description}
+								</p>
 							</CardHeader>
 							<AnimatePresence>
 								{isExpanded && (
