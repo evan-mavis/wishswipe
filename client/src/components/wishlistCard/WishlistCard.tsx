@@ -305,11 +305,18 @@ export function WishlistCard({
 													}
 												}}
 												className={cn(
-													"overflow-auto pb-4 pl-3",
+													"overflow-auto scroll-smooth pb-4 pl-3",
 													isMobile
 														? "flex flex-col gap-4"
-														: "flex snap-x snap-mandatory gap-4"
+														: listingReorderMode
+															? "flex gap-4"
+															: "flex snap-x snap-mandatory gap-4"
 												)}
+												style={{
+													scrollBehavior: listingReorderMode
+														? "auto"
+														: "smooth",
+												}}
 											>
 												{items.map((listing) => (
 													<Reorder.Item
@@ -317,7 +324,7 @@ export function WishlistCard({
 														value={listing}
 														className={cn(
 															"group/item",
-															!isMobile && "snap-center",
+															!isMobile && !listingReorderMode && "snap-center",
 															listingReorderMode &&
 																"cursor-grab active:cursor-grabbing"
 														)}
@@ -326,7 +333,13 @@ export function WishlistCard({
 														<div
 															className={cn(
 																"group relative",
-																isMobile ? "w-full" : "w-[300px]"
+																listingReorderMode
+																	? isMobile
+																		? "w-full transition-none"
+																		: "w-[150px] transition-none"
+																	: isMobile
+																		? "w-full transition-all duration-300 ease-in-out"
+																		: "w-[300px] transition-all duration-300 ease-in-out"
 															)}
 															onClick={(e) => e.stopPropagation()}
 														>

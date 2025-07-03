@@ -75,6 +75,7 @@ export function SavedListingCard({
 									src={getLargerImageUrl(listing.imageUrl, 450)}
 									alt={listing.title}
 									className="h-full w-full object-contain"
+									draggable={false}
 								/>
 							</div>
 							<div className="space-y-1">
@@ -121,6 +122,7 @@ export function SavedListingCard({
 									src={highResImageUrl}
 									alt={listing.title}
 									className="max-h-[60vh] w-full object-contain"
+									draggable={false}
 								/>
 							)}
 						</div>
