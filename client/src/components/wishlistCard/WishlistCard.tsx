@@ -62,8 +62,12 @@ export function WishlistCard({
 	const handleClick = () => {
 		if (deleteMode) {
 			onSelect();
-		} else if (!reorderMode) {
-			// Only allow expansion if not in reorder mode
+		}
+	};
+
+	const handleChevronClick = (e: React.MouseEvent) => {
+		e.stopPropagation();
+		if (!deleteMode && !reorderMode) {
 			setIsExpanded(!isExpanded);
 		}
 	};
@@ -206,8 +210,8 @@ export function WishlistCard({
 																setShowEditDialog(true);
 															}}
 															className={cn(
-																"text-muted-foreground hover:text-foreground transition-all hover:scale-110 hover:opacity-100",
-																isMobile
+																"text-muted-foreground hover:text-foreground rounded-full p-2 transition-all duration-200 hover:scale-110 hover:bg-slate-100 hover:opacity-100 dark:hover:bg-slate-800",
+																isMobile || isExpanded
 																	? "opacity-60"
 																	: "opacity-0 group-hover/card:opacity-60"
 															)}
@@ -237,16 +241,26 @@ export function WishlistCard({
 														}}
 													/>
 												) : (
-													<Button
-														variant="ghost"
-														size="sm"
-														onClick={(e) => {
-															e.stopPropagation();
-															setListingReorderMode(true);
-														}}
-													>
-														<GripVertical className="h-4 w-4" />
-													</Button>
+													<TooltipProvider>
+														<Tooltip>
+															<TooltipTrigger asChild>
+																<Button
+																	variant="ghost"
+																	size="sm"
+																	onClick={(e) => {
+																		e.stopPropagation();
+																		setListingReorderMode(true);
+																	}}
+																	className="transition-all duration-200 hover:scale-110 hover:bg-green-100 hover:text-green-700 dark:hover:bg-green-900 dark:hover:text-green-300"
+																>
+																	<GripVertical className="h-4 w-4" />
+																</Button>
+															</TooltipTrigger>
+															<TooltipContent>
+																<p>Reorder wishlist items</p>
+															</TooltipContent>
+														</Tooltip>
+													</TooltipProvider>
 												)}
 											</>
 										)}
@@ -261,7 +275,8 @@ export function WishlistCard({
 														: -90,
 											}}
 											transition={{ duration: 0.3 }}
-											className="cursor-pointer"
+											className="cursor-pointer rounded-full p-2 transition-all duration-200 hover:scale-110 hover:bg-slate-100 dark:hover:bg-slate-800"
+											onClick={handleChevronClick}
 										>
 											<ChevronDown className="h-5 w-5" />
 										</motion.div>
