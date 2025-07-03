@@ -251,7 +251,15 @@ export function WishlistCard({
 											</>
 										)}
 										<motion.div
-											animate={{ rotate: isExpanded ? 90 : -90 }}
+											animate={{
+												rotate: isExpanded
+													? isMobile
+														? 0
+														: 90
+													: isMobile
+														? 180
+														: -90,
+											}}
 											transition={{ duration: 0.3 }}
 											className="cursor-pointer"
 										>
