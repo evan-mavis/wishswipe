@@ -1,6 +1,13 @@
 import { useState, useMemo } from "react";
 import { motion, AnimatePresence, Reorder } from "framer-motion";
-import { ChevronDown, GripVertical, Star, Pencil, Search, X } from "lucide-react";
+import {
+	ChevronDown,
+	GripVertical,
+	Star,
+	Pencil,
+	Search,
+	X,
+} from "lucide-react";
 import {
 	AlertDialog,
 	AlertDialogContent,
@@ -64,13 +71,14 @@ export function WishlistCard({
 	// Filter items based on search query
 	const filteredItems = useMemo(() => {
 		if (!searchQuery.trim()) return items;
-		return items.filter(item => 
+		return items.filter((item) =>
 			item.title?.toLowerCase().includes(searchQuery.toLowerCase().trim())
 		);
 	}, [items, searchQuery]);
 
 	// Disable reorder mode when searching or on mobile
-	const canReorder = !isMobile && !searchQuery.trim() && filteredItems.length === items.length;
+	const canReorder =
+		!isMobile && !searchQuery.trim() && filteredItems.length === items.length;
 
 	const handleClick = () => {
 		if (deleteMode) {
@@ -254,43 +262,46 @@ export function WishlistCard({
 										)}
 									</div>
 									<div className="flex items-center gap-2">
-										{!deleteMode && !reorderMode && isExpanded && canReorder && (
-											<>
-												{listingReorderMode ? (
-													<ListingReorderControls
-														onCancel={(e) => {
-															e.stopPropagation();
-															handleListingReorderCancel();
-														}}
-														onSave={(e) => {
-															e.stopPropagation();
-															handleListingReorderSave();
-														}}
-													/>
-												) : (
-													<TooltipProvider>
-														<Tooltip>
-															<TooltipTrigger asChild>
-																<Button
-																	variant="ghost"
-																	size="sm"
-																	onClick={(e) => {
-																		e.stopPropagation();
-																		setListingReorderMode(true);
-																	}}
-																	className="transition-all duration-200 hover:scale-110 hover:bg-green-100 hover:text-green-700 dark:hover:bg-green-900 dark:hover:text-green-300"
-																>
-																	<GripVertical className="h-4 w-4" />
-																</Button>
-															</TooltipTrigger>
-															<TooltipContent>
-																<p>Reorder wishlist items</p>
-															</TooltipContent>
-														</Tooltip>
-													</TooltipProvider>
-												)}
-											</>
-										)}
+										{!deleteMode &&
+											!reorderMode &&
+											isExpanded &&
+											canReorder && (
+												<>
+													{listingReorderMode ? (
+														<ListingReorderControls
+															onCancel={(e) => {
+																e.stopPropagation();
+																handleListingReorderCancel();
+															}}
+															onSave={(e) => {
+																e.stopPropagation();
+																handleListingReorderSave();
+															}}
+														/>
+													) : (
+														<TooltipProvider>
+															<Tooltip>
+																<TooltipTrigger asChild>
+																	<Button
+																		variant="ghost"
+																		size="sm"
+																		onClick={(e) => {
+																			e.stopPropagation();
+																			setListingReorderMode(true);
+																		}}
+																		className="transition-all duration-200 hover:scale-110 hover:bg-green-100 hover:text-green-700 dark:hover:bg-green-900 dark:hover:text-green-300"
+																	>
+																		<GripVertical className="h-4 w-4" />
+																	</Button>
+																</TooltipTrigger>
+																<TooltipContent>
+																	<p>Reorder wishlist items</p>
+																</TooltipContent>
+															</Tooltip>
+														</TooltipProvider>
+													)}
+												</>
+											)}
 										<motion.div
 											animate={{
 												rotate: isExpanded
@@ -312,29 +323,32 @@ export function WishlistCard({
 								<p className="text-muted-foreground mb-2 text-sm">
 									{description}
 								</p>
-								{!deleteMode && !reorderMode && isExpanded && items.length > 3 && (
-									<div className="relative mb-4">
-										<Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-										<Input
-											placeholder="Search items..."
-											value={searchQuery}
-											onChange={(e) => setSearchQuery(e.target.value)}
-											className="pl-10 pr-10"
-											onClick={(e) => e.stopPropagation()}
-										/>
-										{searchQuery && (
-											<button
-												onClick={(e) => {
-													e.stopPropagation();
-													setSearchQuery("");
-												}}
-												className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-											>
-												<X className="h-4 w-4" />
-											</button>
-										)}
-									</div>
-								)}
+								{!deleteMode &&
+									!reorderMode &&
+									isExpanded &&
+									items.length > 3 && (
+										<div className="relative mb-4">
+											<Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
+											<Input
+												placeholder="Search items..."
+												value={searchQuery}
+												onChange={(e) => setSearchQuery(e.target.value)}
+												className="pr-10 pl-10"
+												onClick={(e) => e.stopPropagation()}
+											/>
+											{searchQuery && (
+												<button
+													onClick={(e) => {
+														e.stopPropagation();
+														setSearchQuery("");
+													}}
+													className="text-muted-foreground hover:text-foreground absolute top-1/2 right-3 -translate-y-1/2"
+												>
+													<X className="h-4 w-4" />
+												</button>
+											)}
+										</div>
+									)}
 							</CardHeader>
 							<AnimatePresence>
 								{isExpanded && (
@@ -346,75 +360,103 @@ export function WishlistCard({
 										className="overflow-hidden"
 									>
 										<CardContent>
-											{!deleteMode && !reorderMode && isExpanded && searchQuery && (
-												<div className="mb-4 text-sm text-muted-foreground">
-													Showing {filteredItems.length} of {items.length} items
-													{filteredItems.length === 0 && " - try a different search term"}
-												</div>
-											)}
-											<Reorder.Group
-												axis={isMobile ? "y" : "x"}
-												values={filteredItems}
-												onReorder={(newOrder: WishlistItem[]) => {
-													if (listingReorderMode && filteredItems.length === items.length) {
-														setItems(newOrder);
-													}
-												}}
-												className={cn(
-													"overflow-auto scroll-smooth pb-4 pl-3",
-													isMobile
-														? "flex flex-col gap-4"
-														: listingReorderMode
-															? "flex gap-2" // Reduced gap for reorder mode
-															: "flex snap-x snap-mandatory gap-4"
+											{!deleteMode &&
+												!reorderMode &&
+												isExpanded &&
+												searchQuery && (
+													<div className="text-muted-foreground mb-4 text-sm">
+														Showing {filteredItems.length} of {items.length}{" "}
+														items
+														{filteredItems.length === 0 &&
+															" - try a different search term"}
+													</div>
 												)}
-												style={{
-													scrollBehavior: listingReorderMode
-														? "auto"
-														: "smooth",
-												}}
+											<div
+												className={cn(
+													"min-h-[200px]", // Minimum height to prevent dramatic resizing
+													filteredItems.length === 0 &&
+														searchQuery &&
+														"flex items-center justify-center"
+												)}
 											>
-												{filteredItems.map((listing) => (
-													<Reorder.Item
-														key={listing.id}
-														value={listing}
-														className={cn(
-															"group/item",
-															!isMobile && !listingReorderMode && "snap-center",
-															listingReorderMode &&
-																"cursor-grab active:cursor-grabbing"
-														)}
-														drag={listingReorderMode}
-													>
-														<div
-															className={cn(
-																"group relative",
-																listingReorderMode
-																	? "w-[120px] transition-none" // Even smaller in reorder mode
-																	: isMobile
-																		? "w-full transition-all duration-300 ease-in-out"
-																		: "w-[300px] transition-all duration-300 ease-in-out"
-															)}
-															onClick={(e) => e.stopPropagation()}
-														>
-															<SavedListingCard
-																listing={convertToListingFormat(listing)}
-																onDelete={
-																	!listingReorderMode
-																		? () => setItemToDelete(listing.id)
-																		: undefined
-																}
-																isReorderMode={listingReorderMode}
-															/>
-															{listingReorderMode && (
-																<div className="absolute top-1/2 -translate-x-3 -translate-y-1/2 opacity-0 transition-opacity group-hover/item:opacity-100">
-																	<GripVertical className="text-muted-foreground h-3 w-3 cursor-grab active:cursor-grabbing" />
-																</div>
-															)}
+												{filteredItems.length === 0 && searchQuery ? (
+													<div className="text-muted-foreground py-8 text-center">
+														<div className="mb-2 text-lg">No items found</div>
+														<div className="text-sm">
+															Try a different search term or clear the search
 														</div>
-													</Reorder.Item>
-												))}
-											</Reorder.Group>
+													</div>
+												) : (
+													<Reorder.Group
+														axis={isMobile ? "y" : "x"}
+														values={filteredItems}
+														onReorder={(newOrder: WishlistItem[]) => {
+															if (
+																listingReorderMode &&
+																filteredItems.length === items.length
+															) {
+																setItems(newOrder);
+															}
+														}}
+														className={cn(
+															"overflow-auto scroll-smooth pb-4 pl-3",
+															isMobile
+																? "flex flex-col gap-4"
+																: listingReorderMode
+																	? "flex gap-2" // Reduced gap for reorder mode
+																	: "flex snap-x snap-mandatory gap-4"
+														)}
+														style={{
+															scrollBehavior: listingReorderMode
+																? "auto"
+																: "smooth",
+														}}
+													>
+														{filteredItems.map((listing) => (
+															<Reorder.Item
+																key={listing.id}
+																value={listing}
+																className={cn(
+																	"group/item",
+																	!isMobile &&
+																		!listingReorderMode &&
+																		"snap-center",
+																	listingReorderMode &&
+																		"cursor-grab active:cursor-grabbing"
+																)}
+																drag={listingReorderMode}
+															>
+																<div
+																	className={cn(
+																		"group relative",
+																		listingReorderMode
+																			? "w-[120px] transition-none" // Even smaller in reorder mode
+																			: isMobile
+																				? "w-full transition-all duration-300 ease-in-out"
+																				: "w-[300px] transition-all duration-300 ease-in-out"
+																	)}
+																	onClick={(e) => e.stopPropagation()}
+																>
+																	<SavedListingCard
+																		listing={convertToListingFormat(listing)}
+																		onDelete={
+																			!listingReorderMode
+																				? () => setItemToDelete(listing.id)
+																				: undefined
+																		}
+																		isReorderMode={listingReorderMode}
+																	/>
+																	{listingReorderMode && (
+																		<div className="absolute top-1/2 -translate-x-3 -translate-y-1/2 opacity-0 transition-opacity group-hover/item:opacity-100">
+																			<GripVertical className="text-muted-foreground h-3 w-3 cursor-grab active:cursor-grabbing" />
+																		</div>
+																	)}
+																</div>
+															</Reorder.Item>
+														))}
+													</Reorder.Group>
+												)}
+											</div>
 										</CardContent>
 									</motion.div>
 								)}
