@@ -15,7 +15,7 @@ export function SwipeView() {
 		minPrice?: number;
 		maxPrice?: number;
 	}>({});
-	
+
 	// Create ref for undo functionality
 	const undoRef = useRef<(() => void) | null>(null);
 
@@ -30,7 +30,7 @@ export function SwipeView() {
 	const handleSearchChange = (value: string) => {
 		setSearch(value);
 	};
-	
+
 	const handleUndo = () => {
 		if (undoRef.current) {
 			undoRef.current();

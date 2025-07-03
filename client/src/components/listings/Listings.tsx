@@ -37,25 +37,27 @@ export function Listings({
 
 	const handleItemDismissed = useCallback((dismissedItem: Listing) => {
 		// Add to dismissed items array (keep only last 10)
-		setDismissedItems(prev => {
+		setDismissedItems((prev) => {
 			const newDismissed = [dismissedItem, ...prev];
 			return newDismissed.slice(0, 10); // Keep only last 10 items
 		});
-		
+
 		// Remove from current listings
-		setListings(prev => prev.filter(item => item.itemId !== dismissedItem.itemId));
+		setListings((prev) =>
+			prev.filter((item) => item.itemId !== dismissedItem.itemId)
+		);
 	}, []);
 
 	const handleUndo = useCallback(() => {
 		if (dismissedItems.length === 0) return;
-		
+
 		const [lastDismissed, ...remainingDismissed] = dismissedItems;
-		
+
 		// Remove from dismissed items
 		setDismissedItems(remainingDismissed);
-		
+
 		// Add back to the top of listings
-		setListings(prev => [lastDismissed, ...prev]);
+		setListings((prev) => [lastDismissed, ...prev]);
 	}, [dismissedItems]);
 
 	// Expose undo function to parent via ref
@@ -68,7 +70,7 @@ export function Listings({
 	const fetchListingsWithQuery = useCallback(
 		async (query: string) => {
 			setIsLoading(true);
-			
+
 			// Clear dismissed items when fetching new listings
 			setDismissedItems([]);
 
