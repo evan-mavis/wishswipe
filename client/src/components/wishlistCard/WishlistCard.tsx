@@ -148,7 +148,7 @@ export function WishlistCard({
 					position: isExpanded ? "relative" : "static",
 					zIndex: isExpanded ? 50 : 0,
 				}}
-				transition={{ duration: 0.3 }}
+				transition={{ duration: 0.5, ease: "easeInOut" }}
 			>
 				<div className="relative">
 					<TooltipProvider>
@@ -274,7 +274,7 @@ export function WishlistCard({
 														? 180
 														: -90,
 											}}
-											transition={{ duration: 0.3 }}
+											transition={{ duration: 0.4 }}
 											className="cursor-pointer rounded-full p-2 transition-all duration-200 hover:scale-110 hover:bg-slate-100 dark:hover:bg-slate-800"
 											onClick={handleChevronClick}
 										>
@@ -289,10 +289,10 @@ export function WishlistCard({
 							<AnimatePresence>
 								{isExpanded && (
 									<motion.div
-										initial={{ opacity: 0 }}
-										animate={{ opacity: 1 }}
-										exit={{ opacity: 0 }}
-										transition={{ duration: 0.2 }}
+										initial={{ opacity: 0, height: 0 }}
+										animate={{ opacity: 1, height: "auto" }}
+										exit={{ opacity: 0, height: 0 }}
+										transition={{ duration: 0.4, ease: "easeInOut" }}
 										className="overflow-hidden"
 									>
 										<CardContent>
