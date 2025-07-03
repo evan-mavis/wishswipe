@@ -36,7 +36,7 @@ export function FilterMenus({
 	setPriceRange,
 }: FilterMenusProps) {
 	return (
-		<Menubar className="flex min-w-0 flex-1 items-center rounded-b-xl border-none bg-transparent align-middle text-base shadow-none">
+		<Menubar className="flex min-w-0 flex-1 items-center rounded-b-xl border-none bg-transparent align-middle text-base shadow-none gap-0 md:gap-1">
 			<MenubarMenu>
 				<MenubarTrigger>
 					{isMobile ? <Check size={18} /> : "Condition"}

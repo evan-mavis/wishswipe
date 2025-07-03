@@ -33,7 +33,7 @@ export function ActionButtons({
 							variant="ghost"
 							type="button"
 							ref={clearFiltersBtnRef}
-							className="flex items-center rounded align-middle transition duration-150 hover:text-red-500"
+							className="flex items-center rounded pr-0 align-middle transition duration-150 hover:text-red-500"
 							aria-label="Clear All Filters"
 							onClick={() => {
 								onClearAllFilters();
