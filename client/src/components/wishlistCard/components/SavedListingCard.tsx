@@ -8,11 +8,12 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "@/components/ui/dialog";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { getLargerImageUrl } from "@/lib/image";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface SavedListingCardProps {
 	listing: Listing;
@@ -26,9 +27,17 @@ export function SavedListingCard({
 	isReorderMode,
 }: SavedListingCardProps) {
 	const [showDetails, setShowDetails] = useState(false);
+	const [highResImageLoaded, setHighResImageLoaded] = useState(false);
 	const isMobile = useIsMobile();
 
-	const displayImageUrl = getLargerImageUrl(listing.imageUrl);
+	const highResImageUrl = getLargerImageUrl(listing.imageUrl, 800);
+
+	// Preload the high-resolution image when component mounts
+	useEffect(() => {
+		const img = new Image();
+		img.onload = () => setHighResImageLoaded(true);
+		img.src = highResImageUrl;
+	}, [highResImageUrl]);
 
 	if (!listing) return null;
 
@@ -61,11 +70,11 @@ export function SavedListingCard({
 					)}
 					<div className={cn("p-4", isMobile && "w-full")}>
 						<div className="space-y-3">
-							<div className="relative">
+							<div className="relative aspect-square overflow-hidden rounded-md">
 								<img
-									src={displayImageUrl}
+									src={getLargerImageUrl(listing.imageUrl, 450)}
 									alt={listing.title}
-									className="h-full w-full rounded-md object-cover"
+									className="h-full w-full object-contain"
 								/>
 							</div>
 							<div className="space-y-1">
@@ -102,12 +111,18 @@ export function SavedListingCard({
 						<DialogTitle>{listing.title}</DialogTitle>
 					</DialogHeader>
 					<div className="grid gap-6">
-						<div className="aspect-video w-full overflow-hidden rounded-lg">
-							<img
-								src={displayImageUrl}
-								alt={listing.title}
-								className="h-full w-full object-contain"
-							/>
+						<div className="rounded-lg">
+							{!highResImageLoaded ? (
+								<div className="flex items-center justify-center">
+									<Skeleton className="h-80 w-full rounded-lg" />
+								</div>
+							) : (
+								<img
+									src={highResImageUrl}
+									alt={listing.title}
+									className="max-h-[60vh] w-full object-contain"
+								/>
+							)}
 						</div>
 						<div className="grid gap-2">
 							<div className="flex justify-between">
