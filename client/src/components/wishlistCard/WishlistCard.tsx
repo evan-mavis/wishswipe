@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { motion, AnimatePresence, Reorder } from "framer-motion";
-import { ChevronDown, GripVertical, Star, Pencil } from "lucide-react";
+import { ChevronDown, GripVertical, Star, Pencil, Search, X } from "lucide-react";
 import {
 	AlertDialog,
 	AlertDialogContent,
@@ -12,6 +12,7 @@ import {
 	AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { SavedListingCard } from "./components/SavedListingCard";
 import { ListingReorderControls } from "./components/ListingReorderControls";
 import { EditWishlistDialog } from "./components/EditWishlistDialog";
@@ -58,6 +59,18 @@ export function WishlistCard({
 	const [itemToDelete, setItemToDelete] = useState<string | null>(null);
 	const [listingReorderMode, setListingReorderMode] = useState(false);
 	const [showEditDialog, setShowEditDialog] = useState(false);
+	const [searchQuery, setSearchQuery] = useState("");
+
+	// Filter items based on search query
+	const filteredItems = useMemo(() => {
+		if (!searchQuery.trim()) return items;
+		return items.filter(item => 
+			item.title?.toLowerCase().includes(searchQuery.toLowerCase().trim())
+		);
+	}, [items, searchQuery]);
+
+	// Disable reorder mode when searching or on mobile
+	const canReorder = !isMobile && !searchQuery.trim() && filteredItems.length === items.length;
 
 	const handleClick = () => {
 		if (deleteMode) {
@@ -105,6 +118,13 @@ export function WishlistCard({
 
 	const handleListingReorderSave = async () => {
 		try {
+			// Only save if we're not in search mode (all items are visible)
+			if (filteredItems.length !== items.length) {
+				console.warn("Cannot reorder while search is active");
+				setListingReorderMode(false);
+				return;
+			}
+
 			const itemIds = items.map((item) => item.id);
 			await wishlistService.reorderWishlistItems(itemIds);
 
@@ -134,6 +154,13 @@ export function WishlistCard({
 			setIsExpanded(false);
 		}
 	}, [deleteMode, reorderMode]);
+
+	// Disable reorder mode when search is active or on mobile
+	React.useEffect(() => {
+		if (!canReorder && listingReorderMode) {
+			setListingReorderMode(false);
+		}
+	}, [canReorder, listingReorderMode]);
 
 	return (
 		<>
@@ -227,7 +254,7 @@ export function WishlistCard({
 										)}
 									</div>
 									<div className="flex items-center gap-2">
-										{!deleteMode && !reorderMode && isExpanded && (
+										{!deleteMode && !reorderMode && isExpanded && canReorder && (
 											<>
 												{listingReorderMode ? (
 													<ListingReorderControls
@@ -285,6 +312,29 @@ export function WishlistCard({
 								<p className="text-muted-foreground mb-2 text-sm">
 									{description}
 								</p>
+								{!deleteMode && !reorderMode && isExpanded && items.length > 3 && (
+									<div className="relative mb-4">
+										<Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+										<Input
+											placeholder="Search items..."
+											value={searchQuery}
+											onChange={(e) => setSearchQuery(e.target.value)}
+											className="pl-10 pr-10"
+											onClick={(e) => e.stopPropagation()}
+										/>
+										{searchQuery && (
+											<button
+												onClick={(e) => {
+													e.stopPropagation();
+													setSearchQuery("");
+												}}
+												className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+											>
+												<X className="h-4 w-4" />
+											</button>
+										)}
+									</div>
+								)}
 							</CardHeader>
 							<AnimatePresence>
 								{isExpanded && (
@@ -296,11 +346,17 @@ export function WishlistCard({
 										className="overflow-hidden"
 									>
 										<CardContent>
+											{!deleteMode && !reorderMode && isExpanded && searchQuery && (
+												<div className="mb-4 text-sm text-muted-foreground">
+													Showing {filteredItems.length} of {items.length} items
+													{filteredItems.length === 0 && " - try a different search term"}
+												</div>
+											)}
 											<Reorder.Group
 												axis={isMobile ? "y" : "x"}
-												values={items}
+												values={filteredItems}
 												onReorder={(newOrder: WishlistItem[]) => {
-													if (listingReorderMode) {
+													if (listingReorderMode && filteredItems.length === items.length) {
 														setItems(newOrder);
 													}
 												}}
@@ -309,7 +365,7 @@ export function WishlistCard({
 													isMobile
 														? "flex flex-col gap-4"
 														: listingReorderMode
-															? "flex gap-4"
+															? "flex gap-2" // Reduced gap for reorder mode
 															: "flex snap-x snap-mandatory gap-4"
 												)}
 												style={{
@@ -318,7 +374,7 @@ export function WishlistCard({
 														: "smooth",
 												}}
 											>
-												{items.map((listing) => (
+												{filteredItems.map((listing) => (
 													<Reorder.Item
 														key={listing.id}
 														value={listing}
@@ -334,9 +390,7 @@ export function WishlistCard({
 															className={cn(
 																"group relative",
 																listingReorderMode
-																	? isMobile
-																		? "w-full transition-none"
-																		: "w-[150px] transition-none"
+																	? "w-[120px] transition-none" // Even smaller in reorder mode
 																	: isMobile
 																		? "w-full transition-all duration-300 ease-in-out"
 																		: "w-[300px] transition-all duration-300 ease-in-out"
@@ -353,8 +407,8 @@ export function WishlistCard({
 																isReorderMode={listingReorderMode}
 															/>
 															{listingReorderMode && (
-																<div className="absolute top-1/2 -translate-x-4 -translate-y-1/2 opacity-0 transition-opacity group-hover/item:opacity-100">
-																	<GripVertical className="text-muted-foreground h-4 w-4 cursor-grab active:cursor-grabbing" />
+																<div className="absolute top-1/2 -translate-x-3 -translate-y-1/2 opacity-0 transition-opacity group-hover/item:opacity-100">
+																	<GripVertical className="text-muted-foreground h-3 w-3 cursor-grab active:cursor-grabbing" />
 																</div>
 															)}
 														</div>
