@@ -1,4 +1,5 @@
 import type { Dispatch, SetStateAction } from "react";
+import { useState, useEffect } from "react";
 import type { Listing } from "../../../../types/listing";
 import { ListingCaption } from "../listingCaption/ListingCaption";
 import * as wishlistService from "../../../../services/wishlistService";
@@ -27,8 +28,19 @@ export function ListingCard({
 }: ListingCardProps) {
 	const x = useMotionValue(0);
 	const DRAG_THRESHOLD = 150;
+	const [isDragCommitted, setIsDragCommitted] = useState(false);
+
+	// Reset drag committed state when this card becomes active (index === 0)
+	useEffect(() => {
+		if (index === 0) {
+			setIsDragCommitted(false);
+		}
+	}, [index]);
 
 	useMotionValueEvent(x, "change", (latest) => {
+		// Don't update progress if drag is already committed
+		if (isDragCommitted) return;
+
 		// Adjust calculation to reach 0/100 at threshold
 		const progress = 50 + (latest / DRAG_THRESHOLD) * 50;
 		onProgressChange?.(Math.min(Math.max(progress, 0), 100));
@@ -44,6 +56,19 @@ export function ListingCard({
 	const handleDragEnd = async () => {
 		const currentX = x.get();
 		if (Math.abs(currentX) > DRAG_THRESHOLD) {
+			// Set flag to prevent further progress updates
+			setIsDragCommitted(true);
+
+			if (currentX > 0) {
+				onProgressChange?.(100);
+			} else {
+				onProgressChange?.(0);
+			}
+
+			setTimeout(() => {
+				onProgressChange?.(50);
+			}, 200);
+
 			// Swipe right (positive X) - add to wishlist
 			if (currentX > 0 && selectedWishlistId) {
 				try {
@@ -66,11 +91,6 @@ export function ListingCard({
 
 			// Remove the card from the list regardless of swipe direction
 			setListings((pv) => pv.filter((v) => v.itemId !== listing.itemId));
-
-			// Ensure progress reset happens after animation
-			requestAnimationFrame(() => {
-				onProgressChange?.(50);
-			});
 		} else {
 			onProgressChange?.(50);
 		}
