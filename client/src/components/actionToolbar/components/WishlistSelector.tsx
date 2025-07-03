@@ -57,17 +57,17 @@ export function WishlistSelector({ value, onChange }: WishlistSelectorProps) {
 				Wishlist:
 			</Label>
 			<Select value={value} onValueChange={onChange} disabled={loading}>
-				<SelectTrigger id="wishlist-select" className="w-[120px]">
+				<SelectTrigger id="wishlist-select" className="w-[160px]">
 					<SelectValue placeholder={loading ? "Loading..." : "Choose..."} />
 				</SelectTrigger>
 				<SelectContent>
 					{wishlists.map((wishlist) => (
-						<SelectItem key={wishlist.id} value={wishlist.id}>
+						<SelectItem key={wishlist.id} value={wishlist.id} className="text-xs">
 							{wishlist.name}
 						</SelectItem>
 					))}
 					{wishlists.length === 0 && !loading && (
-						<SelectItem value="" disabled>
+						<SelectItem value="" disabled className="text-xs">
 							No wishlists found
 						</SelectItem>
 					)}
