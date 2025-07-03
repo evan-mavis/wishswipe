@@ -14,6 +14,7 @@ import {
 interface ListingCardProps {
 	listing: Listing;
 	setListings: Dispatch<SetStateAction<Listing[]>>;
+	onItemDismissed?: (dismissedItem: Listing) => void;
 	onProgressChange?: (progress: number) => void;
 	index: number;
 	selectedWishlistId?: string;
@@ -22,6 +23,7 @@ interface ListingCardProps {
 export function ListingCard({
 	listing,
 	setListings,
+	onItemDismissed,
 	onProgressChange,
 	index,
 	selectedWishlistId,
@@ -89,8 +91,13 @@ export function ListingCard({
 			}
 			// Swipe left (negative X) - just dismiss (no action needed)
 
-			// Remove the card from the list regardless of swipe direction
-			setListings((pv) => pv.filter((v) => v.itemId !== listing.itemId));
+			// Call onItemDismissed if provided, otherwise fallback to setListings
+			if (onItemDismissed) {
+				onItemDismissed(listing);
+			} else {
+				// Fallback to old behavior for backward compatibility
+				setListings((pv) => pv.filter((v) => v.itemId !== listing.itemId));
+			}
 		} else {
 			onProgressChange?.(50);
 		}

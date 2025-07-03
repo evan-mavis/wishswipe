@@ -1,7 +1,7 @@
 import { AppHeaderWithLogo } from "@/components/appHeader/AppHeaderWithLogo";
 import { useAuth } from "@/hooks/use-auth";
 import { Listings } from "@/components/listings/Listings";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { ActionToolbar } from "@/components/actionToolbar/ActionToolbar";
 
 export function SwipeView() {
@@ -15,6 +15,9 @@ export function SwipeView() {
 		minPrice?: number;
 		maxPrice?: number;
 	}>({});
+	
+	// Create ref for undo functionality
+	const undoRef = useRef<(() => void) | null>(null);
 
 	useEffect(() => {
 		const timer = setTimeout(() => {
@@ -26,6 +29,12 @@ export function SwipeView() {
 
 	const handleSearchChange = (value: string) => {
 		setSearch(value);
+	};
+	
+	const handleUndo = () => {
+		if (undoRef.current) {
+			undoRef.current();
+		}
 	};
 
 	return (
@@ -54,12 +63,14 @@ export function SwipeView() {
 					setFilters={setFilters}
 					selectedWishlist={selectedWishlist}
 					onWishlistChange={setSelectedWishlist}
+					onUndo={handleUndo}
 				/>
 
 				<Listings
 					searchQuery={search}
 					filters={filters}
 					selectedWishlistId={selectedWishlist}
+					undoRef={undoRef}
 				/>
 			</div>
 		</div>

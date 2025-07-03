@@ -17,24 +17,60 @@ interface ListingsProps {
 		maxPrice?: number;
 	};
 	selectedWishlistId?: string;
+	undoRef?: { current: (() => void) | null }; // Use object with current property
 }
 
 export function Listings({
 	searchQuery = "",
 	filters = {},
 	selectedWishlistId,
+	undoRef,
 }: ListingsProps) {
 	const [listings, setListings] = useState<Listing[]>([]);
 	const [progress, setProgress] = useState(50);
 	const [isLoading, setIsLoading] = useState(false);
+	const [dismissedItems, setDismissedItems] = useState<Listing[]>([]);
 
 	const handleProgressChange = (progress: number) => {
 		setProgress(progress);
 	};
 
+	const handleItemDismissed = useCallback((dismissedItem: Listing) => {
+		// Add to dismissed items array (keep only last 10)
+		setDismissedItems(prev => {
+			const newDismissed = [dismissedItem, ...prev];
+			return newDismissed.slice(0, 10); // Keep only last 10 items
+		});
+		
+		// Remove from current listings
+		setListings(prev => prev.filter(item => item.itemId !== dismissedItem.itemId));
+	}, []);
+
+	const handleUndo = useCallback(() => {
+		if (dismissedItems.length === 0) return;
+		
+		const [lastDismissed, ...remainingDismissed] = dismissedItems;
+		
+		// Remove from dismissed items
+		setDismissedItems(remainingDismissed);
+		
+		// Add back to the top of listings
+		setListings(prev => [lastDismissed, ...prev]);
+	}, [dismissedItems]);
+
+	// Expose undo function to parent via ref
+	useEffect(() => {
+		if (undoRef) {
+			undoRef.current = handleUndo;
+		}
+	}, [undoRef, handleUndo]);
+
 	const fetchListingsWithQuery = useCallback(
 		async (query: string) => {
 			setIsLoading(true);
+			
+			// Clear dismissed items when fetching new listings
+			setDismissedItems([]);
 
 			try {
 				const data = await fetchListings({
@@ -83,6 +119,7 @@ export function Listings({
 									key={`${listing.itemId}-${index}`}
 									listing={listing}
 									setListings={setListings}
+									onItemDismissed={handleItemDismissed}
 									onProgressChange={handleProgressChange}
 									index={index}
 									selectedWishlistId={selectedWishlistId}

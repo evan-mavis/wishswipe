@@ -25,7 +25,6 @@ export function ActionButtons({
 }: ActionButtonsProps) {
 	return (
 		<>
-			{/* Clear All Filters Button - Mobile Only */}
 			{isMobile && (
 				<Tooltip>
 					<TooltipTrigger asChild>
