@@ -107,21 +107,30 @@ export function SavedListingCard({
 			</Card>
 
 			<Dialog open={showDetails} onOpenChange={setShowDetails}>
-				<DialogContent className="sm:max-w-[600px]">
+				<DialogContent className={cn(
+					"sm:max-w-[600px]",
+					isMobile && "max-h-[90vh] overflow-y-auto p-4"
+				)}>
 					<DialogHeader>
-						<DialogTitle>{listing.title}</DialogTitle>
+						<DialogTitle className="line-clamp-2">{listing.title}</DialogTitle>
 					</DialogHeader>
 					<div className="grid gap-6">
 						<div className="rounded-lg">
 							{!highResImageLoaded ? (
 								<div className="flex items-center justify-center">
-									<Skeleton className="h-80 w-full rounded-lg" />
+									<Skeleton className={cn(
+										"w-full rounded-lg",
+										isMobile ? "h-48" : "h-80"
+									)} />
 								</div>
 							) : (
 								<img
 									src={highResImageUrl}
 									alt={listing.title}
-									className="max-h-[60vh] w-full object-contain"
+									className={cn(
+										"w-full object-contain",
+										isMobile ? "max-h-[40vh]" : "max-h-[60vh]"
+									)}
 									draggable={false}
 								/>
 							)}
@@ -146,7 +155,10 @@ export function SavedListingCard({
 								</span>
 							</div>
 							<Button
-								className="mt-4 bg-fuchsia-300 hover:bg-fuchsia-400"
+								className={cn(
+									"bg-fuchsia-300 hover:bg-fuchsia-400",
+									isMobile ? "mt-3" : "mt-4"
+								)}
 								onClick={() => window.open(listing.itemWebUrl, "_blank")}
 							>
 								View on eBay
