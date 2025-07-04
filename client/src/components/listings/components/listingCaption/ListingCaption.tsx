@@ -16,12 +16,12 @@ export function ListingCaption({ isActive, listing }: ListingCaptionProps) {
 			<div
 				className={`bg-card relative mt-1 inline-block p-2 transition-all duration-300 sm:mt-2 sm:p-3 md:p-4 ${
 					isActive ? "animate-bounce-in translate-x-0 opacity-100" : "opacity-0"
-				} max-w-[280px] ease-out sm:max-w-full`}
+				} max-w-[280px] ease-out sm:max-w-md md:max-w-lg lg:max-w-xl`}
 			>
 				<div className="absolute -inset-3.5">
 					<CornersFrame />
 				</div>
-				<h3 className="truncate text-sm font-semibold sm:text-base md:text-lg">
+				<h3 className="text-sm leading-tight font-semibold break-words sm:text-base md:text-lg">
 					{listing.title}
 				</h3>
 				<p className="text-xs text-gray-500 sm:text-sm">
