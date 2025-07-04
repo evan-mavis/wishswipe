@@ -109,7 +109,7 @@ export function Listings({
 	}, [cleanup]);
 
 	return (
-		<div className="flex h-full max-h-[calc(100vh-200px)] w-full flex-col">
+		<div className="flex h-full max-h-[calc(100vh-180px)] w-full flex-col">
 			<div className="grid w-full flex-1 place-items-center overflow-hidden pb-2">
 				{isLoading ? (
 					<DemoListing text="Searching eBay..." />

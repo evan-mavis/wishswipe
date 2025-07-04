@@ -40,21 +40,30 @@ export function SwipeView() {
 	return (
 		<div className="flex min-h-screen">
 			<div className="flex w-full flex-1 flex-col items-center justify-center p-0 md:py-4">
-				<h1 className="mb-2">
-					<AppHeaderWithLogo
-						fontSize="text-4xl"
-						imageHeight="10"
-						imageWidth="10"
-						margin="2"
-					/>
-				</h1>
-				<p
-					className={`animate-keyboard-wave mb-2 bg-gradient-to-r from-fuchsia-300 via-white to-fuchsia-300 bg-[length:200%_auto] bg-clip-text text-center text-transparent transition-opacity duration-500 ${
-						showWelcome ? "opacity-100" : "opacity-0"
-					}`}
-				>
-					Welcome, {user?.displayName || "User"}! Swipe away.
-				</p>
+				<div className="relative mb-2">
+					{showWelcome ? (
+						<h1
+							className={`animate-keyboard-wave bg-gradient-to-r from-fuchsia-300 via-white to-fuchsia-300 bg-[length:200%_auto] bg-clip-text text-center text-2xl text-transparent transition-opacity duration-500 ${
+								showWelcome ? "opacity-100" : "opacity-0"
+							}`}
+						>
+							Welcome, {user?.displayName || "User"}! Swipe away.
+						</h1>
+					) : (
+						<h1
+							className={`animate-bounce-in transition-opacity duration-500 ${
+								!showWelcome ? "opacity-100" : "opacity-0"
+							}`}
+						>
+							<AppHeaderWithLogo
+								fontSize="text-4xl"
+								imageHeight="10"
+								imageWidth="10"
+								margin="2"
+							/>
+						</h1>
+					)}
+				</div>
 
 				<ActionToolbar
 					search={search}

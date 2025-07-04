@@ -124,10 +124,10 @@ export function ListingCard({
 					drag="x"
 					dragConstraints={{ left: 0, right: 0 }}
 					dragElastic={0.7}
-					className="mt-5 flex h-full flex-1 cursor-grab flex-col items-center justify-center active:cursor-grabbing"
+					className="mt-1 flex h-full flex-1 cursor-grab flex-col items-center justify-center active:cursor-grabbing"
 					onDragEnd={handleDragEnd}
 				>
-					<div className="pointer-events-none mx-auto flex h-[40vh] w-[300px] items-center justify-center sm:h-[40vh] sm:w-[400px] md:h-[45vh] md:w-[500px] lg:h-[50vh] lg:w-[600px]">
+					<div className="pointer-events-none mx-auto flex h-[35vh] w-[300px] items-center justify-center sm:h-[40vh] sm:w-[400px] md:h-[45vh] md:w-[500px] lg:h-[50vh] lg:w-[600px]">
 						<img
 							src={displayImageUrl}
 							alt="eBay product"
