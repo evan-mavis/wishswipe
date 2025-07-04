@@ -57,7 +57,10 @@ export function WishlistCardContent({
 					initial={{ opacity: 0, height: 0 }}
 					animate={{ opacity: 1, height: "auto" }}
 					exit={{ opacity: 0, height: 0 }}
-					transition={{ duration: 0.4, ease: "easeInOut" }}
+					transition={{
+						duration: isMobile ? 0.2 : 0.4,
+						ease: "easeInOut",
+					}}
 					className="overflow-hidden"
 				>
 					<CardContent>

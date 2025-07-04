@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { useIsMobile } from "@/hooks/use-mobile";
 import type { WishlistItem } from "@/types/wishlist";
 
 interface WishlistItemsContainerProps {
@@ -14,6 +15,8 @@ export function WishlistItemsContainer({
 	searchQuery,
 	children,
 }: WishlistItemsContainerProps) {
+	const isMobile = useIsMobile();
+
 	return (
 		<>
 			{searchQuery && (
@@ -23,7 +26,8 @@ export function WishlistItemsContainer({
 			)}
 			<div
 				className={cn(
-					"min-h-[200px]", // Minimum height to prevent dramatic resizing
+					isMobile ? "min-h-[300px]" : "min-h-[200px]", // Slightly larger min-height on mobile
+					"w-full", // Ensure consistent width
 					filteredItems.length === 0 &&
 						searchQuery &&
 						"flex items-center justify-center"

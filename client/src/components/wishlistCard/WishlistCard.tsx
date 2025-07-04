@@ -175,17 +175,22 @@ export function WishlistCard({
 	return (
 		<>
 			<motion.div
-				layout
+				layout={!isMobile || !searchQuery} // Disable layout animation on mobile when searching
 				animate={{
 					width: isExpanded
 						? isMobile
 							? "100%"
 							: "calc(100% - 2rem)"
-						: "300px",
+						: isMobile
+							? "100%" // Keep full width on mobile even when collapsed
+							: "300px",
 					position: isExpanded ? "relative" : "static",
 					zIndex: isExpanded ? 50 : 0,
 				}}
-				transition={{ duration: 0.5, ease: "easeInOut" }}
+				transition={{
+					duration: isMobile ? (searchQuery ? 0.1 : 0.2) : 0.5,
+					ease: "easeInOut",
+				}}
 			>
 				<div className="relative">
 					{/* Favorite Icon - only shown when wishlist is favorite */}
