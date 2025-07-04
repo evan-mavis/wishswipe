@@ -28,8 +28,9 @@ export async function searchEbayItems(
   if (options.minPrice || options.maxPrice) {
     let priceFilter = "";
     // If max price is 200, ignore it and only use min price
-    const effectiveMaxPrice = options.maxPrice === 200 ? undefined : options.maxPrice;
-    
+    const effectiveMaxPrice =
+      options.maxPrice === 200 ? undefined : options.maxPrice;
+
     if (options.minPrice !== undefined && effectiveMaxPrice !== undefined) {
       priceFilter = `price:[${options.minPrice}..${effectiveMaxPrice}],priceCurrency:USD`;
     } else if (options.minPrice !== undefined) {
@@ -45,6 +46,13 @@ export async function searchEbayItems(
     params.append("filter", filters.join(","));
   }
 
+  // Log the request URL for debugging
+  console.log(
+    `eBay API Request: ${
+      process.env.EBAY_BASE_URL
+    }/buy/browse/v1/item_summary/search?${params.toString()}`
+  );
+
   const response = await axios.get(
     `${
       process.env.EBAY_BASE_URL
@@ -56,6 +64,20 @@ export async function searchEbayItems(
       },
     }
   );
+
+  if (response.data && response.data.errors) {
+    console.error(
+      "eBay API errors:",
+      JSON.stringify(response.data.errors, null, 2)
+    );
+  }
+
+  if (response.data && response.data.warnings) {
+    console.warn(
+      "eBay API warnings:",
+      JSON.stringify(response.data.warnings, null, 2)
+    );
+  }
 
   return response.data;
 }
