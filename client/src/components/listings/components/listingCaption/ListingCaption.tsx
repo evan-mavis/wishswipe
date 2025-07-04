@@ -12,7 +12,7 @@ export function ListingCaption({ isActive, listing }: ListingCaptionProps) {
 	}
 
 	return (
-		<div className="mb-1 flex justify-center sm:mb-2">
+		<div className="bg-background mb-1 flex justify-center sm:mb-2">
 			<div
 				className={`relative mt-1 inline-block p-2 transition-all duration-300 sm:mt-2 sm:p-3 md:p-4 ${
 					isActive ? "animate-bounce-in translate-x-0 opacity-100" : "opacity-0"

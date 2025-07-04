@@ -141,7 +141,10 @@
 	}
 
 	main {
-		background-image: radial-gradient(#c289e3 1px, transparent 1px);
+		background-image: radial-gradient(
+			oklch(0.833 0.145 321.434) 1px,
+			transparent 1px
+		);
 		background-size: 40px 40px;
 		background-attachment: fixed;
 	}
