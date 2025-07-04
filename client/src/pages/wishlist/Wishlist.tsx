@@ -122,7 +122,13 @@ export function Wishlist() {
 				isFavorite: false,
 			});
 
-			setWishlists((prev) => [...prev, newWishlist]);
+			// Ensure the new wishlist has an items array
+			const wishlistWithItems = {
+				...newWishlist,
+				items: newWishlist.items || [],
+			};
+
+			setWishlists((prev) => [...prev, wishlistWithItems]);
 		} catch (err) {
 			console.error("Error creating wishlist:", err);
 			setError("Failed to create wishlist");
@@ -202,7 +208,7 @@ export function Wishlist() {
 	return (
 		<>
 			<div className="container mx-auto p-8">
-				<div className="mb-8 flex items-center justify-between">
+				<div className="mt-5 mr-1 mb-8 ml-1 flex items-center justify-between">
 					<WishlistHeader />
 					{renderWishlistActions()}
 				</div>

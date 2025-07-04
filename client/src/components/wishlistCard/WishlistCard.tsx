@@ -54,7 +54,7 @@ export function WishlistCard({
 }: WishlistCardProps) {
 	const isMobile = useIsMobile();
 	const [isExpanded, setIsExpanded] = useState(false);
-	const [items, setItems] = useState(initialItems);
+	const [items, setItems] = useState(initialItems || []);
 	const [itemToDelete, setItemToDelete] = useState<string | null>(null);
 	const [listingReorderMode, setListingReorderMode] = useState(false);
 	const [showEditDialog, setShowEditDialog] = useState(false);
@@ -62,7 +62,7 @@ export function WishlistCard({
 
 	// Filter items based on search query
 	const filteredItems = useMemo(() => {
-		if (!searchQuery.trim()) return items;
+		if (!items || !searchQuery.trim()) return items || [];
 		return items.filter((item) =>
 			item.title?.toLowerCase().includes(searchQuery.toLowerCase().trim())
 		);
@@ -70,7 +70,10 @@ export function WishlistCard({
 
 	// Disable reorder mode when searching or on mobile
 	const canReorder =
-		!isMobile && !searchQuery.trim() && filteredItems.length === items.length;
+		!isMobile &&
+		!searchQuery.trim() &&
+		items &&
+		filteredItems.length === items.length;
 
 	const handleClick = () => {
 		if (deleteMode) {
@@ -134,13 +137,13 @@ export function WishlistCard({
 		} catch (error) {
 			console.error("Error reordering wishlist items:", error);
 			// Revert to original order on error
-			setItems(initialItems);
+			setItems(initialItems || []);
 			setListingReorderMode(false);
 		}
 	};
 
 	const handleListingReorderCancel = () => {
-		setItems(initialItems);
+		setItems(initialItems || []);
 		setListingReorderMode(false);
 	};
 

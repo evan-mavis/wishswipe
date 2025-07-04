@@ -65,19 +65,23 @@ export function WishlistCardContent({
 				>
 					<CardContent>
 						{/* Search Bar */}
-						{!deleteMode && !reorderMode && isExpanded && items.length > 3 && (
-							<WishlistSearchBar
-								searchQuery={searchQuery}
-								onSearchChange={onSearchChange}
-								onClearSearch={onClearSearch}
-							/>
-						)}
+						{!deleteMode &&
+							!reorderMode &&
+							isExpanded &&
+							items &&
+							items.length > 3 && (
+								<WishlistSearchBar
+									searchQuery={searchQuery}
+									onSearchChange={onSearchChange}
+									onClearSearch={onClearSearch}
+								/>
+							)}
 
 						{/* Items Container */}
 						{!deleteMode && !reorderMode && isExpanded && (
 							<WishlistItemsContainer
 								filteredItems={filteredItems}
-								totalItems={items.length}
+								totalItems={items ? items.length : 0}
 								searchQuery={searchQuery}
 							>
 								<WishlistItemsList
