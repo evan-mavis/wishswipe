@@ -102,7 +102,7 @@ export function FilterMenus({
 						<Slider
 							min={0}
 							max={200}
-							step={5}
+							step={1} // Changed from 5 to 1 for more granular control
 							value={priceRange}
 							onValueChange={(vals: number[]) => {
 								const newRange: [number, number] = [
@@ -123,6 +123,45 @@ export function FilterMenus({
 								${priceRange[1]}
 								{priceRange[1] === 200 ? "+" : ""}
 							</span>
+						</div>
+						{/* Add quick price preset buttons for common low price ranges */}
+						<div className="mt-3 flex flex-wrap gap-1">
+							<button
+								onClick={() => {
+									setPriceRange([0, 10]);
+									setFilters({ ...filters, minPrice: 0, maxPrice: 10 });
+								}}
+								className="rounded bg-fuchsia-500 px-2 py-1 text-xs hover:bg-fuchsia-500/50"
+							>
+								Under $10
+							</button>
+							<button
+								onClick={() => {
+									setPriceRange([0, 25]);
+									setFilters({ ...filters, minPrice: 0, maxPrice: 25 });
+								}}
+								className="rounded bg-fuchsia-500 px-2 py-1 text-xs hover:bg-fuchsia-500/50"
+							>
+								Under $25
+							</button>
+							<button
+								onClick={() => {
+									setPriceRange([0, 50]);
+									setFilters({ ...filters, minPrice: 0, maxPrice: 50 });
+								}}
+								className="rounded bg-fuchsia-500 px-2 py-1 text-xs hover:bg-fuchsia-500/50"
+							>
+								Under $50
+							</button>
+							<button
+								onClick={() => {
+									setPriceRange([10, 30]);
+									setFilters({ ...filters, minPrice: 10, maxPrice: 30 });
+								}}
+								className="rounded bg-fuchsia-500 px-2 py-1 text-xs hover:bg-fuchsia-500/50"
+							>
+								$10-$30
+							</button>
 						</div>
 					</div>
 				</MenubarContent>
