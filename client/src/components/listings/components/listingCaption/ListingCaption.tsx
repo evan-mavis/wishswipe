@@ -21,7 +21,7 @@ export function ListingCaption({ isActive, listing }: ListingCaptionProps) {
 				<div className="absolute -inset-3.5">
 					<CornersFrame />
 				</div>
-				<h3 className="text-sm leading-tight font-semibold break-words sm:text-base md:text-lg">
+				<h3 className="md:text-md text-sm leading-tight font-semibold break-words sm:text-base">
 					{listing.title}
 				</h3>
 				<p className="text-xs text-gray-500 sm:text-sm">

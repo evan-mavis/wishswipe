@@ -122,7 +122,7 @@ export function ActionToolbar({
 
 	return (
 		<div
-			className={`bg-background relative flex w-full max-w-xl flex-col items-stretch rounded-xl border-2 border-fuchsia-400 transition-colors duration-200 sm:max-w-lg md:max-w-2xl lg:max-w-2xl xl:max-w-2xl 2xl:max-w-3xl`}
+			className={`bg-background relative z-10 flex w-full max-w-xl flex-col items-stretch rounded-xl border-2 border-fuchsia-400 transition-colors duration-200 sm:max-w-lg md:max-w-2xl lg:max-w-2xl xl:max-w-2xl 2xl:max-w-3xl`}
 		>
 			{!isMobile && (
 				<FilterBadges

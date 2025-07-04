@@ -1,6 +1,4 @@
-import { ArrowDownToLine, Trash2 } from "lucide-react";
 import { ListingCard } from "./components/listingCard/ListingCard";
-import { Progress } from "../ui/progress";
 import { useState, useEffect, useCallback, useMemo } from "react";
 import type { Listing } from "../../types/listing";
 import { AnimatePresence } from "framer-motion";
@@ -18,6 +16,8 @@ interface ListingsProps {
 	};
 	selectedWishlistId?: string;
 	undoRef?: { current: (() => void) | null }; // Use object with current property
+	onProgressChange?: (progress: number) => void;
+	onCurrentListingChange?: (listing: Listing | null) => void;
 }
 
 export function Listings({
@@ -25,14 +25,15 @@ export function Listings({
 	filters = {},
 	selectedWishlistId,
 	undoRef,
+	onProgressChange,
+	onCurrentListingChange,
 }: ListingsProps) {
 	const [listings, setListings] = useState<Listing[]>([]);
-	const [progress, setProgress] = useState(50);
 	const [isLoading, setIsLoading] = useState(false);
 	const [dismissedItems, setDismissedItems] = useState<Listing[]>([]);
 
 	const handleProgressChange = (progress: number) => {
-		setProgress(progress);
+		onProgressChange?.(progress);
 	};
 
 	const handleItemDismissed = useCallback((dismissedItem: Listing) => {
@@ -66,6 +67,15 @@ export function Listings({
 			undoRef.current = handleUndo;
 		}
 	}, [undoRef, handleUndo]);
+
+	// Update current listing when listings change
+	useEffect(() => {
+		if (listings.length > 0) {
+			onCurrentListingChange?.(listings[0]);
+		} else {
+			onCurrentListingChange?.(null);
+		}
+	}, [listings, onCurrentListingChange]);
 
 	const fetchListingsWithQuery = useCallback(
 		async (query: string) => {
@@ -109,49 +119,27 @@ export function Listings({
 	}, [cleanup]);
 
 	return (
-		<div className="flex h-full max-h-[calc(100vh-180px)] w-full flex-col">
-			<div className="grid w-full flex-1 place-items-center overflow-hidden pb-2">
+		<div className="flex h-full w-full flex-col">
+			<div className="grid w-full flex-1 place-items-center">
 				{isLoading ? (
 					<DemoListing text="Searching eBay..." />
 				) : listings.length > 0 ? (
-					<div className="relative h-full w-full">
-						<AnimatePresence mode="popLayout">
-							{listings.map((listing, index) => (
-								<ListingCard
-									key={`${listing.itemId}-${index}`}
-									listing={listing}
-									setListings={setListings}
-									onItemDismissed={handleItemDismissed}
-									onProgressChange={handleProgressChange}
-									index={index}
-									selectedWishlistId={selectedWishlistId}
-								/>
-							))}
-						</AnimatePresence>
-					</div>
+					<AnimatePresence mode="popLayout">
+						{listings.map((listing, index) => (
+							<ListingCard
+								key={`${listing.itemId}-${index}`}
+								listing={listing}
+								setListings={setListings}
+								onItemDismissed={handleItemDismissed}
+								onProgressChange={handleProgressChange}
+								index={index}
+								selectedWishlistId={selectedWishlistId}
+							/>
+						))}
+					</AnimatePresence>
 				) : (
 					<DemoListing text="No listings found. Try a different search!" />
 				)}
-			</div>
-			<div className="mx-auto flex w-full max-w-[600px] items-center justify-center px-4 py-4">
-				<Trash2
-					size={32}
-					className={`mr-4 transition-all duration-300 ${
-						progress < 5 ? "scale-150 text-red-500" : ""
-					}`}
-				/>
-				<div className="flex-1">
-					<Progress
-						value={progress}
-						className="bg-gray-200 [&>div]:bg-fuchsia-400"
-					/>
-				</div>
-				<ArrowDownToLine
-					size={32}
-					className={`ml-4 transition-all duration-300 ${
-						progress > 95 ? "scale-150 text-green-500" : ""
-					}`}
-				/>
 			</div>
 		</div>
 	);

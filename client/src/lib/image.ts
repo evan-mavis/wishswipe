@@ -1,10 +1,13 @@
 /**
  * Transforms eBay image URLs to request higher quality versions
  * @param imageUrl - The original eBay image URL
- * @param size - The desired image size (default: 450)
+ * @param size - The desired image size (default: 400)
  * @returns Enhanced URL for higher quality image
  */
-export function getLargerImageUrl(imageUrl: string | undefined, size: number = 450): string {
+export function getLargerImageUrl(
+	imageUrl: string | undefined,
+	size: number = 400
+): string {
 	if (!imageUrl) return "";
 
 	// eBay image URLs typically have size parameters like s-l225, s-l300, etc.

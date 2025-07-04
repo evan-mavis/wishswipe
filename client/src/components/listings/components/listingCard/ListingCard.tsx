@@ -1,7 +1,6 @@
 import type { Dispatch, SetStateAction } from "react";
 import { useState, useEffect } from "react";
 import type { Listing } from "../../../../types/listing";
-import { ListingCaption } from "../listingCaption/ListingCaption";
 import * as wishlistService from "../../../../services/wishlistService";
 import {
 	AnimatePresence,
@@ -111,8 +110,6 @@ export function ListingCard({
 			{index === 0 && (
 				<motion.div
 					style={{
-						gridRow: 1,
-						gridColumn: 1,
 						x,
 						rotate,
 						opacity,
@@ -124,20 +121,17 @@ export function ListingCard({
 					drag="x"
 					dragConstraints={{ left: 0, right: 0 }}
 					dragElastic={0.7}
-					className="mt-1 flex h-full flex-1 cursor-grab flex-col items-center justify-center active:cursor-grabbing"
+					className="relative flex h-full w-full cursor-grab items-center justify-center active:cursor-grabbing"
 					onDragEnd={handleDragEnd}
 				>
-					<div className="pointer-events-none mx-auto flex h-[35vh] w-[300px] items-center justify-center sm:h-[40vh] sm:w-[400px] md:h-[45vh] md:w-[500px] lg:h-[50vh] lg:w-[600px]">
+					<div className="pointer-events-none mx-auto flex w-full items-center justify-center px-4">
 						<img
 							src={displayImageUrl}
 							alt="eBay product"
-							className="pointer-events-none h-auto max-h-full w-auto max-w-full rounded-4xl object-contain"
+							className="pointer-events-none h-auto max-h-[60vh] w-auto max-w-full rounded-4xl object-contain"
 							loading="lazy"
 							draggable="false"
 						/>
-					</div>
-					<div className="mt-2 sm:mt-4">
-						<ListingCaption isActive={true} listing={listing} />
 					</div>
 				</motion.div>
 			)}
