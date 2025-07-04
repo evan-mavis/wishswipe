@@ -12,13 +12,15 @@ export function ListingCaption({ isActive, listing }: ListingCaptionProps) {
 	}
 
 	return (
-		<div className="bg-background mb-1 flex justify-center sm:mb-2">
+		<div className="relative mb-1 flex justify-center sm:mb-2">
 			<div
-				className={`relative mt-1 inline-block p-2 transition-all duration-300 sm:mt-2 sm:p-3 md:p-4 ${
+				className={`bg-muted relative mt-1 inline-block p-2 transition-all duration-300 sm:mt-2 sm:p-3 md:p-4 ${
 					isActive ? "animate-bounce-in translate-x-0 opacity-100" : "opacity-0"
 				} max-w-[280px] ease-out sm:max-w-full`}
 			>
-				<CornersFrame />
+				<div className="absolute -inset-3.5">
+					<CornersFrame />
+				</div>
 				<h3 className="truncate text-sm font-semibold sm:text-base md:text-lg">
 					{listing.title}
 				</h3>
