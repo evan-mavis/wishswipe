@@ -14,19 +14,35 @@ export async function searchEbayItems(
   params.append("offset", "0");
 
   if (options.category) params.append("category_ids", options.category);
-  if (options.condition)
-    params.append("filter", `conditionIds:{${options.condition}}`);
+
+  // Build filters array and combine them
+  const filters: string[] = [];
+
+  if (options.condition) {
+    const conditionIds = mapCondition(options.condition);
+    if (conditionIds) {
+      filters.push(`conditionIds:{${conditionIds}}`);
+    }
+  }
 
   if (options.minPrice || options.maxPrice) {
     let priceFilter = "";
-    if (options.minPrice !== undefined && options.maxPrice !== undefined) {
-      priceFilter = `price:[${options.minPrice}..${options.maxPrice}]`;
+    // If max price is 200, ignore it and only use min price
+    const effectiveMaxPrice = options.maxPrice === 200 ? undefined : options.maxPrice;
+    
+    if (options.minPrice !== undefined && effectiveMaxPrice !== undefined) {
+      priceFilter = `price:[${options.minPrice}..${effectiveMaxPrice}],priceCurrency:USD`;
     } else if (options.minPrice !== undefined) {
-      priceFilter = `price:[${options.minPrice}..]`;
-    } else if (options.maxPrice !== undefined) {
-      priceFilter = `price:[..${options.maxPrice}]`;
+      priceFilter = `price:[${options.minPrice}..],priceCurrency:USD`;
+    } else if (effectiveMaxPrice !== undefined) {
+      priceFilter = `price:[..${effectiveMaxPrice}],priceCurrency:USD`;
     }
-    if (priceFilter) params.append("filter", priceFilter);
+    if (priceFilter) filters.push(priceFilter);
+  }
+
+  // Combine all filters into a single filter parameter
+  if (filters.length > 0) {
+    params.append("filter", filters.join(","));
   }
 
   const response = await axios.get(
@@ -42,4 +58,17 @@ export async function searchEbayItems(
   );
 
   return response.data;
+}
+
+function mapCondition(conditionId: string): string {
+  switch (conditionId) {
+    case "new":
+      return "1000|1500|1750"; // New, New other, New with defects
+    case "used":
+      return "2750|3000|4000|5000|6000"; // Like New, Used, Very Good, Good, Acceptable
+    case "refurbished":
+      return "2000|2500"; // Certified Refurbished, Seller Refurbished (using more common ones)
+    default:
+      return "";
+  }
 }

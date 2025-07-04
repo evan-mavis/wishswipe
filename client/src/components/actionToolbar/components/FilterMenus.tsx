@@ -36,7 +36,7 @@ export function FilterMenus({
 	setPriceRange,
 }: FilterMenusProps) {
 	return (
-		<Menubar className="flex min-w-0 flex-1 items-center rounded-b-xl border-none bg-transparent align-middle text-base shadow-none gap-0 md:gap-1">
+		<Menubar className="flex min-w-0 flex-1 items-center gap-0 rounded-b-xl border-none bg-transparent align-middle text-base shadow-none md:gap-1">
 			<MenubarMenu>
 				<MenubarTrigger>
 					{isMobile ? <Check size={18} /> : "Condition"}
@@ -48,9 +48,9 @@ export function FilterMenus({
 							setFilters({ ...filters, condition: value })
 						}
 					>
-						<MenubarRadioItem value="1000">New</MenubarRadioItem>
-						<MenubarRadioItem value="2000">Used</MenubarRadioItem>
-						<MenubarRadioItem value="4000">Refurbished</MenubarRadioItem>
+						<MenubarRadioItem value="new">New</MenubarRadioItem>
+						<MenubarRadioItem value="used">Used</MenubarRadioItem>
+						<MenubarRadioItem value="refurbished">Refurbished</MenubarRadioItem>
 					</MenubarRadioGroup>
 				</MenubarContent>
 			</MenubarMenu>

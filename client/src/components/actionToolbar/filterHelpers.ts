@@ -7,11 +7,11 @@ interface Filters {
 
 export const getConditionDisplayName = (conditionId?: string) => {
 	switch (conditionId) {
-		case "1000":
+		case "new":
 			return "New";
-		case "2000":
+		case "used":
 			return "Used";
-		case "4000":
+		case "refurbished":
 			return "Refurbished";
 		default:
 			return "";
@@ -54,12 +54,15 @@ export const getCategoryDisplayName = (categoryId?: string) => {
 };
 
 export const getPriceDisplayName = (filters: Filters) => {
-	if (filters.minPrice && filters.maxPrice) {
-		return `$${filters.minPrice}-$${filters.maxPrice}`;
+	// Treat maxPrice of 200 as "no upper limit"
+	const effectiveMaxPrice = filters.maxPrice === 200 ? undefined : filters.maxPrice;
+	
+	if (filters.minPrice && effectiveMaxPrice) {
+		return `$${filters.minPrice}-$${effectiveMaxPrice}`;
 	} else if (filters.minPrice) {
 		return `$${filters.minPrice}+`;
-	} else if (filters.maxPrice) {
-		return `Up to $${filters.maxPrice}`;
+	} else if (effectiveMaxPrice) {
+		return `Up to $${effectiveMaxPrice}`;
 	}
 	return "";
 };
