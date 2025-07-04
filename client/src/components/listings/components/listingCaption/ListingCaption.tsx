@@ -14,7 +14,7 @@ export function ListingCaption({ isActive, listing }: ListingCaptionProps) {
 	return (
 		<div className="relative mb-1 flex justify-center sm:mb-2">
 			<div
-				className={`bg-muted relative mt-1 inline-block p-2 transition-all duration-300 sm:mt-2 sm:p-3 md:p-4 ${
+				className={`bg-card relative mt-1 inline-block p-2 transition-all duration-300 sm:mt-2 sm:p-3 md:p-4 ${
 					isActive ? "animate-bounce-in translate-x-0 opacity-100" : "opacity-0"
 				} max-w-[280px] ease-out sm:max-w-full`}
 			>
