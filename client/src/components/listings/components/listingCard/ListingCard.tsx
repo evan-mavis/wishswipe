@@ -48,7 +48,7 @@ export function ListingCard({
 		onProgressChange?.(Math.min(Math.max(progress, 0), 100));
 	});
 
-	const rotate = useTransform(x, [-DRAG_THRESHOLD, DRAG_THRESHOLD], [-15, 15]);
+	const rotate = useTransform(x, [-DRAG_THRESHOLD, DRAG_THRESHOLD], [-27, 27]);
 	const opacity = useTransform(
 		x,
 		[-DRAG_THRESHOLD, 0, DRAG_THRESHOLD],
