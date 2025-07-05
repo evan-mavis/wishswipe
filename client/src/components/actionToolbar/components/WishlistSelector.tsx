@@ -12,13 +12,21 @@ import * as wishlistService from "@/services/wishlistService";
 interface WishlistSelectorProps {
 	value: string;
 	onChange: (value: string) => void;
+	onWishlistCountChange?: (count: number) => void;
+	onLoadingChange?: (loading: boolean) => void;
 }
 
-export function WishlistSelector({ value, onChange }: WishlistSelectorProps) {
+export function WishlistSelector({
+	value,
+	onChange,
+	onWishlistCountChange,
+	onLoadingChange,
+}: WishlistSelectorProps) {
 	const [wishlists, setWishlists] = useState<wishlistService.WishlistOption[]>(
 		[]
 	);
 	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState(false);
 	const [hasSetDefault, setHasSetDefault] = useState(false);
 
 	useEffect(() => {
@@ -26,14 +34,20 @@ export function WishlistSelector({ value, onChange }: WishlistSelectorProps) {
 			try {
 				const options = await wishlistService.fetchWishlistOptions();
 				setWishlists(options);
+				setError(false);
+				onWishlistCountChange?.(options.length);
 			} catch (error) {
 				console.error("Error fetching wishlists:", error);
+				setError(true);
+				onWishlistCountChange?.(0);
 			} finally {
 				setLoading(false);
+				onLoadingChange?.(false);
 			}
 		};
 
 		fetchWishlists();
+		onLoadingChange?.(true);
 	}, []); // Only run once on mount
 
 	// Separate effect to handle default selection
@@ -62,13 +76,22 @@ export function WishlistSelector({ value, onChange }: WishlistSelectorProps) {
 				</SelectTrigger>
 				<SelectContent>
 					{wishlists.map((wishlist) => (
-						<SelectItem key={wishlist.id} value={wishlist.id} className="text-xs">
+						<SelectItem
+							key={wishlist.id}
+							value={wishlist.id}
+							className="text-xs"
+						>
 							{wishlist.name}
 						</SelectItem>
 					))}
-					{wishlists.length === 0 && !loading && (
-						<SelectItem value="" disabled className="text-xs">
+					{wishlists.length === 0 && !loading && !error && (
+						<SelectItem value="no-wishlists" disabled className="text-xs">
 							No wishlists found
+						</SelectItem>
+					)}
+					{error && (
+						<SelectItem value="error" disabled className="text-xs">
+							Failed to load wishlists
 						</SelectItem>
 					)}
 				</SelectContent>

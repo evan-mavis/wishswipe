@@ -2,7 +2,7 @@ import { ListingCard } from "./components/listingCard/ListingCard";
 import { useState, useEffect, useCallback, useMemo } from "react";
 import type { Listing } from "../../types/listing";
 import { AnimatePresence } from "framer-motion";
-import { DemoListing } from "@/components/demoListing/DemoListing";
+import { PlaceholderListing } from "@/components/placeholderListing/PlaceholderListing";
 import { fetchListings } from "@/services/listingsService";
 import { debounceSearch } from "@/lib/debounce";
 
@@ -136,7 +136,7 @@ export function Listings({
 		<div className="flex h-full w-full flex-col">
 			<div className="grid w-full flex-1 place-items-center">
 				{isLoading ? (
-					<DemoListing text="Searching eBay..." />
+					<PlaceholderListing text="Searching eBay..." />
 				) : listings.length > 0 ? (
 					<AnimatePresence mode="popLayout">
 						{listings.map((listing, index) => (
@@ -152,7 +152,7 @@ export function Listings({
 						))}
 					</AnimatePresence>
 				) : (
-					<DemoListing text="No listings found. Try a different search!" />
+					<PlaceholderListing text="No listings found. Try a different search!" />
 				)}
 			</div>
 		</div>

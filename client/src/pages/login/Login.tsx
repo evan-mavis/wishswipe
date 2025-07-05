@@ -1,6 +1,6 @@
 import { AppHeaderWithLogo } from "@/components/appHeader/AppHeaderWithLogo";
 import { LoginForm } from "@/components/loginForm/LoginForm";
-import { DemoListing } from "@/components/demoListing/DemoListing";
+import { PlaceholderListing } from "@/components/placeholderListing/PlaceholderListing";
 import { motion } from "framer-motion";
 
 function Login() {
@@ -21,7 +21,7 @@ function Login() {
 				<div className="h-[60px]" /> {/* Spacer for header */}
 				<div className="flex flex-1 items-center">
 					<div className="flex w-[400px] flex-col items-center">
-						<DemoListing />
+						<PlaceholderListing />
 						<p className="text-muted-foreground mt-8 text-center text-lg">
 							A swipe-based app for discovering and saving eBay items. Swipe
 							right to wishlist, left to dismiss.

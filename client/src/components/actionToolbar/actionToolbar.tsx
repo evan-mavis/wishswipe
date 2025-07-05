@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { FilterBadges } from "./components/FilterBadges";
 import { SearchInput } from "./components/SearchInput";
@@ -26,6 +26,8 @@ interface SearchAndFilterToolbarProps {
 	onWishlistChange?: (wishlistId: string) => void;
 	onUndo?: () => void;
 	undoCount?: number;
+	onWishlistCountChange?: (count: number) => void;
+	onWishlistsLoadingChange?: (loading: boolean) => void;
 }
 
 export function ActionToolbar({
@@ -37,6 +39,8 @@ export function ActionToolbar({
 	onWishlistChange,
 	onUndo,
 	undoCount = 0,
+	onWishlistCountChange,
+	onWishlistsLoadingChange,
 }: SearchAndFilterToolbarProps) {
 	const isMobile = useIsMobile();
 	const [priceRange, setPriceRange] = useState<[number, number]>([10, 75]);
@@ -50,7 +54,16 @@ export function ActionToolbar({
 
 	// Use external state if provided, otherwise use internal state
 	const selectedWishlist = externalSelectedWishlist ?? internalSelectedWishlist;
-	const setSelectedWishlist = onWishlistChange ?? setInternalSelectedWishlist;
+	const setSelectedWishlist = useCallback(
+		(value: string) => {
+			if (onWishlistChange) {
+				onWishlistChange(value);
+			} else {
+				setInternalSelectedWishlist(value);
+			}
+		},
+		[onWishlistChange]
+	);
 
 	useEffect(() => {
 		setInputValue(search);
@@ -144,6 +157,8 @@ export function ActionToolbar({
 				<WishlistSelector
 					value={selectedWishlist}
 					onChange={setSelectedWishlist}
+					onWishlistCountChange={onWishlistCountChange}
+					onLoadingChange={onWishlistsLoadingChange}
 				/>
 
 				<div className="flex min-w-0 flex-1 flex-wrap items-center">

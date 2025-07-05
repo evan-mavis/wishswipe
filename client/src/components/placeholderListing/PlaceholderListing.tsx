@@ -34,11 +34,17 @@ function WaveText({ text }: { text: string }) {
 	);
 }
 
-interface DemoListingProps {
+interface PlaceholderListingProps {
 	text?: string;
+	actionButton?: React.ReactNode;
+	showArrows?: boolean;
 }
 
-export function DemoListing({ text }: DemoListingProps) {
+export function PlaceholderListing({
+	text,
+	actionButton,
+	showArrows = true,
+}: PlaceholderListingProps) {
 	const [currentLangIndex, setCurrentLangIndex] = useState(0);
 	const languages = Object.values(translations);
 	const x = useMotionValue(0);
@@ -74,9 +80,14 @@ export function DemoListing({ text }: DemoListingProps) {
 			onDragEnd={handleDragEnd}
 		>
 			<div className="bg-card border-border flex h-[400px] w-[400px] items-center justify-between rounded-xl border px-12">
-				<MoveLeft size={32} className="text-muted-foreground" />
-				<WaveText text={text || languages[currentLangIndex]} />
-				<MoveRight size={32} className="text-muted-foreground" />
+				{showArrows && <MoveLeft size={32} className="text-muted-foreground" />}
+				<div className="flex flex-col items-center justify-center">
+					<WaveText text={text || languages[currentLangIndex]} />
+					{actionButton && <div className="mt-4">{actionButton}</div>}
+				</div>
+				{showArrows && (
+					<MoveRight size={32} className="text-muted-foreground" />
+				)}
 			</div>
 		</motion.div>
 	);
