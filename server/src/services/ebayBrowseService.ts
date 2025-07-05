@@ -13,7 +13,9 @@ export async function searchEbayItems(
   params.append("limit", "50");
   params.append("offset", "0");
 
-  if (options.category) params.append("category_ids", options.category);
+  if (options.category && options.category !== "none") {
+    params.append("category_ids", options.category);
+  }
 
   // Build filters array and combine them
   const filters: string[] = [];
@@ -45,13 +47,6 @@ export async function searchEbayItems(
   if (filters.length > 0) {
     params.append("filter", filters.join(","));
   }
-
-  // Log the request URL for debugging
-  console.log(
-    `eBay API Request: ${
-      process.env.EBAY_BASE_URL
-    }/buy/browse/v1/item_summary/search?${params.toString()}`
-  );
 
   const response = await axios.get(
     `${
