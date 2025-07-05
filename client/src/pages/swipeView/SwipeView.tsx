@@ -9,6 +9,7 @@ import { Progress } from "@/components/ui/progress";
 import { ArrowDownToLine, Trash2 } from "lucide-react";
 import type { Listing } from "@/types/listing";
 import { Link } from "react-router-dom";
+import { preferencesService } from "@/services/preferencesService";
 
 export function SwipeView() {
 	const { user } = useAuth();
@@ -30,6 +31,39 @@ export function SwipeView() {
 	const undoRef = useRef<(() => void) | null>(null);
 	// Create ref for undo count
 	const undoCountRef = useRef<number>(0);
+
+	// Load user preferences on mount
+	useEffect(() => {
+		const preferences = preferencesService.loadPreferences();
+		if (preferences.defaultSearchTerm) {
+			setSearch(preferences.defaultSearchTerm);
+		}
+
+		// Only apply filters if they differ from defaults
+		const defaultPriceRange = [10, 75];
+		const hasCustomCondition =
+			preferences.defaultCondition && preferences.defaultCondition !== "none";
+		const hasCustomCategory =
+			preferences.defaultCategory && preferences.defaultCategory !== "none";
+		const hasCustomPriceRange =
+			preferences.defaultPriceRange[0] !== defaultPriceRange[0] ||
+			preferences.defaultPriceRange[1] !== defaultPriceRange[1];
+
+		if (hasCustomCondition || hasCustomCategory || hasCustomPriceRange) {
+			setFilters({
+				condition: hasCustomCondition
+					? preferences.defaultCondition
+					: undefined,
+				category: hasCustomCategory ? preferences.defaultCategory : undefined,
+				minPrice: hasCustomPriceRange
+					? preferences.defaultPriceRange[0]
+					: undefined,
+				maxPrice: hasCustomPriceRange
+					? preferences.defaultPriceRange[1]
+					: undefined,
+			});
+		}
+	}, []);
 
 	useEffect(() => {
 		const timer = setTimeout(() => {

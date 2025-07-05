@@ -7,8 +7,9 @@ import {
 	MenubarRadioGroup,
 	MenubarRadioItem,
 } from "@/components/ui/menubar";
-import { Slider } from "@/components/ui/slider";
-import { Label } from "@/components/ui/label";
+import { PriceRange } from "@/components/priceRange/PriceRange";
+import { CONDITIONS } from "@/constants/conditions";
+import { CATEGORIES } from "@/constants/categories";
 
 interface FilterMenusProps {
 	isMobile: boolean;
@@ -48,9 +49,11 @@ export function FilterMenus({
 							setFilters({ ...filters, condition: value })
 						}
 					>
-						<MenubarRadioItem value="new">New</MenubarRadioItem>
-						<MenubarRadioItem value="used">Used</MenubarRadioItem>
-						<MenubarRadioItem value="refurbished">Refurbished</MenubarRadioItem>
+						{CONDITIONS.map((condition) => (
+							<MenubarRadioItem key={condition.value} value={condition.value}>
+								{condition.label}
+							</MenubarRadioItem>
+						))}
 					</MenubarRadioGroup>
 				</MenubarContent>
 			</MenubarMenu>
@@ -65,28 +68,11 @@ export function FilterMenus({
 							setFilters({ ...filters, category: value })
 						}
 					>
-						<MenubarRadioItem value="11450">
-							Clothing, Shoes & Accessories
-						</MenubarRadioItem>
-						<MenubarRadioItem value="26395">Health & Beauty</MenubarRadioItem>
-						<MenubarRadioItem value="220">Toys & Hobbies</MenubarRadioItem>
-						<MenubarRadioItem value="267">Books & Magazines</MenubarRadioItem>
-						<MenubarRadioItem value="281">Jewelry & Watches</MenubarRadioItem>
-						<MenubarRadioItem value="293">
-							Consumer Electronics
-						</MenubarRadioItem>
-						<MenubarRadioItem value="619">
-							Musical Instruments & Gear
-						</MenubarRadioItem>
-						<MenubarRadioItem value="625">Cameras & Photo</MenubarRadioItem>
-						<MenubarRadioItem value="870">Pottery & Glass</MenubarRadioItem>
-						<MenubarRadioItem value="888">Sporting Goods</MenubarRadioItem>
-						<MenubarRadioItem value="1249">
-							Video Games & Consoles
-						</MenubarRadioItem>
-						<MenubarRadioItem value="3252">Travel</MenubarRadioItem>
-						<MenubarRadioItem value="11700">Home & Garden</MenubarRadioItem>
-						<MenubarRadioItem value="99">Everything Else...</MenubarRadioItem>
+						{CATEGORIES.map((category) => (
+							<MenubarRadioItem key={category.value} value={category.value}>
+								{category.label}
+							</MenubarRadioItem>
+						))}
 					</MenubarRadioGroup>
 				</MenubarContent>
 			</MenubarMenu>
@@ -95,75 +81,14 @@ export function FilterMenus({
 					{isMobile ? <DollarSign size={18} /> : "Price"}
 				</MenubarTrigger>
 				<MenubarContent>
-					<div className="flex flex-col">
-						<Label htmlFor="priceRange" className="mb-2 text-sm text-gray-600">
-							Price Range
-						</Label>
-						<Slider
-							min={0}
-							max={200}
-							step={1} // Changed from 5 to 1 for more granular control
-							value={priceRange}
-							onValueChange={(vals: number[]) => {
-								const newRange: [number, number] = [
-									vals[0],
-									vals[1] ?? vals[0],
-								];
-								setPriceRange(newRange);
-								setFilters({
-									...filters,
-									minPrice: newRange[0],
-									maxPrice: newRange[1],
-								});
-							}}
-						/>
-						<div className="mt-2 flex justify-between text-sm text-gray-500">
-							<span>${priceRange[0]}</span>
-							<span>
-								${priceRange[1]}
-								{priceRange[1] === 200 ? "+" : ""}
-							</span>
-						</div>
-						{/* Add quick price preset buttons for common low price ranges */}
-						<div className="mt-3 flex flex-wrap gap-1">
-							<button
-								onClick={() => {
-									setPriceRange([0, 10]);
-									setFilters({ ...filters, minPrice: 0, maxPrice: 10 });
-								}}
-								className="rounded bg-fuchsia-500 px-2 py-1 text-xs hover:bg-fuchsia-500/50"
-							>
-								Under $10
-							</button>
-							<button
-								onClick={() => {
-									setPriceRange([0, 25]);
-									setFilters({ ...filters, minPrice: 0, maxPrice: 25 });
-								}}
-								className="rounded bg-fuchsia-500 px-2 py-1 text-xs hover:bg-fuchsia-500/50"
-							>
-								Under $25
-							</button>
-							<button
-								onClick={() => {
-									setPriceRange([0, 50]);
-									setFilters({ ...filters, minPrice: 0, maxPrice: 50 });
-								}}
-								className="rounded bg-fuchsia-500 px-2 py-1 text-xs hover:bg-fuchsia-500/50"
-							>
-								Under $50
-							</button>
-							<button
-								onClick={() => {
-									setPriceRange([10, 30]);
-									setFilters({ ...filters, minPrice: 10, maxPrice: 30 });
-								}}
-								className="rounded bg-fuchsia-500 px-2 py-1 text-xs hover:bg-fuchsia-500/50"
-							>
-								$10-$30
-							</button>
-						</div>
-					</div>
+					<PriceRange
+						value={priceRange}
+						onChange={setPriceRange}
+						onFiltersChange={(priceFilters) =>
+							setFilters({ ...filters, ...priceFilters })
+						}
+						variant="toolbar"
+					/>
 				</MenubarContent>
 			</MenubarMenu>
 		</Menubar>

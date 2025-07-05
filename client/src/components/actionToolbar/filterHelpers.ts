@@ -13,6 +13,7 @@ export const getConditionDisplayName = (conditionId?: string) => {
 			return "Used";
 		case "refurbished":
 			return "Refurbished";
+		case "none":
 		default:
 			return "";
 	}
@@ -48,6 +49,7 @@ export const getCategoryDisplayName = (categoryId?: string) => {
 			return "Home & Garden";
 		case "99":
 			return "Everything Else";
+		case "none":
 		default:
 			return "";
 	}
@@ -55,8 +57,9 @@ export const getCategoryDisplayName = (categoryId?: string) => {
 
 export const getPriceDisplayName = (filters: Filters) => {
 	// Treat maxPrice of 200 as "no upper limit"
-	const effectiveMaxPrice = filters.maxPrice === 200 ? undefined : filters.maxPrice;
-	
+	const effectiveMaxPrice =
+		filters.maxPrice === 200 ? undefined : filters.maxPrice;
+
 	if (filters.minPrice && effectiveMaxPrice) {
 		return `$${filters.minPrice}-$${effectiveMaxPrice}`;
 	} else if (filters.minPrice) {

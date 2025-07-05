@@ -1,0 +1,192 @@
+import { useState, useEffect } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { Save, RotateCcw } from "lucide-react";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
+import { PriceRange } from "@/components/priceRange/PriceRange";
+import { CONDITIONS } from "@/constants/conditions";
+import { CATEGORIES } from "@/constants/categories";
+import {
+	preferencesService,
+	type Preferences,
+} from "@/services/preferencesService";
+
+export function Preferences() {
+	const [preferences, setPreferences] = useState<Preferences>({
+		defaultSearchTerm: "",
+		defaultCondition: "none",
+		defaultCategory: "none",
+		defaultPriceRange: [10, 75],
+	});
+	const [isLoading, setIsLoading] = useState(false);
+
+	// Load saved preferences on component mount
+	useEffect(() => {
+		loadPreferences();
+	}, []);
+
+	const loadPreferences = () => {
+		const savedPreferences = preferencesService.loadPreferences();
+		setPreferences(savedPreferences);
+	};
+
+	const savePreferences = async () => {
+		setIsLoading(true);
+		try {
+			// Save to localStorage
+			preferencesService.savePreferences(preferences);
+
+			// TODO: Save to backend API when available
+			// await preferencesService.savePreferencesToBackend(preferences);
+
+			alert(
+				"Preferences saved! Your default search settings have been updated."
+			);
+		} catch (error) {
+			console.error("Error saving preferences:", error);
+			alert("Error saving preferences. Please try again.");
+		} finally {
+			setIsLoading(false);
+		}
+	};
+
+	const resetPreferences = () => {
+		const defaultPrefs: Preferences = {
+			defaultSearchTerm: "",
+			defaultCondition: "none",
+			defaultCategory: "none",
+			defaultPriceRange: [10, 75],
+		};
+		setPreferences(defaultPrefs);
+		alert(
+			"Preferences reset. All preferences have been reset to default values."
+		);
+	};
+
+	const updatePreference = <K extends keyof Preferences>(
+		key: K,
+		value: Preferences[K]
+	) => {
+		setPreferences((prev) => ({
+			...prev,
+			[key]: value,
+		}));
+	};
+
+	return (
+		<div className="container mx-auto max-w-4xl p-6">
+			<div className="mb-8">
+				<h1 className="text-foreground text-3xl font-bold">Preferences</h1>
+				<p className="text-muted-foreground mt-2">
+					Set your default search and filter preferences for a better swiping
+					experience.
+				</p>
+			</div>
+
+			<div className="space-y-6">
+				<Card>
+					<CardContent>
+						<div className="space-y-6">
+							<div className="space-y-2">
+								<Label htmlFor="defaultSearch">Default Search Term</Label>
+								<Input
+									id="defaultSearch"
+									placeholder="e.g., iPhone, vintage camera, gaming laptop"
+									value={preferences.defaultSearchTerm}
+									onChange={(e) =>
+										updatePreference("defaultSearchTerm", e.target.value)
+									}
+								/>
+							</div>
+
+							<div className="space-y-2">
+								<Label htmlFor="defaultCondition">Default Condition</Label>
+								<Select
+									value={preferences.defaultCondition}
+									onValueChange={(value) =>
+										updatePreference("defaultCondition", value)
+									}
+								>
+									<SelectTrigger>
+										<SelectValue placeholder="No Selection" />
+									</SelectTrigger>
+									<SelectContent>
+										{CONDITIONS.map((condition) => (
+											<SelectItem key={condition.value} value={condition.value}>
+												{condition.label}
+											</SelectItem>
+										))}
+									</SelectContent>
+								</Select>
+							</div>
+
+							<div className="space-y-2">
+								<Label htmlFor="defaultCategory">Default Category</Label>
+								<Select
+									value={preferences.defaultCategory}
+									onValueChange={(value) =>
+										updatePreference("defaultCategory", value)
+									}
+								>
+									<SelectTrigger>
+										<SelectValue placeholder="No Selection" />
+									</SelectTrigger>
+									<SelectContent>
+										{CATEGORIES.map((category) => (
+											<SelectItem key={category.value} value={category.value}>
+												{category.label}
+											</SelectItem>
+										))}
+									</SelectContent>
+								</Select>
+							</div>
+
+							<div className="space-y-2">
+								<Label htmlFor="defaultPriceRange">Default Price Range</Label>
+								<PriceRange
+									value={preferences.defaultPriceRange}
+									onChange={(value) =>
+										updatePreference("defaultPriceRange", value)
+									}
+									label=""
+									variant="preferences"
+									className="max-w-md"
+								/>
+							</div>
+						</div>
+					</CardContent>
+				</Card>
+
+				<Separator />
+
+				<div className="flex justify-end gap-4">
+					<Button
+						variant="outline"
+						onClick={resetPreferences}
+						className="flex items-center gap-2"
+					>
+						<RotateCcw size={16} />
+						Reset to Defaults
+					</Button>
+					<Button
+						onClick={savePreferences}
+						disabled={isLoading}
+						className="flex items-center gap-2"
+					>
+						<Save size={16} />
+						{isLoading ? "Saving..." : "Save Preferences"}
+					</Button>
+				</div>
+			</div>
+		</div>
+	);
+}
