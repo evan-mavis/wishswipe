@@ -16,6 +16,7 @@ interface ListingsProps {
 	};
 	selectedWishlistId?: string;
 	undoRef?: { current: (() => void) | null }; // Use object with current property
+	undoCountRef?: { current: number }; // Add ref for undo count
 	onProgressChange?: (progress: number) => void;
 	onCurrentListingChange?: (listing: Listing | null) => void;
 }
@@ -25,6 +26,7 @@ export function Listings({
 	filters = {},
 	selectedWishlistId,
 	undoRef,
+	undoCountRef,
 	onProgressChange,
 	onCurrentListingChange,
 }: ListingsProps) {
@@ -36,18 +38,23 @@ export function Listings({
 		onProgressChange?.(progress);
 	};
 
-	const handleItemDismissed = useCallback((dismissedItem: Listing) => {
-		// Add to dismissed items array (keep only last 10)
-		setDismissedItems((prev) => {
-			const newDismissed = [dismissedItem, ...prev];
-			return newDismissed.slice(0, 10); // Keep only last 10 items
-		});
+	const handleItemDismissed = useCallback(
+		(dismissedItem: Listing, swipeDirection: "left" | "right") => {
+			// Only add to dismissed items array if it was a left swipe (dismissal)
+			if (swipeDirection === "left") {
+				setDismissedItems((prev) => {
+					const newDismissed = [dismissedItem, ...prev];
+					return newDismissed.slice(0, 10); // Keep only last 10 items
+				});
+			}
 
-		// Remove from current listings
-		setListings((prev) =>
-			prev.filter((item) => item.itemId !== dismissedItem.itemId)
-		);
-	}, []);
+			// Remove from current listings
+			setListings((prev) =>
+				prev.filter((item) => item.itemId !== dismissedItem.itemId)
+			);
+		},
+		[]
+	);
 
 	const handleUndo = useCallback(() => {
 		if (dismissedItems.length === 0) return;
@@ -67,6 +74,13 @@ export function Listings({
 			undoRef.current = handleUndo;
 		}
 	}, [undoRef, handleUndo]);
+
+	// Expose undo count to parent via ref
+	useEffect(() => {
+		if (undoCountRef) {
+			undoCountRef.current = dismissedItems.length;
+		}
+	}, [undoCountRef, dismissedItems.length]);
 
 	// Update current listing when listings change
 	useEffect(() => {

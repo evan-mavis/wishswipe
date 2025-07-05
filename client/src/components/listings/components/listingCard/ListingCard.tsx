@@ -14,7 +14,10 @@ import { getLargerImageUrl } from "@/lib/image";
 interface ListingCardProps {
 	listing: Listing;
 	setListings: Dispatch<SetStateAction<Listing[]>>;
-	onItemDismissed?: (dismissedItem: Listing) => void;
+	onItemDismissed?: (
+		dismissedItem: Listing,
+		swipeDirection: "left" | "right"
+	) => void;
 	onProgressChange?: (progress: number) => void;
 	index: number;
 	selectedWishlistId?: string;
@@ -91,9 +94,12 @@ export function ListingCard({
 			}
 			// Swipe left (negative X) - just dismiss (no action needed)
 
+			// Determine swipe direction
+			const swipeDirection = currentX > 0 ? "right" : "left";
+
 			// Call onItemDismissed if provided, otherwise fallback to setListings
 			if (onItemDismissed) {
-				onItemDismissed(listing);
+				onItemDismissed(listing, swipeDirection);
 			} else {
 				// Fallback to old behavior for backward compatibility
 				setListings((pv) => pv.filter((v) => v.itemId !== listing.itemId));

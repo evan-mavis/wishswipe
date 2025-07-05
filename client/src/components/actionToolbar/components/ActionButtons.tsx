@@ -13,6 +13,7 @@ interface ActionButtonsProps {
 	onClearAllFilters: () => void;
 	onUndo: () => void;
 	animateIcon: (ref: React.RefObject<HTMLButtonElement | null>) => void;
+	undoCount: number;
 }
 
 export function ActionButtons({
@@ -22,6 +23,7 @@ export function ActionButtons({
 	onClearAllFilters,
 	onUndo,
 	animateIcon,
+	undoCount,
 }: ActionButtonsProps) {
 	return (
 		<>
@@ -52,8 +54,9 @@ export function ActionButtons({
 						variant="ghost"
 						type="button"
 						ref={undoBtnRef}
-						className="mr-1 flex items-center rounded align-middle transition duration-150 hover:text-amber-300"
-						aria-label="Undo Last Dismissal"
+						disabled={undoCount === 0}
+						className="mr-1 flex items-center rounded align-middle transition duration-150 hover:text-amber-300 disabled:cursor-not-allowed disabled:opacity-50"
+						aria-label={`Undo Last Dismissal (${undoCount} available)`}
 						onClick={() => {
 							onUndo();
 							animateIcon(undoBtnRef);
@@ -62,7 +65,11 @@ export function ActionButtons({
 						<Undo2 className="inline-block align-middle" size={20} />
 					</Button>
 				</TooltipTrigger>
-				<TooltipContent side="bottom">Undo Last Dismissal</TooltipContent>
+				<TooltipContent side="bottom">
+					{undoCount > 0
+						? `Undo Last Dismissal (${undoCount} available)`
+						: "No dismissals to undo"}
+				</TooltipContent>
 			</Tooltip>
 		</>
 	);

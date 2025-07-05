@@ -25,6 +25,7 @@ interface SearchAndFilterToolbarProps {
 	selectedWishlist?: string;
 	onWishlistChange?: (wishlistId: string) => void;
 	onUndo?: () => void;
+	undoCount?: number;
 }
 
 export function ActionToolbar({
@@ -35,6 +36,7 @@ export function ActionToolbar({
 	selectedWishlist: externalSelectedWishlist,
 	onWishlistChange,
 	onUndo,
+	undoCount = 0,
 }: SearchAndFilterToolbarProps) {
 	const isMobile = useIsMobile();
 	const [priceRange, setPriceRange] = useState<[number, number]>([10, 75]);
@@ -160,6 +162,7 @@ export function ActionToolbar({
 						onClearAllFilters={clearAllFilters}
 						onUndo={onUndo || (() => {})}
 						animateIcon={animateIcon}
+						undoCount={undoCount}
 					/>
 				</div>
 			</div>

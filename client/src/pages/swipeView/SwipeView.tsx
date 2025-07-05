@@ -24,6 +24,8 @@ export function SwipeView() {
 
 	// Create ref for undo functionality
 	const undoRef = useRef<(() => void) | null>(null);
+	// Create ref for undo count
+	const undoCountRef = useRef<number>(0);
 
 	useEffect(() => {
 		const timer = setTimeout(() => {
@@ -91,6 +93,7 @@ export function SwipeView() {
 					selectedWishlist={selectedWishlist}
 					onWishlistChange={setSelectedWishlist}
 					onUndo={handleUndo}
+					undoCount={undoCountRef.current}
 				/>
 			</div>
 
@@ -101,6 +104,7 @@ export function SwipeView() {
 					filters={filters}
 					selectedWishlistId={selectedWishlist}
 					undoRef={undoRef}
+					undoCountRef={undoCountRef}
 					onProgressChange={handleProgressChange}
 					onCurrentListingChange={handleCurrentListingChange}
 				/>
