@@ -82,7 +82,7 @@ class UserInteractionService {
 		this.currentSearchSessionId = null;
 
 		try {
-			await axiosInstance.post("/user-item-history/batch", {
+			await axiosInstance.post("/wishswipe/user-item-history/batch", {
 				interactions: interactions.map((interaction) => ({
 					itemId: interaction.itemId,
 					action: interaction.action,
