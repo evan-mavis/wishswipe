@@ -71,7 +71,7 @@ export function WishlistSelector({
 				Wishlist:
 			</Label>
 			<Select value={value} onValueChange={onChange} disabled={loading}>
-				<SelectTrigger id="wishlist-select" className="w-[160px]">
+				<SelectTrigger id="wishlist-select" className="w-[120px] sm:w-[160px]">
 					<SelectValue placeholder={loading ? "Loading..." : "Choose..."} />
 				</SelectTrigger>
 				<SelectContent>
