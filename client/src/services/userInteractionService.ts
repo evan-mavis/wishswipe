@@ -10,6 +10,7 @@ export interface UserInteraction {
 	priceMax?: number;
 	itemPrice: number;
 	timestamp: Date;
+	searchSessionId?: string; // Add session ID to each interaction
 	// for right swipes
 	wishlistId?: string;
 	title?: string;
@@ -23,24 +24,15 @@ class UserInteractionService {
 	private batchSize = 10;
 	private flushTimeout: NodeJS.Timeout | null = null;
 	private flushDelay = 10000; // 10 seconds
-	private currentSearchSessionId: string | null = null;
 
 	/**
 	 * Add an interaction to the queue
 	 */
-	addInteraction(
-		interaction: Omit<UserInteraction, "timestamp">,
-		searchSessionId?: string
-	): void {
+	addInteraction(interaction: Omit<UserInteraction, "timestamp">): void {
 		this.interactionQueue.push({
 			...interaction,
 			timestamp: new Date(),
 		});
-
-		// Store session ID for this batch if provided
-		if (searchSessionId && !this.currentSearchSessionId) {
-			this.currentSearchSessionId = searchSessionId;
-		}
 
 		// Flush if we reach batch size
 		if (this.interactionQueue.length >= this.batchSize) {
@@ -78,9 +70,6 @@ class UserInteractionService {
 			this.flushTimeout = null;
 		}
 
-		// Clear session ID after flushing
-		this.currentSearchSessionId = null;
-
 		// At this point, interactions array is guaranteed to have items
 		// because we checked this.interactionQueue.length > 0 at the start
 		try {
@@ -100,7 +89,7 @@ class UserInteractionService {
 					itemWebUrl: interaction.itemWebUrl,
 					sellerFeedbackScore: interaction.sellerFeedbackScore,
 				})),
-				searchSessionId: this.currentSearchSessionId,
+				searchSessionId: interactions[0]?.searchSessionId || null,
 			});
 		} catch (error) {
 			console.error("Failed to send interactions to backend:", error);
