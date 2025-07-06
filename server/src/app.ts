@@ -4,7 +4,6 @@ dotenv.config();
 import express from "express";
 import cors from "cors";
 import admin, { getServiceAccount } from "./config/firebase.js";
-import userRoutes from "./routes/userRoutes.js";
 import baseRoutes from "./routes/baseRoutes.js";
 import { authenticateUser } from "./middleware/auth.js";
 import exploreRoutes from "./routes/exploreRoutes.js";
@@ -12,6 +11,7 @@ import wishlistRoutes from "./routes/wishlistRoutes.js";
 import wishlistItemRoutes from "./routes/wishlistItemRoutes.js";
 import preferencesRoutes from "./routes/preferencesRoutes.js";
 import userItemHistoryRoutes from "./routes/userItemHistoryRoutes.js";
+import loginRoutes from "./routes/loginRoutes.js";
 
 // initialize firebase
 admin.initializeApp({
@@ -31,12 +31,13 @@ app.get("/", (req, res) => {
   res.json({ status: "ok" });
 });
 
-// protect everything under /wishswipe
+// public routes (no authentication required)
+app.use("/login", loginRoutes);
+
+// protect everything else under /wishswipe
 app.use("/wishswipe", authenticateUser);
 
-// all routes under /wishswipe are protected
 app.use("/wishswipe", baseRoutes);
-app.use("/wishswipe/user", userRoutes);
 app.use("/wishswipe/explore", exploreRoutes);
 app.use("/wishswipe/wishlist", wishlistRoutes);
 app.use("/wishswipe/wishlist-items", wishlistItemRoutes);

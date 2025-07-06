@@ -8,7 +8,7 @@ export async function loginOrCreateUser(
 	payload: LoginOrCreateUserPayload
 ): Promise<LoginOrCreateUserResponse> {
 	const { data } = await axios.post<LoginOrCreateUserResponse>(
-		"/wishswipe/user/login",
+		"/login",
 		payload
 	);
 	return data;

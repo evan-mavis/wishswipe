@@ -8,7 +8,7 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import { useAuth } from "@/hooks/use-auth";
-import { loginOrCreateUser } from "@/services/userService";
+import { loginOrCreateUser } from "@/services/loginService";
 import { getAuth } from "firebase/auth";
 
 type LoginFormProps = React.HTMLAttributes<HTMLDivElement>;
