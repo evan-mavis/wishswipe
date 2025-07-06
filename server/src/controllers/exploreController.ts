@@ -50,8 +50,8 @@ export const getEbayListings = async (
       }
     );
 
-    // Get the current offset for this session
-    const currentOffset = await PaginationService.getCurrentOffset(
+    // Get the offset for the next fetch (increments if needed)
+    const currentOffset = await PaginationService.getOffsetForNextFetch(
       searchSession.id
     );
 
@@ -91,12 +91,11 @@ export const getEbayListings = async (
       simplifiedListings
     );
 
-    // Update session progress with items we're about to show
+    // Set the last item ID for this batch (the 200th item or the last item if less than 200)
     if (unseenItems.length > 0) {
-      await PaginationService.updateSessionProgress(
-        searchSession.id,
-        unseenItems.length
-      );
+      const lastItemIndex = Math.min(199, unseenItems.length - 1); // 200th item (0-indexed = 199)
+      const lastItemId = unseenItems[lastItemIndex].itemId;
+      await PaginationService.setLastItemId(searchSession.id, lastItemId);
     }
 
     res.json({

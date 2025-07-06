@@ -22,7 +22,7 @@ const batchInteractionSchema = z.object({
       sellerFeedbackScore: z.number().int().nonnegative().optional(),
     })
   ),
-  searchSessionId: z.string().optional(), // To update pagination offset
+  searchSessionId: z.string().nullable().optional(), // Allow null values
 });
 
 export const recordBatchInteractions = async (
@@ -42,16 +42,18 @@ export const recordBatchInteractions = async (
 
     const { interactions, searchSessionId } = parseResult.data;
 
-    // Update pagination offset if search session ID is provided
-    if (searchSessionId) {
+    // Update session progress if search session ID is provided
+    // Note: We don't increment offset here since we're not fetching new items from eBay
+    if (searchSessionId && searchSessionId !== null) {
       try {
         await PaginationService.updateSessionProgress(
           parseInt(searchSessionId),
-          interactions.length
+          interactions.length,
+          false // Don't increment offset, just update items seen
         );
       } catch (error) {
-        console.error("Failed to update pagination offset:", error);
-        // Continue processing interactions even if pagination update fails
+        console.error("Failed to update session progress:", error);
+        // Continue processing interactions even if session update fails
       }
     }
 
