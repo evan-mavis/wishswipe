@@ -14,11 +14,9 @@ export async function searchEbayItems(
   // Try to get cached results first
   const cachedResult = await redis.get(cacheKey);
   if (cachedResult) {
-    console.log(`Cache hit for key: ${cacheKey}`);
     return JSON.parse(cachedResult);
   }
 
-  console.log(`Cache miss for key: ${cacheKey}, fetching from eBay API`);
   const accessToken = await getEbayAccessToken();
 
   const params = new URLSearchParams();
