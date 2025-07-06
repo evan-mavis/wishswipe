@@ -10,6 +10,7 @@ import { ArrowDownToLine, Trash2 } from "lucide-react";
 import type { Listing } from "@/types/listing";
 import { Link } from "react-router-dom";
 import { preferencesService } from "@/services/preferencesService";
+import { userInteractionService } from "@/services/userInteractionService";
 
 export function SwipeView() {
 	const { user } = useAuth();
@@ -82,6 +83,31 @@ export function SwipeView() {
 		}, 4000);
 
 		return () => clearTimeout(timer);
+	}, []);
+
+	// Handle page visibility changes and cleanup
+	useEffect(() => {
+		const handleVisibilityChange = () => {
+			if (document.hidden) {
+				// Page is hidden, flush any pending interactions
+				userInteractionService.forceFlush();
+			}
+		};
+
+		const handleBeforeUnload = () => {
+			// Page is being unloaded, flush any pending interactions
+			userInteractionService.forceFlush();
+		};
+
+		document.addEventListener("visibilitychange", handleVisibilityChange);
+		window.addEventListener("beforeunload", handleBeforeUnload);
+
+		return () => {
+			document.removeEventListener("visibilitychange", handleVisibilityChange);
+			window.removeEventListener("beforeunload", handleBeforeUnload);
+			// Flush any remaining interactions on component unmount
+			userInteractionService.forceFlush();
+		};
 	}, []);
 
 	const handleSearchChange = (value: string) => {

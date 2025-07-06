@@ -1,7 +1,6 @@
 import type { Dispatch, SetStateAction } from "react";
 import { useState, useEffect } from "react";
 import type { Listing } from "../../../../types/listing";
-import * as wishlistService from "../../../../services/wishlistService";
 import {
 	AnimatePresence,
 	motion,
@@ -29,7 +28,6 @@ export function ListingCard({
 	onItemDismissed,
 	onProgressChange,
 	index,
-	selectedWishlistId,
 }: ListingCardProps) {
 	const x = useMotionValue(0);
 	const DRAG_THRESHOLD = 150;
@@ -73,26 +71,6 @@ export function ListingCard({
 			setTimeout(() => {
 				onProgressChange?.(50);
 			}, 200);
-
-			// Swipe right (positive X) - add to wishlist
-			if (currentX > 0 && selectedWishlistId) {
-				try {
-					await wishlistService.addItemToWishlist({
-						wishlistId: selectedWishlistId,
-						ebayItemId: listing.itemId,
-						title: listing.title,
-						imageUrl: listing.imageUrl,
-						itemWebUrl: listing.itemWebUrl,
-						price: listing.price ? parseFloat(listing.price.value) : undefined,
-						sellerFeedbackScore: listing.sellerFeedbackScore,
-					});
-					console.log("Item added to wishlist successfully");
-				} catch (error) {
-					console.error("Error adding item to wishlist:", error);
-					// Could show a toast notification here for better UX
-				}
-			}
-			// Swipe left (negative X) - just dismiss (no action needed)
 
 			// Determine swipe direction
 			const swipeDirection = currentX > 0 ? "right" : "left";

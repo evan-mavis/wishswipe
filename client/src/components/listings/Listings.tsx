@@ -5,6 +5,7 @@ import { AnimatePresence } from "framer-motion";
 import { PlaceholderListing } from "@/components/placeholderListing/PlaceholderListing";
 import { fetchListings } from "@/services/listingsService";
 import { debounceSearch } from "@/lib/debounce";
+import { userInteractionService } from "@/services/userInteractionService";
 
 interface ListingsProps {
 	searchQuery?: string;
@@ -48,12 +49,33 @@ export function Listings({
 				});
 			}
 
+			// Record interaction for batch processing
+			userInteractionService.addInteraction({
+				itemId: dismissedItem.itemId,
+				action: swipeDirection,
+				searchQuery: searchQuery,
+				conditionFilter: filters.condition,
+				categoryFilter: filters.category,
+				priceMin: filters.minPrice,
+				priceMax: filters.maxPrice,
+				itemPrice: parseFloat(dismissedItem.price.value),
+				// Include wishlist data for right swipes
+				...(swipeDirection === "right" &&
+					selectedWishlistId && {
+						wishlistId: selectedWishlistId,
+						title: dismissedItem.title,
+						imageUrl: dismissedItem.imageUrl,
+						itemWebUrl: dismissedItem.itemWebUrl,
+						sellerFeedbackScore: dismissedItem.sellerFeedbackScore,
+					}),
+			});
+
 			// Remove from current listings
 			setListings((prev) =>
 				prev.filter((item) => item.itemId !== dismissedItem.itemId)
 			);
 		},
-		[]
+		[searchQuery, filters]
 	);
 
 	const handleUndo = useCallback(() => {
