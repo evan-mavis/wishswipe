@@ -10,7 +10,7 @@ import { Github, ExternalLink, AlertCircle, Bug, Star } from "lucide-react";
 
 export function Feedback() {
 	return (
-		<div className="container mx-auto max-w-4xl p-6">
+		<div className="container mx-auto mt-6 ml-4 max-w-4xl p-6">
 			<div className="mb-8">
 				<h1 className="mb-2 text-3xl font-bold">Feedback & Issues</h1>
 				<p className="text-muted-foreground">
@@ -30,7 +30,7 @@ export function Feedback() {
 					</CardDescription>
 				</CardHeader>
 				<CardContent>
-					<div className="flex items-center justify-between">
+					<div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
 						<div>
 							<div className="space-y-2 text-sm">
 								<div className="flex items-center gap-2">
@@ -43,7 +43,10 @@ export function Feedback() {
 								</div>
 							</div>
 						</div>
-						<Button asChild className="bg-orange-600 hover:bg-orange-700">
+						<Button
+							asChild
+							className="w-full bg-orange-600 hover:bg-orange-700 sm:w-auto"
+						>
 							<a
 								href="https://github.com/evan-mavis/wishswipe/issues"
 								target="_blank"
