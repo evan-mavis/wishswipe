@@ -33,14 +33,59 @@ export function Listings({
 }: ListingsProps) {
 	const [listings, setListings] = useState<Listing[]>([]);
 	const [isLoading, setIsLoading] = useState(false);
+	const [isBackgroundLoading, setIsBackgroundLoading] = useState(false);
 	const [dismissedItems, setDismissedItems] = useState<Listing[]>([]);
 	const [currentSearchSessionId, setCurrentSearchSessionId] = useState<
 		string | null
 	>(null);
+	const [hasMoreItems, setHasMoreItems] = useState<boolean>(true);
 
 	const handleProgressChange = (progress: number) => {
 		onProgressChange?.(progress);
 	};
+
+	const fetchMoreListings = useCallback(async () => {
+		if (
+			isLoading ||
+			!hasMoreItems ||
+			!currentSearchSessionId ||
+			isBackgroundLoading
+		)
+			return;
+
+		setIsBackgroundLoading(true);
+		try {
+			const data = await fetchListings({
+				query: searchQuery,
+				...filters,
+			});
+
+			if (data && Array.isArray(data.listings)) {
+				// Filter out items that are already in the current listings
+				const existingItemIds = new Set(
+					listings.map((item: Listing) => item.itemId)
+				);
+				const newItems = data.listings.filter(
+					(item: Listing) => !existingItemIds.has(item.itemId)
+				);
+
+				// Append new items to existing listings
+				setListings((prev) => [...prev, ...newItems]);
+			}
+		} catch (err) {
+			console.error("Failed to fetch more listings:", err);
+		} finally {
+			setIsBackgroundLoading(false);
+		}
+	}, [
+		isLoading,
+		hasMoreItems,
+		currentSearchSessionId,
+		searchQuery,
+		filters,
+		listings,
+		isBackgroundLoading,
+	]);
 
 	const handleItemDismissed = useCallback(
 		(dismissedItem: Listing, swipeDirection: "left" | "right") => {
@@ -53,7 +98,6 @@ export function Listings({
 			}
 
 			// Record interaction for batch processing
-			console.log("currentSearchSessionId", currentSearchSessionId);
 			userInteractionService.addInteraction({
 				itemId: dismissedItem.itemId,
 				action: swipeDirection,
@@ -76,11 +120,34 @@ export function Listings({
 			});
 
 			// Remove from current listings
-			setListings((prev) =>
-				prev.filter((item) => item.itemId !== dismissedItem.itemId)
-			);
+			setListings((prev) => {
+				const updatedListings = prev.filter(
+					(item) => item.itemId !== dismissedItem.itemId
+				);
+
+				// Check if we need to fetch more items (5 or fewer remaining)
+				if (
+					updatedListings.length <= 5 &&
+					hasMoreItems &&
+					!isLoading &&
+					!isBackgroundLoading
+				) {
+					fetchMoreListings();
+				}
+
+				return updatedListings;
+			});
 		},
-		[searchQuery, filters, currentSearchSessionId, selectedWishlistId]
+		[
+			searchQuery,
+			filters,
+			currentSearchSessionId,
+			selectedWishlistId,
+			hasMoreItems,
+			isLoading,
+			isBackgroundLoading,
+			fetchMoreListings,
+		]
 	);
 
 	const handleUndo = useCallback(() => {
@@ -132,20 +199,23 @@ export function Listings({
 				});
 				if (data && Array.isArray(data.listings)) {
 					setListings(data.listings);
-					// Store the session ID for pagination tracking
+					// Store the session ID and pagination info
 					if (data.pagination?.searchSessionId) {
 						setCurrentSearchSessionId(
 							data.pagination.searchSessionId.toString()
 						);
 					}
+					setHasMoreItems(data.pagination?.hasMoreItems || false);
 				} else {
 					setListings([]);
 					setCurrentSearchSessionId(null);
+					setHasMoreItems(false);
 				}
 			} catch (err) {
 				console.error(err);
 				setListings([]);
 				setCurrentSearchSessionId(null);
+				setHasMoreItems(false);
 			} finally {
 				setIsLoading(false);
 			}
