@@ -1,3 +1,3 @@
 export function SwipeInsights() {
-	return <div>SwipeInsights</div>;
+	return <div>SwipeInsights TM coming soon!</div>;
 }

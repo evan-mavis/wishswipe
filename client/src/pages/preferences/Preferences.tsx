@@ -110,7 +110,7 @@ export function Preferences() {
 		originalPreferences.defaultPriceRange[1] !== 75;
 
 	return (
-		<div className="container mx-auto max-w-4xl p-6">
+		<div className="container mx-auto mt-6 ml-2 max-w-4xl p-6">
 			<div className="mb-8">
 				<h1 className="text-foreground flex items-center gap-2 text-3xl font-bold">
 					<Settings /> Preferences
@@ -198,7 +198,7 @@ export function Preferences() {
 
 				<Separator />
 
-				<div className="flex justify-end gap-4">
+				<div className="flex flex-col justify-end gap-4 sm:flex-row">
 					<Button
 						type="button"
 						variant="outline"
