@@ -46,6 +46,9 @@ export const up = (pgm) => {
       notNull: true,
       default: 0,
     },
+    last_item_id: {
+      type: "VARCHAR(255)",
+    },
     last_activity: {
       type: "TIMESTAMP",
       notNull: true,
