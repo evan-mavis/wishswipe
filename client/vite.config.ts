@@ -16,6 +16,7 @@ export default defineConfig({
 		open: true,
 		proxy: {
 			"/wishswipe/": "http://localhost:3000",
+			"/login": "http://localhost:3000",
 		},
 	},
 });
