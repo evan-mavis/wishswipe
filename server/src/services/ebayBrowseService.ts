@@ -1,17 +1,30 @@
 import axios from "axios";
 import { getEbayAccessToken } from "./ebayTokenService.js";
 import { SearchFilters, EbaySearchResponse } from "../types/ebay.js";
+import redis from "../utils/redisClient.js";
 
 export async function searchEbayItems(
   query: string,
-  options: SearchFilters = {}
+  options: SearchFilters = {},
+  offset: number = 0
 ): Promise<EbaySearchResponse> {
+  // Create cache key based on query, filters, and offset
+  const cacheKey = generateCacheKey(query, options, offset);
+
+  // Try to get cached results first
+  const cachedResult = await redis.get(cacheKey);
+  if (cachedResult) {
+    console.log(`Cache hit for key: ${cacheKey}`);
+    return JSON.parse(cachedResult);
+  }
+
+  console.log(`Cache miss for key: ${cacheKey}, fetching from eBay API`);
   const accessToken = await getEbayAccessToken();
 
   const params = new URLSearchParams();
   params.append("q", query);
-  params.append("limit", "50");
-  params.append("offset", "0");
+  params.append("limit", "200"); // Use max limit for better caching
+  params.append("offset", offset.toString());
 
   if (options.category && options.category !== "none") {
     params.append("category_ids", options.category);
@@ -65,6 +78,8 @@ export async function searchEbayItems(
       "eBay API errors:",
       JSON.stringify(response.data.errors, null, 2)
     );
+    // Don't cache error responses
+    return response.data;
   }
 
   if (response.data && response.data.warnings) {
@@ -74,7 +89,39 @@ export async function searchEbayItems(
     );
   }
 
+  // Only cache successful responses with items
+  if (
+    response.data &&
+    response.data.itemSummaries &&
+    response.data.itemSummaries.length > 0
+  ) {
+    try {
+      const cacheExpiry = 1800; // 30 minutes
+      await redis.setex(cacheKey, cacheExpiry, JSON.stringify(response.data));
+      console.log(`Cached results for key: ${cacheKey}`);
+    } catch (cacheError) {
+      console.error("Failed to cache results:", cacheError);
+      // Continue without caching if Redis fails
+    }
+  }
+
   return response.data;
+}
+
+function generateCacheKey(
+  query: string,
+  options: SearchFilters,
+  offset: number = 0
+): string {
+  const filterString = JSON.stringify({
+    condition: options.condition || "none",
+    category: options.category || "none",
+    minPrice: options.minPrice || 0,
+    maxPrice: options.maxPrice || 200,
+    offset: offset,
+  });
+
+  return `ebay:search:${query}:${filterString}`;
 }
 
 function mapCondition(conditionId: string): string {
