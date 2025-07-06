@@ -20,6 +20,20 @@ export const up = (pgm) => {
       references: "users",
       onDelete: "CASCADE",
     },
+    search_hash: {
+      type: "VARCHAR(64)",
+      notNull: true,
+    },
+    current_offset: {
+      type: "INTEGER",
+      notNull: true,
+      default: 0,
+    },
+    total_items_seen: {
+      type: "INTEGER",
+      notNull: true,
+      default: 0,
+    },
     search_query: {
       type: "TEXT",
       notNull: true,
@@ -36,19 +50,6 @@ export const up = (pgm) => {
     price_max: {
       type: "DECIMAL(10,2)",
     },
-    current_offset: {
-      type: "INTEGER",
-      notNull: true,
-      default: 0,
-    },
-    total_items_seen: {
-      type: "INTEGER",
-      notNull: true,
-      default: 0,
-    },
-    last_item_id: {
-      type: "VARCHAR(255)",
-    },
     last_activity: {
       type: "TIMESTAMP",
       notNull: true,
@@ -63,22 +64,14 @@ export const up = (pgm) => {
 
   // Indexes for performance
   pgm.createIndex("user_search_sessions", "user_id");
-  pgm.createIndex("user_search_sessions", ["user_id", "search_query"]);
+  pgm.createIndex("user_search_sessions", ["user_id", "search_hash"]);
   pgm.createIndex("user_search_sessions", "last_activity");
 
   // Unique constraint to prevent duplicate sessions for same search
-  pgm.createIndex(
-    "user_search_sessions",
-    [
-      "user_id",
-      "search_query",
-      "condition_filter",
-      "category_filter",
-      "price_min",
-      "price_max",
-    ],
-    { unique: true, name: "unique_user_search_session" }
-  );
+  pgm.createIndex("user_search_sessions", ["user_id", "search_hash"], {
+    unique: true,
+    name: "unique_user_search_session",
+  });
 };
 
 /**

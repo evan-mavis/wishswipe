@@ -52,7 +52,7 @@ export const getEbayListings = async (
 
     // Get the offset for the next fetch (increments if needed)
     const currentOffset = await PaginationService.getOffsetForNextFetch(
-      searchSession.id
+      searchSession
     );
 
     // Search eBay with pagination
@@ -90,13 +90,6 @@ export const getEbayListings = async (
       req.dbUser.id,
       simplifiedListings
     );
-
-    // Set the last item ID for this batch (the 200th item or the last item if less than 200)
-    if (unseenItems.length > 0) {
-      const lastItemIndex = Math.min(199, unseenItems.length - 1); // 200th item (0-indexed = 199)
-      const lastItemId = unseenItems[lastItemIndex].itemId;
-      await PaginationService.setLastItemId(searchSession.id, lastItemId);
-    }
 
     res.json({
       listings: unseenItems,
