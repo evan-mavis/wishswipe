@@ -1,4 +1,10 @@
-import { Search, Settings, MessageSquare, Scroll } from "lucide-react";
+import {
+	Search,
+	Settings,
+	MessageSquare,
+	Scroll,
+	BarChart,
+} from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import {
 	Sidebar,
@@ -28,14 +34,19 @@ const items = [
 		icon: Scroll,
 	},
 	{
-		title: "Feedback",
-		url: "/feedback",
-		icon: MessageSquare,
+		title: "Swipe Insights",
+		url: "/insights",
+		icon: BarChart,
 	},
 	{
 		title: "Preferences",
 		url: "/preferences",
 		icon: Settings,
+	},
+	{
+		title: "Feedback",
+		url: "/feedback",
+		icon: MessageSquare,
 	},
 ];
 

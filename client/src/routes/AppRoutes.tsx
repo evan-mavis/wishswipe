@@ -6,6 +6,7 @@ import Login from "@/pages/login/Login";
 import { Wishlist } from "@/pages/wishlist/Wishlist";
 import { Feedback } from "@/pages/feedback/Feedback";
 import { Preferences } from "@/pages/preferences/Preferences";
+import { SwipeInsights } from "@/pages/swipeInsights/SwipeInsights";
 
 export function AppRoutes() {
 	return (
@@ -29,6 +30,7 @@ export function AppRoutes() {
 				<Route path="/wishlist" element={<Wishlist />} />
 				<Route path="/feedback" element={<Feedback />} />
 				<Route path="/preferences" element={<Preferences />} />
+				<Route path="/insights" element={<SwipeInsights />} />
 			</Route>
 		</Routes>
 	);

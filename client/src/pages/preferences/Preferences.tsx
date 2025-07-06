@@ -4,7 +4,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Save, RotateCcw } from "lucide-react";
+import { Save, RotateCcw, Settings } from "lucide-react";
 import {
 	Select,
 	SelectContent,
@@ -112,7 +112,9 @@ export function Preferences() {
 	return (
 		<div className="container mx-auto max-w-4xl p-6">
 			<div className="mb-8">
-				<h1 className="text-foreground text-3xl font-bold">Preferences</h1>
+				<h1 className="text-foreground flex items-center gap-2 text-3xl font-bold">
+					<Settings /> Preferences
+				</h1>
 				<p className="text-muted-foreground mt-2">
 					Set your default search and filter preferences for a better swiping
 					experience.
