@@ -190,6 +190,9 @@ export function Listings({
 
 	const fetchListingsWithQuery = useCallback(
 		async (query: string) => {
+			// Flush interaction queue before starting new search
+			await userInteractionService.forceFlush();
+
 			setIsLoading(true);
 
 			// Clear dismissed items when fetching new listings
