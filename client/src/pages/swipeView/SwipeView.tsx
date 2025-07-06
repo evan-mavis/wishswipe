@@ -34,35 +34,46 @@ export function SwipeView() {
 
 	// Load user preferences on mount
 	useEffect(() => {
-		const preferences = preferencesService.loadPreferences();
-		if (preferences.defaultSearchTerm) {
-			setSearch(preferences.defaultSearchTerm);
-		}
+		const loadPreferences = async () => {
+			try {
+				const preferences = await preferencesService.loadPreferences();
+				if (preferences.defaultSearchTerm) {
+					setSearch(preferences.defaultSearchTerm);
+				}
 
-		// Only apply filters if they differ from defaults
-		const defaultPriceRange = [10, 75];
-		const hasCustomCondition =
-			preferences.defaultCondition && preferences.defaultCondition !== "none";
-		const hasCustomCategory =
-			preferences.defaultCategory && preferences.defaultCategory !== "none";
-		const hasCustomPriceRange =
-			preferences.defaultPriceRange[0] !== defaultPriceRange[0] ||
-			preferences.defaultPriceRange[1] !== defaultPriceRange[1];
+				// Only apply filters if they differ from defaults
+				const defaultPriceRange = [10, 75];
+				const hasCustomCondition =
+					preferences.defaultCondition &&
+					preferences.defaultCondition !== "none";
+				const hasCustomCategory =
+					preferences.defaultCategory && preferences.defaultCategory !== "none";
+				const hasCustomPriceRange =
+					preferences.defaultPriceRange[0] !== defaultPriceRange[0] ||
+					preferences.defaultPriceRange[1] !== defaultPriceRange[1];
 
-		if (hasCustomCondition || hasCustomCategory || hasCustomPriceRange) {
-			setFilters({
-				condition: hasCustomCondition
-					? preferences.defaultCondition
-					: undefined,
-				category: hasCustomCategory ? preferences.defaultCategory : undefined,
-				minPrice: hasCustomPriceRange
-					? preferences.defaultPriceRange[0]
-					: undefined,
-				maxPrice: hasCustomPriceRange
-					? preferences.defaultPriceRange[1]
-					: undefined,
-			});
-		}
+				if (hasCustomCondition || hasCustomCategory || hasCustomPriceRange) {
+					setFilters({
+						condition: hasCustomCondition
+							? preferences.defaultCondition
+							: undefined,
+						category: hasCustomCategory
+							? preferences.defaultCategory
+							: undefined,
+						minPrice: hasCustomPriceRange
+							? preferences.defaultPriceRange[0]
+							: undefined,
+						maxPrice: hasCustomPriceRange
+							? preferences.defaultPriceRange[1]
+							: undefined,
+					});
+				}
+			} catch (error) {
+				console.error("Error loading preferences:", error);
+			}
+		};
+
+		loadPreferences();
 	}, []);
 
 	useEffect(() => {

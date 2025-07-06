@@ -29,31 +29,25 @@ export function Preferences() {
 	});
 	const [isLoading, setIsLoading] = useState(false);
 
-	// Load saved preferences on component mount
 	useEffect(() => {
 		loadPreferences();
 	}, []);
 
-	const loadPreferences = () => {
-		const savedPreferences = preferencesService.loadPreferences();
-		setPreferences(savedPreferences);
+	const loadPreferences = async () => {
+		try {
+			const savedPreferences = await preferencesService.loadPreferences();
+			setPreferences(savedPreferences);
+		} catch (error) {
+			console.error("Error loading preferences:", error);
+		}
 	};
 
 	const savePreferences = async () => {
 		setIsLoading(true);
 		try {
-			// Save to localStorage
-			preferencesService.savePreferences(preferences);
-
-			// TODO: Save to backend API when available
-			// await preferencesService.savePreferencesToBackend(preferences);
-
-			alert(
-				"Preferences saved! Your default search settings have been updated."
-			);
+			await preferencesService.savePreferences(preferences);
 		} catch (error) {
 			console.error("Error saving preferences:", error);
-			alert("Error saving preferences. Please try again.");
 		} finally {
 			setIsLoading(false);
 		}
@@ -67,9 +61,6 @@ export function Preferences() {
 			defaultPriceRange: [10, 75],
 		};
 		setPreferences(defaultPrefs);
-		alert(
-			"Preferences reset. All preferences have been reset to default values."
-		);
 	};
 
 	const updatePreference = <K extends keyof Preferences>(
