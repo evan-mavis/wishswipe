@@ -102,3 +102,16 @@ export const upsertUserPreferences = async (
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
+export const deleteUserPreferences = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    await preferencesRepository.deleteUserPreferences(req.dbUser.id);
+    res.json({ message: "Preferences deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting user preferences:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};

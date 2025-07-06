@@ -27,6 +27,12 @@ export function Preferences() {
 		defaultCategory: "none",
 		defaultPriceRange: [10, 75],
 	});
+	const [originalPreferences, setOriginalPreferences] = useState<Preferences>({
+		defaultSearchTerm: "",
+		defaultCondition: "none",
+		defaultCategory: "none",
+		defaultPriceRange: [10, 75],
+	});
 	const [isLoading, setIsLoading] = useState(false);
 
 	useEffect(() => {
@@ -37,15 +43,19 @@ export function Preferences() {
 		try {
 			const savedPreferences = await preferencesService.loadPreferences();
 			setPreferences(savedPreferences);
+			setOriginalPreferences(savedPreferences);
 		} catch (error) {
 			console.error("Error loading preferences:", error);
 		}
 	};
 
-	const savePreferences = async () => {
+	const handleSubmit = async (e: React.FormEvent) => {
+		e.preventDefault();
 		setIsLoading(true);
 		try {
 			await preferencesService.savePreferences(preferences);
+			// Update original preferences after successful save
+			setOriginalPreferences(preferences);
 		} catch (error) {
 			console.error("Error saving preferences:", error);
 		} finally {
@@ -53,14 +63,22 @@ export function Preferences() {
 		}
 	};
 
-	const resetPreferences = () => {
-		const defaultPrefs: Preferences = {
-			defaultSearchTerm: "",
-			defaultCondition: "none",
-			defaultCategory: "none",
-			defaultPriceRange: [10, 75],
-		};
-		setPreferences(defaultPrefs);
+	const handleReset = async (e: React.MouseEvent) => {
+		e.preventDefault();
+		try {
+			await preferencesService.deletePreferences();
+			// Set to default preferences after successful deletion
+			const defaultPrefs: Preferences = {
+				defaultSearchTerm: "",
+				defaultCondition: "none",
+				defaultCategory: "none",
+				defaultPriceRange: [10, 75],
+			};
+			setPreferences(defaultPrefs);
+			setOriginalPreferences(defaultPrefs);
+		} catch (error) {
+			console.error("Error resetting preferences:", error);
+		}
 	};
 
 	const updatePreference = <K extends keyof Preferences>(
@@ -73,6 +91,24 @@ export function Preferences() {
 		}));
 	};
 
+	// Check if preferences have changed from original
+	const hasChanges =
+		preferences.defaultSearchTerm !== originalPreferences.defaultSearchTerm ||
+		preferences.defaultCondition !== originalPreferences.defaultCondition ||
+		preferences.defaultCategory !== originalPreferences.defaultCategory ||
+		preferences.defaultPriceRange[0] !==
+			originalPreferences.defaultPriceRange[0] ||
+		preferences.defaultPriceRange[1] !==
+			originalPreferences.defaultPriceRange[1];
+
+	// Check if user has saved preferences (record exists in database)
+	const hasSavedPreferences =
+		originalPreferences.defaultSearchTerm !== "" ||
+		originalPreferences.defaultCondition !== "none" ||
+		originalPreferences.defaultCategory !== "none" ||
+		originalPreferences.defaultPriceRange[0] !== 10 ||
+		originalPreferences.defaultPriceRange[1] !== 75;
+
 	return (
 		<div className="container mx-auto max-w-4xl p-6">
 			<div className="mb-8">
@@ -83,7 +119,7 @@ export function Preferences() {
 				</p>
 			</div>
 
-			<div className="space-y-6">
+			<form onSubmit={handleSubmit} className="space-y-6">
 				<Card>
 					<CardContent>
 						<div className="space-y-6">
@@ -91,7 +127,8 @@ export function Preferences() {
 								<Label htmlFor="defaultSearch">Default Search Term</Label>
 								<Input
 									id="defaultSearch"
-									placeholder="e.g., iPhone, vintage camera, gaming laptop"
+									name="defaultSearchTerm"
+									placeholder="e.g., iPhone, vintage camera, guitar"
 									value={preferences.defaultSearchTerm}
 									onChange={(e) =>
 										updatePreference("defaultSearchTerm", e.target.value)
@@ -161,23 +198,25 @@ export function Preferences() {
 
 				<div className="flex justify-end gap-4">
 					<Button
+						type="button"
 						variant="outline"
-						onClick={resetPreferences}
+						onClick={handleReset}
+						disabled={!hasSavedPreferences}
 						className="flex items-center gap-2"
 					>
 						<RotateCcw size={16} />
 						Reset to Defaults
 					</Button>
 					<Button
-						onClick={savePreferences}
-						disabled={isLoading}
+						type="submit"
+						disabled={isLoading || !hasChanges}
 						className="flex items-center gap-2"
 					>
 						<Save size={16} />
 						{isLoading ? "Saving..." : "Save Preferences"}
 					</Button>
 				</div>
-			</div>
+			</form>
 		</div>
 	);
 }

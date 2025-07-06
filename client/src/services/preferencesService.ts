@@ -32,4 +32,13 @@ export const preferencesService = {
 			throw error;
 		}
 	},
+
+	deletePreferences: async (): Promise<void> => {
+		try {
+			await axiosInstance.delete("wishswipe/preferences");
+		} catch (error) {
+			console.error("Error deleting preferences:", error);
+			throw error;
+		}
+	},
 };

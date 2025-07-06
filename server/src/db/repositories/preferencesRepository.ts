@@ -61,4 +61,10 @@ export const preferencesRepository = {
       return result.rows[0];
     }
   },
+
+  async deleteUserPreferences(userId: string): Promise<void> {
+    await pool.query(`DELETE FROM user_preferences WHERE user_id = $1`, [
+      userId,
+    ]);
+  },
 };

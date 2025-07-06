@@ -7,4 +7,6 @@ router.get("/", preferencesController.getUserPreferences);
 
 router.patch("/", preferencesController.upsertUserPreferences);
 
+router.delete("/", preferencesController.deleteUserPreferences);
+
 export default router;
