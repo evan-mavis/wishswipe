@@ -21,13 +21,13 @@ export const up = (pgm) => {
       onDelete: "CASCADE",
     },
     search_hash: {
-      type: "VARCHAR(64)",
+      type: "VARCHAR(128)",
       notNull: true,
     },
-    current_offset: {
+    page_number: {
       type: "INTEGER",
       notNull: true,
-      default: 0,
+      default: 1,
     },
     total_items_seen: {
       type: "INTEGER",
@@ -62,12 +62,11 @@ export const up = (pgm) => {
     },
   });
 
-  // Indexes for performance
   pgm.createIndex("user_search_sessions", "user_id");
   pgm.createIndex("user_search_sessions", ["user_id", "search_hash"]);
   pgm.createIndex("user_search_sessions", "last_activity");
 
-  // Unique constraint to prevent duplicate sessions for same search
+  // unique constraint to prevent duplicate sessions for same search
   pgm.createIndex("user_search_sessions", ["user_id", "search_hash"], {
     unique: true,
     name: "unique_user_search_session",

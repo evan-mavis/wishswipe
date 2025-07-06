@@ -3,12 +3,13 @@ import { z } from "zod";
 import { UserItemHistoryService } from "../services/userItemHistoryService.js";
 import { PaginationService } from "../services/paginationService.js";
 import * as wishlistItemRepo from "../db/repositories/wishlistItemRepository.js";
+import { SWIPE_ACTIONS } from "../constants/swipe.js";
 
 const batchInteractionSchema = z.object({
   interactions: z.array(
     z.object({
       itemId: z.string(),
-      action: z.enum(["left", "right"]),
+      action: z.enum([SWIPE_ACTIONS.LEFT, SWIPE_ACTIONS.RIGHT]),
       searchQuery: z.string(),
       conditionFilter: z.string().optional(),
       categoryFilter: z.string().optional(),
@@ -42,21 +43,18 @@ export const recordBatchInteractions = async (
 
     const { interactions, searchSessionId } = parseResult.data;
 
-    // Update session progress if search session ID is provided
-    if (searchSessionId && searchSessionId !== null) {
+    if (searchSessionId) {
       try {
         await PaginationService.updateSessionProgress(
           parseInt(searchSessionId),
-          interactions.length,
-          false // Don't increment offset, just update items seen
+          interactions.length
         );
       } catch (error) {
         console.error("Failed to update session progress:", error);
-        // Continue processing interactions even if session update fails
       }
     }
 
-    // Record each interaction and handle wishlist additions
+    // record each interaction and handle wishlist additions
     for (const interaction of interactions) {
       await UserItemHistoryService.recordItemInteraction(
         req.dbUser.id,
@@ -70,8 +68,11 @@ export const recordBatchInteractions = async (
         interaction.price
       );
 
-      // If it's a right swipe and has wishlist data, add to wishlist
-      if (interaction.action === "right" && interaction.wishlistId) {
+      // if it's a right swipe and has wishlist data, add to wishlist
+      if (
+        interaction.action === SWIPE_ACTIONS.RIGHT &&
+        interaction.wishlistId
+      ) {
         try {
           await wishlistItemRepo.addItemToWishlist({
             wishlistId: interaction.wishlistId,
@@ -87,7 +88,6 @@ export const recordBatchInteractions = async (
             `Failed to add item ${interaction.itemId} to wishlist:`,
             error
           );
-          // Continue processing other interactions even if one wishlist addition fails
         }
       }
     }
@@ -98,43 +98,6 @@ export const recordBatchInteractions = async (
     });
   } catch (error) {
     console.error("Error recording batch interactions:", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-};
-
-export const getUserHistory = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
-  try {
-    const limit = parseInt(req.query.limit as string) || 50;
-    const offset = parseInt(req.query.offset as string) || 0;
-
-    const history = await UserItemHistoryService.getUserHistory(
-      req.dbUser.id,
-      limit,
-      offset
-    );
-
-    res.json({ history });
-  } catch (error) {
-    console.error("Error getting user history:", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-};
-
-export const getUserAnalytics = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
-  try {
-    const analytics = await UserItemHistoryService.getUserAnalytics(
-      req.dbUser.id
-    );
-
-    res.json({ analytics });
-  } catch (error) {
-    console.error("Error getting user analytics:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };

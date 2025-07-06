@@ -6,7 +6,7 @@ export interface SearchSession {
   category_filter?: string;
   price_min?: number;
   price_max?: number;
-  current_offset: number;
+  page_number: number;
   total_items_seen: number;
   last_activity: Date;
   search_hash: string;

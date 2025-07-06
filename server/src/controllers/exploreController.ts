@@ -3,7 +3,12 @@ import { z } from "zod";
 import { searchEbayItems } from "../services/ebayBrowseService.js";
 import { PaginationService } from "../services/paginationService.js";
 import { UserItemHistoryService } from "../services/userItemHistoryService.js";
-import { SimplifiedListing, SearchFilters } from "../types/ebay.js";
+import {
+  SimplifiedListing,
+  SearchFilters,
+  EbayItemSummary,
+} from "../types/ebay.js";
+import { generateSearchHash } from "../utils/searchHashUtility.js";
 
 const exploreQuerySchema = z.object({
   query: z.string().optional().default("trending"),
@@ -21,11 +26,14 @@ const exploreQuerySchema = z.object({
     .optional(),
 });
 
+const EBAY_RESPONSE_LIMIT = 200;
+
 export const getEbayListings = async (
   req: Request,
   res: Response
 ): Promise<void> => {
   try {
+    // validate request
     const parseResult = exploreQuerySchema.safeParse(req.query);
 
     if (!parseResult.success) {
@@ -36,68 +44,76 @@ export const getEbayListings = async (
       return;
     }
 
-    const { query, condition, category, minPrice, maxPrice } = parseResult.data;
+    const searchFilters: SearchFilters = parseResult.data;
+    const searchHash = generateSearchHash(searchFilters);
 
-    // Get or create search session for this user and search
+    // get or create search session for this user and search
     const searchSession = await PaginationService.getOrCreateSession(
       req.dbUser.id,
-      query,
-      {
-        condition,
-        category,
-        minPrice,
-        maxPrice,
+      searchHash,
+      searchFilters
+    );
+
+    let currentPage = searchSession.page_number;
+    let currentOffset = (currentPage - 1) * EBAY_RESPONSE_LIMIT;
+    let unseenListings: EbayItemSummary[] = [];
+    let hasMoreItems = true;
+    const maxAttempts = 5;
+    let attempts = 0;
+
+    // search eBay with pagination and filter unseen items
+    while (
+      unseenListings.length === 0 &&
+      hasMoreItems &&
+      attempts < maxAttempts
+    ) {
+      const data = await searchEbayItems(
+        searchHash,
+        searchFilters,
+        currentOffset
+      );
+
+      if (!data.itemSummaries || data.itemSummaries.length === 0) {
+        hasMoreItems = false;
+        break;
       }
-    );
 
-    // Get the offset for the next fetch (increments if needed)
-    const currentOffset = await PaginationService.getOffsetForNextFetch(
-      searchSession
-    );
+      unseenListings = await UserItemHistoryService.filterUnseenItems(
+        req.dbUser.id,
+        data.itemSummaries
+      );
 
-    // Search eBay with pagination
-    const data = await searchEbayItems(
-      query,
-      {
-        condition,
-        category,
-        minPrice,
-        maxPrice,
-      },
-      currentOffset
-    );
+      if (unseenListings.length === 0) {
+        currentPage += 1;
+        currentOffset = (currentPage - 1) * EBAY_RESPONSE_LIMIT;
+        await PaginationService.setNextPage(searchSession.id, currentPage);
+        attempts++;
+      }
+    }
 
-    // Transform and filter items
-    let simplifiedListings: SimplifiedListing[] = data.itemSummaries
-      ? data.itemSummaries
-          .map((item) => ({
-            itemId: item.itemId,
-            title: item.title,
-            price: {
-              value: item.price.value,
-              currency: item.price.currency,
-            },
-            condition: item.condition,
-            itemWebUrl: item.itemWebUrl,
-            imageUrl: item.image?.imageUrl,
-            sellerFeedbackScore: item.seller.feedbackScore,
-          }))
-          .filter((item) => item.imageUrl)
+    const simplifiedListings: SimplifiedListing[] = unseenListings
+      ? unseenListings.map((item) => ({
+          itemId: item.itemId,
+          title: item.title,
+          price: {
+            value: item.price.value,
+            currency: item.price.currency,
+          },
+          condition: item.condition,
+          itemWebUrl: item.itemWebUrl,
+          imageUrl: item.image?.imageUrl,
+          sellerFeedbackScore: item.seller.feedbackScore,
+        }))
       : [];
 
-    // Filter out items the user has already seen
-    const unseenItems = await UserItemHistoryService.filterUnseenItems(
-      req.dbUser.id,
-      simplifiedListings
-    );
-
     res.json({
-      listings: unseenItems,
+      listings: simplifiedListings,
       pagination: {
+        currentPage: currentPage,
         currentOffset: currentOffset,
         totalItemsSeen: searchSession.total_items_seen,
-        sessionId: searchSession.id,
-        hasMoreItems: data.itemSummaries && data.itemSummaries.length === 200,
+        searchSessionId: searchSession.id,
+        hasMoreItems: hasMoreItems && attempts < maxAttempts,
       },
     });
   } catch (error) {

@@ -1,17 +1,19 @@
 import axios from "axios";
 import { getEbayAccessToken } from "./ebayTokenService.js";
-import { SearchFilters, EbaySearchResponse } from "../types/ebay.js";
+import {
+  SearchFilters,
+  EbaySearchResponse,
+  EbayItemSummary,
+} from "../types/ebay.js";
 import redis from "../utils/redisClient.js";
 
 export async function searchEbayItems(
-  query: string,
-  options: SearchFilters = {},
+  searchHash: string,
+  searchFilters: SearchFilters = {},
   offset: number = 0
 ): Promise<EbaySearchResponse> {
-  // Create cache key based on query, filters, and offset
-  const cacheKey = generateCacheKey(query, options, offset);
-
-  // Try to get cached results first
+  // check if we have cached results
+  const cacheKey = `${searchHash}:${offset}`;
   const cachedResult = await redis.get(cacheKey);
   if (cachedResult) {
     return JSON.parse(cachedResult);
@@ -20,34 +22,36 @@ export async function searchEbayItems(
   const accessToken = await getEbayAccessToken();
 
   const params = new URLSearchParams();
-  params.append("q", query);
-  params.append("limit", "200"); // Use max limit for better caching
+  params.append("q", searchFilters.query || "");
+  params.append("limit", "200");
   params.append("offset", offset.toString());
 
-  if (options.category && options.category !== "none") {
-    params.append("category_ids", options.category);
+  if (searchFilters.category && searchFilters.category !== "none") {
+    params.append("category_ids", searchFilters.category);
   }
 
-  // Build filters array and combine them
   const filters: string[] = [];
 
-  if (options.condition) {
-    const conditionIds = mapCondition(options.condition);
+  if (searchFilters.condition) {
+    const conditionIds = mapCondition(searchFilters.condition);
     if (conditionIds) {
       filters.push(`conditionIds:{${conditionIds}}`);
     }
   }
 
-  if (options.minPrice || options.maxPrice) {
+  if (searchFilters.minPrice || searchFilters.maxPrice) {
     let priceFilter = "";
     // If max price is 200, ignore it and only use min price
     const effectiveMaxPrice =
-      options.maxPrice === 200 ? undefined : options.maxPrice;
+      searchFilters.maxPrice === 200 ? undefined : searchFilters.maxPrice;
 
-    if (options.minPrice !== undefined && effectiveMaxPrice !== undefined) {
-      priceFilter = `price:[${options.minPrice}..${effectiveMaxPrice}],priceCurrency:USD`;
-    } else if (options.minPrice !== undefined) {
-      priceFilter = `price:[${options.minPrice}..],priceCurrency:USD`;
+    if (
+      searchFilters.minPrice !== undefined &&
+      effectiveMaxPrice !== undefined
+    ) {
+      priceFilter = `price:[${searchFilters.minPrice}..${effectiveMaxPrice}],priceCurrency:USD`;
+    } else if (searchFilters.minPrice !== undefined) {
+      priceFilter = `price:[${searchFilters.minPrice}..],priceCurrency:USD`;
     } else if (effectiveMaxPrice !== undefined) {
       priceFilter = `price:[..${effectiveMaxPrice}],priceCurrency:USD`;
     }
@@ -87,6 +91,13 @@ export async function searchEbayItems(
     );
   }
 
+  // Filter out items without images
+  if (response.data && response.data.itemSummaries) {
+    response.data.itemSummaries = response.data.itemSummaries.filter(
+      (item: EbayItemSummary) => item.image?.imageUrl
+    );
+  }
+
   // Only cache successful responses with items
   if (
     response.data &&
@@ -94,32 +105,15 @@ export async function searchEbayItems(
     response.data.itemSummaries.length > 0
   ) {
     try {
-      const cacheExpiry = 1800; // 30 minutes
+      const cacheExpiry = 2400; // 40 minutes
       await redis.setex(cacheKey, cacheExpiry, JSON.stringify(response.data));
-      console.log(`Cached results for key: ${cacheKey}`);
+      console.log(`Cached results for key: ${searchHash}`);
     } catch (cacheError) {
       console.error("Failed to cache results:", cacheError);
-      // Continue without caching if Redis fails
     }
   }
 
   return response.data;
-}
-
-function generateCacheKey(
-  query: string,
-  options: SearchFilters,
-  offset: number = 0
-): string {
-  const filterString = JSON.stringify({
-    condition: options.condition || "none",
-    category: options.category || "none",
-    minPrice: options.minPrice || 0,
-    maxPrice: options.maxPrice || 200,
-    offset: offset,
-  });
-
-  return `ebay:search:${query}:${filterString}`;
 }
 
 function mapCondition(conditionId: string): string {
