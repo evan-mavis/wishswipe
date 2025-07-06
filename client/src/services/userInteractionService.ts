@@ -81,6 +81,8 @@ class UserInteractionService {
 		// Clear session ID after flushing
 		this.currentSearchSessionId = null;
 
+		// At this point, interactions array is guaranteed to have items
+		// because we checked this.interactionQueue.length > 0 at the start
 		try {
 			await axiosInstance.post("/wishswipe/user-item-history/batch", {
 				interactions: interactions.map((interaction) => ({
