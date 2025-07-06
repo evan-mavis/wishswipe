@@ -107,7 +107,6 @@ export async function searchEbayItems(
     try {
       const cacheExpiry = 2400; // 40 minutes
       await redis.setex(cacheKey, cacheExpiry, JSON.stringify(response.data));
-      console.log(`Cached results for key: ${searchHash}`);
     } catch (cacheError) {
       console.error("Failed to cache results:", cacheError);
     }
