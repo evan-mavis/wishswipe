@@ -3,8 +3,6 @@ import * as wishlistItemController from "../controllers/wishlistItemController.j
 
 const router = express.Router();
 
-router.post("/", wishlistItemController.addItemToWishlist);
-
 router.patch("/reorder", wishlistItemController.reorderWishlistItems);
 
 router.delete("/", wishlistItemController.removeItemsFromWishlist);
