@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { z } from "zod";
 import { UserItemHistoryService } from "../services/userItemHistoryService.js";
+import { PaginationService } from "../services/paginationService.js";
 import * as wishlistItemRepo from "../db/repositories/wishlistItemRepository.js";
 
 const batchInteractionSchema = z.object({
@@ -21,6 +22,7 @@ const batchInteractionSchema = z.object({
       sellerFeedbackScore: z.number().int().nonnegative().optional(),
     })
   ),
+  searchSessionId: z.string().optional(), // To update pagination offset
 });
 
 export const recordBatchInteractions = async (
@@ -38,7 +40,20 @@ export const recordBatchInteractions = async (
       return;
     }
 
-    const { interactions } = parseResult.data;
+    const { interactions, searchSessionId } = parseResult.data;
+
+    // Update pagination offset if search session ID is provided
+    if (searchSessionId) {
+      try {
+        await PaginationService.updateSessionProgress(
+          parseInt(searchSessionId),
+          interactions.length
+        );
+      } catch (error) {
+        console.error("Failed to update pagination offset:", error);
+        // Continue processing interactions even if pagination update fails
+      }
+    }
 
     // Record each interaction and handle wishlist additions
     for (const interaction of interactions) {

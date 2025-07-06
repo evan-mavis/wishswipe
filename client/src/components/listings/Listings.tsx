@@ -34,6 +34,7 @@ export function Listings({
 	const [listings, setListings] = useState<Listing[]>([]);
 	const [isLoading, setIsLoading] = useState(false);
 	const [dismissedItems, setDismissedItems] = useState<Listing[]>([]);
+	const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
 
 	const handleProgressChange = (progress: number) => {
 		onProgressChange?.(progress);
@@ -50,25 +51,28 @@ export function Listings({
 			}
 
 			// Record interaction for batch processing
-			userInteractionService.addInteraction({
-				itemId: dismissedItem.itemId,
-				action: swipeDirection,
-				searchQuery: searchQuery,
-				conditionFilter: filters.condition,
-				categoryFilter: filters.category,
-				priceMin: filters.minPrice,
-				priceMax: filters.maxPrice,
-				itemPrice: parseFloat(dismissedItem.price.value),
-				// Include wishlist data for right swipes
-				...(swipeDirection === "right" &&
-					selectedWishlistId && {
-						wishlistId: selectedWishlistId,
-						title: dismissedItem.title,
-						imageUrl: dismissedItem.imageUrl,
-						itemWebUrl: dismissedItem.itemWebUrl,
-						sellerFeedbackScore: dismissedItem.sellerFeedbackScore,
-					}),
-			});
+			userInteractionService.addInteraction(
+				{
+					itemId: dismissedItem.itemId,
+					action: swipeDirection,
+					searchQuery: searchQuery,
+					conditionFilter: filters.condition,
+					categoryFilter: filters.category,
+					priceMin: filters.minPrice,
+					priceMax: filters.maxPrice,
+					itemPrice: parseFloat(dismissedItem.price.value),
+					// Include wishlist data for right swipes
+					...(swipeDirection === "right" &&
+						selectedWishlistId && {
+							wishlistId: selectedWishlistId,
+							title: dismissedItem.title,
+							imageUrl: dismissedItem.imageUrl,
+							itemWebUrl: dismissedItem.itemWebUrl,
+							sellerFeedbackScore: dismissedItem.sellerFeedbackScore,
+						}),
+				},
+				currentSessionId || undefined
+			);
 
 			// Remove from current listings
 			setListings((prev) =>
@@ -127,12 +131,18 @@ export function Listings({
 				});
 				if (data && Array.isArray(data.listings)) {
 					setListings(data.listings);
+					// Store the session ID for pagination tracking
+					if (data.pagination?.sessionId) {
+						setCurrentSessionId(data.pagination.sessionId.toString());
+					}
 				} else {
 					setListings([]);
+					setCurrentSessionId(null);
 				}
 			} catch (err) {
 				console.error(err);
 				setListings([]);
+				setCurrentSessionId(null);
 			} finally {
 				setIsLoading(false);
 			}
