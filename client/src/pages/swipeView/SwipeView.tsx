@@ -233,7 +233,7 @@ export function SwipeView() {
 					<div className="mx-auto flex w-full max-w-[600px] items-center justify-center">
 						<Trash2
 							size={28}
-							className={`mr-4 transition-all duration-300 ${
+							className={`mr-4 transition-transform duration-300 ${
 								progress < 5 ? "scale-150 text-red-500" : ""
 							}`}
 						/>
@@ -245,7 +245,7 @@ export function SwipeView() {
 						</div>
 						<ArrowDownToLine
 							size={28}
-							className={`ml-4 transition-all duration-300 ${
+							className={`ml-4 transition-transform duration-300 ${
 								progress > 95 ? "scale-150 text-green-500" : ""
 							}`}
 						/>

@@ -244,8 +244,14 @@ export function Listings({
 	}, [cleanup]);
 
 	return (
-		<div className="flex h-full w-full flex-col">
-			<div className="grid w-full flex-1 place-items-center">
+		<div
+			className="flex h-full w-full flex-col"
+			style={{ contain: "layout style" }}
+		>
+			<div
+				className="grid w-full flex-1 place-items-center"
+				style={{ contain: "layout style", overflow: "visible" }}
+			>
 				{isLoading ? (
 					<PlaceholderListing text="Searching eBay..." />
 				) : listings.length > 0 ? (

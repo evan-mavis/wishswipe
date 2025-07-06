@@ -178,7 +178,7 @@ export function WishlistCard({
 	return (
 		<>
 			<motion.div
-				layout={!isMobile || !searchQuery} // Disable layout animation on mobile when searching
+				layout={false} // Disable layout animations to prevent sidebar trigger movement
 				animate={{
 					width: isExpanded
 						? isMobile

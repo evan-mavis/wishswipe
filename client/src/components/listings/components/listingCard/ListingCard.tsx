@@ -44,6 +44,9 @@ export function ListingCard({
 		// Don't update progress if drag is already committed
 		if (isDragCommitted) return;
 
+		// Only update progress if the movement is significant enough
+		if (Math.abs(latest) < 10) return;
+
 		// Adjust calculation to reach 0/100 at threshold
 		const progress = 50 + (latest / DRAG_THRESHOLD) * 50;
 		onProgressChange?.(Math.min(Math.max(progress, 0), 100));
@@ -97,6 +100,8 @@ export function ListingCard({
 						x,
 						rotate,
 						opacity,
+						contain: "layout style paint",
+						willChange: "transform",
 					}}
 					initial={{ opacity: 0 }}
 					animate={{ opacity: 1 }}
