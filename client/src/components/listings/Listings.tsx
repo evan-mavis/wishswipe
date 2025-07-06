@@ -55,10 +55,13 @@ export function Listings({
 
 		setIsBackgroundLoading(true);
 		try {
-			const data = await fetchListings({
-				query: searchQuery,
-				...filters,
-			});
+			const data = await fetchListings(
+				{
+					query: searchQuery,
+					...filters,
+				},
+				true
+			);
 
 			if (data && Array.isArray(data.listings)) {
 				// Filter out items that are already in the current listings

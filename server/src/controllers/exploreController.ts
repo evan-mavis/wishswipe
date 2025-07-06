@@ -24,6 +24,7 @@ const exploreQuerySchema = z.object({
     .regex(/^\d*\.?\d+$/, "Invalid price format")
     .transform((val) => parseFloat(val))
     .optional(),
+  background: z.string().optional(),
 });
 
 const EBAY_RESPONSE_LIMIT = 200;
@@ -82,6 +83,18 @@ export const getEbayListings = async (
         req.dbUser.id,
         data.itemSummaries
       );
+
+      // If this is a background fetch and we have very few unseen items, advance to next page
+      // This prevents inefficient repeated calls for small batches
+      if (
+        parseResult.data.background === "true" &&
+        unseenListings.length > 0 &&
+        unseenListings.length < 10
+      ) {
+        currentPage += 1;
+        currentOffset = (currentPage - 1) * EBAY_RESPONSE_LIMIT;
+        await PaginationService.setNextPage(searchSession.id, currentPage);
+      }
 
       if (unseenListings.length === 0) {
         currentPage += 1;
