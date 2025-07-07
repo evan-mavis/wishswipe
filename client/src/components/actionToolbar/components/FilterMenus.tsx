@@ -50,8 +50,8 @@ export function FilterMenus({
 						}
 					>
 						{CONDITIONS.map((condition) => (
-							<MenubarRadioItem key={condition.value} value={condition.value}>
-								{condition.label}
+							<MenubarRadioItem key={condition} value={condition}>
+								{condition}
 							</MenubarRadioItem>
 						))}
 					</MenubarRadioGroup>
@@ -69,8 +69,8 @@ export function FilterMenus({
 						}
 					>
 						{CATEGORIES.map((category) => (
-							<MenubarRadioItem key={category.value} value={category.value}>
-								{category.label}
+							<MenubarRadioItem key={category} value={category}>
+								{category}
 							</MenubarRadioItem>
 						))}
 					</MenubarRadioGroup>

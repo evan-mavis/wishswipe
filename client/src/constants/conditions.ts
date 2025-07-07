@@ -1,6 +1,1 @@
-export const CONDITIONS = [
-	{ value: "none", label: "No Selection" },
-	{ value: "new", label: "New" },
-	{ value: "used", label: "Used" },
-	{ value: "refurbished", label: "Refurbished" },
-];
+export const CONDITIONS = ["No Selection", "New", "Used", "Refurbished"];

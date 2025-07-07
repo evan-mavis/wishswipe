@@ -31,7 +31,7 @@ export function PriceStatisticsCard({
 				<div className="flex h-48 items-center justify-center">
 					<div className="flex w-full items-center justify-between px-8">
 						<div className="flex-1 text-center">
-							<div className="text-4xl font-bold text-red-600">
+							<div className="animate-bounce-in text-4xl font-bold text-red-600">
 								${min.toFixed(2)}
 							</div>
 							<p className="text-muted-foreground text-base">Lowest</p>
@@ -40,7 +40,7 @@ export function PriceStatisticsCard({
 						<div className="h-32 w-px bg-gray-300 dark:bg-gray-600" />
 
 						<div className="flex-1 text-center">
-							<div className="text-4xl font-bold text-fuchsia-300">
+							<div className="animate-bounce-in text-4xl font-bold text-fuchsia-300">
 								${average.toFixed(2)}
 							</div>
 							<p className="text-muted-foreground text-base">Average</p>
@@ -49,7 +49,7 @@ export function PriceStatisticsCard({
 						<div className="h-32 w-px bg-gray-300 dark:bg-gray-600" />
 
 						<div className="flex-1 text-center">
-							<div className="text-4xl font-bold text-green-600">
+							<div className="animate-bounce-in text-4xl font-bold text-green-600">
 								${max.toFixed(2)}
 							</div>
 							<p className="text-muted-foreground text-base">Highest</p>

@@ -16,7 +16,9 @@ export function SwipeCountsHeader({ swipeCounts }: SwipeCountsHeaderProps) {
 					<div className="text-center">
 						<div className="flex items-center gap-2 text-red-600">
 							<ArrowLeft className="h-6 w-6" />
-							<span className="text-4xl font-bold">{swipeCounts.left}</span>
+							<span className="animate-bounce-in text-4xl font-bold">
+								{swipeCounts.left}
+							</span>
 						</div>
 						<p className="text-muted-foreground text-sm">Swipe Left</p>
 					</div>
@@ -25,7 +27,9 @@ export function SwipeCountsHeader({ swipeCounts }: SwipeCountsHeaderProps) {
 
 					<div className="text-center">
 						<div className="flex items-center gap-2 text-green-600">
-							<span className="text-4xl font-bold">{swipeCounts.right}</span>
+							<span className="animate-bounce-in text-4xl font-bold">
+								{swipeCounts.right}
+							</span>
 							<ArrowRight className="h-6 w-6" />
 						</div>
 						<p className="text-muted-foreground text-sm">Swipe Right</p>

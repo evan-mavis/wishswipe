@@ -35,7 +35,9 @@ export function StatCard({
 			</CardHeader>
 			<CardContent>
 				<div className="text-center">
-					<div className="text-3xl font-bold text-fuchsia-300">{value}</div>
+					<div className="animate-bounce-in text-3xl font-bold text-fuchsia-300">
+						{value}
+					</div>
 					{label && <p className="text-lg font-semibold">{label}</p>}
 					{label2 && <p className="text-muted-foreground text-sm">{label2}</p>}
 				</div>

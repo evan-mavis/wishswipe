@@ -110,6 +110,7 @@ export function Feedback() {
 							<li>• Consider if others would benefit from this</li>
 						</ul>
 					</div>
+					<h3>Thank you!</h3>
 				</CardContent>
 			</Card>
 		</div>

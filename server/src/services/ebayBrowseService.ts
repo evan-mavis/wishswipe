@@ -26,8 +26,11 @@ export async function searchEbayItems(
   params.append("limit", "200");
   params.append("offset", offset.toString());
 
-  if (searchFilters.category && searchFilters.category !== "none") {
-    params.append("category_ids", searchFilters.category);
+  if (searchFilters.category && searchFilters.category !== "No Selection") {
+    const categoryId = mapCategoryToId(searchFilters.category);
+    if (categoryId) {
+      params.append("category_ids", categoryId);
+    }
   }
 
   const filters: string[] = [];
@@ -123,6 +126,41 @@ function mapCondition(conditionId: string): string {
       return "2750|3000|4000|5000|6000"; // Like New, Used, Very Good, Good, Acceptable
     case "refurbished":
       return "2000|2500"; // Certified Refurbished, Seller Refurbished (using more common ones)
+    default:
+      return "";
+  }
+}
+
+function mapCategoryToId(categoryLabel: string): string {
+  switch (categoryLabel) {
+    case "Clothing, Shoes & Accessories":
+      return "11450";
+    case "Health & Beauty":
+      return "26395";
+    case "Toys & Hobbies":
+      return "220";
+    case "Books & Magazines":
+      return "267";
+    case "Jewelry & Watches":
+      return "281";
+    case "Consumer Electronics":
+      return "293";
+    case "Musical Instruments & Gear":
+      return "619";
+    case "Cameras & Photo":
+      return "625";
+    case "Pottery & Glass":
+      return "870";
+    case "Sporting Goods":
+      return "888";
+    case "Video Games & Consoles":
+      return "1249";
+    case "Travel":
+      return "3252";
+    case "Home & Garden":
+      return "11700";
+    case "Everything Else...":
+      return "99";
     default:
       return "";
   }

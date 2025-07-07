@@ -23,14 +23,14 @@ import {
 export function Preferences() {
 	const [preferences, setPreferences] = useState<Preferences>({
 		defaultSearchTerm: "",
-		defaultCondition: "none",
-		defaultCategory: "none",
+		defaultCondition: "None",
+		defaultCategory: "None",
 		defaultPriceRange: [10, 75],
 	});
 	const [originalPreferences, setOriginalPreferences] = useState<Preferences>({
 		defaultSearchTerm: "",
-		defaultCondition: "none",
-		defaultCategory: "none",
+		defaultCondition: "None",
+		defaultCategory: "None",
 		defaultPriceRange: [10, 75],
 	});
 	const [isLoading, setIsLoading] = useState(false);
@@ -70,8 +70,8 @@ export function Preferences() {
 			// Set to default preferences after successful deletion
 			const defaultPrefs: Preferences = {
 				defaultSearchTerm: "",
-				defaultCondition: "none",
-				defaultCategory: "none",
+				defaultCondition: "None",
+				defaultCategory: "None",
 				defaultPriceRange: [10, 75],
 			};
 			setPreferences(defaultPrefs);
@@ -104,8 +104,8 @@ export function Preferences() {
 	// Check if user has saved preferences (record exists in database)
 	const hasSavedPreferences =
 		originalPreferences.defaultSearchTerm !== "" ||
-		originalPreferences.defaultCondition !== "none" ||
-		originalPreferences.defaultCategory !== "none" ||
+		originalPreferences.defaultCondition !== "None" ||
+		originalPreferences.defaultCategory !== "None" ||
 		originalPreferences.defaultPriceRange[0] !== 10 ||
 		originalPreferences.defaultPriceRange[1] !== 75;
 
@@ -151,8 +151,8 @@ export function Preferences() {
 									</SelectTrigger>
 									<SelectContent>
 										{CONDITIONS.map((condition) => (
-											<SelectItem key={condition.value} value={condition.value}>
-												{condition.label}
+											<SelectItem key={condition} value={condition}>
+												{condition}
 											</SelectItem>
 										))}
 									</SelectContent>
@@ -172,8 +172,8 @@ export function Preferences() {
 									</SelectTrigger>
 									<SelectContent>
 										{CATEGORIES.map((category) => (
-											<SelectItem key={category.value} value={category.value}>
-												{category.label}
+											<SelectItem key={category} value={category}>
+												{category}
 											</SelectItem>
 										))}
 									</SelectContent>
