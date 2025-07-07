@@ -12,6 +12,7 @@ import wishlistItemRoutes from "./routes/wishlistItemRoutes.js";
 import preferencesRoutes from "./routes/preferencesRoutes.js";
 import userItemHistoryRoutes from "./routes/userItemHistoryRoutes.js";
 import loginRoutes from "./routes/loginRoutes.js";
+import analyticsRoutes from "./routes/analyticsRoutes.js";
 
 // initialize firebase
 admin.initializeApp({
@@ -43,6 +44,7 @@ app.use("/wishswipe/wishlist", wishlistRoutes);
 app.use("/wishswipe/wishlist-items", wishlistItemRoutes);
 app.use("/wishswipe/preferences", preferencesRoutes);
 app.use("/wishswipe/user-item-history", userItemHistoryRoutes);
+app.use("/wishswipe/analytics", analyticsRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
