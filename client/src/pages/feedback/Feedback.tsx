@@ -73,7 +73,7 @@ export function Feedback() {
 
 			<Card>
 				<CardHeader>
-					<CardTitle className="text-xl">Guidelines</CardTitle>
+					<CardTitle className="text-xl">Guidelines -- Please :)</CardTitle>
 				</CardHeader>
 				<CardContent className="space-y-4">
 					<div>
