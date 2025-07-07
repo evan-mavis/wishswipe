@@ -6,13 +6,22 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
-import { Github, ExternalLink, AlertCircle, Bug, Star } from "lucide-react";
+import {
+	Github,
+	ExternalLink,
+	AlertCircle,
+	Bug,
+	Star,
+	MessageSquare,
+} from "lucide-react";
 
 export function Feedback() {
 	return (
-		<div className="container mx-auto mt-6 ml-4 max-w-4xl p-6">
+		<div className="container mx-auto mt-6 max-w-4xl p-6">
 			<div className="mb-8">
-				<h1 className="mb-2 text-3xl font-bold">Feedback & Issues</h1>
+				<h1 className="mb-2 flex items-center gap-2 text-3xl font-bold">
+					<MessageSquare className="text-xl" /> Feedback & Issues
+				</h1>
 				<p className="text-muted-foreground">
 					Help us improve WishSwipe by reporting issues and suggesting features.
 				</p>
