@@ -122,7 +122,7 @@ async function getPriceDistribution(userId: string) {
   const result = await db.query(
     `SELECT 
       range,
-      avgPrice
+      count
     FROM (
       SELECT 
         CASE 
@@ -133,7 +133,7 @@ async function getPriceDistribution(userId: string) {
           WHEN price <= 150 THEN '$101-150'
           ELSE '$151+'
         END as range,
-        AVG(price) as avgPrice
+        COUNT(*) as count
       FROM user_item_history 
       WHERE user_id = $1 
         AND action = $2
@@ -161,7 +161,7 @@ async function getPriceDistribution(userId: string) {
 
   return result.rows.map((row) => ({
     range: row.range,
-    avgPrice: parseFloat(row.avgprice),
+    count: parseInt(row.count),
   }));
 }
 

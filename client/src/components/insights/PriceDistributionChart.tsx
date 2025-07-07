@@ -14,7 +14,7 @@ import { Line, LineChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { DollarSign } from "lucide-react";
 
 interface PriceDistributionChartProps {
-	data: Array<{ range: string; avgPrice: number }>;
+	data: Array<{ range: string; count: number }>;
 	config: Record<string, { color: string }>;
 }
 
@@ -29,7 +29,9 @@ export function PriceDistributionChart({
 					<DollarSign className="h-4 w-4" />
 					Items by Price Range
 				</CardTitle>
-				<CardDescription>Number of items per price range</CardDescription>
+				<CardDescription>
+					Number of items swiped right per price range
+				</CardDescription>
 			</CardHeader>
 			<CardContent className="pt-0">
 				<ChartContainer config={config} className="h-64 w-full">
@@ -40,7 +42,7 @@ export function PriceDistributionChart({
 						<ChartTooltip content={<ChartTooltipContent />} />
 						<Line
 							type="monotone"
-							dataKey="avgPrice"
+							dataKey="count"
 							stroke="#a855f7"
 							strokeWidth={2}
 						/>
