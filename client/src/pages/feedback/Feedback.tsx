@@ -44,7 +44,9 @@ export function Feedback() {
 							<div className="space-y-2 text-sm">
 								<div className="flex items-center gap-2">
 									<Bug className="h-4 w-4 text-red-500" />
-									<span>Bug reports with steps to reproduce</span>
+									<span>
+										Bug reports with steps to reproduce -- screenshots please :)
+									</span>
 								</div>
 								<div className="flex items-center gap-2">
 									<Star className="h-4 w-4 text-green-500" />
@@ -68,49 +70,6 @@ export function Feedback() {
 							</a>
 						</Button>
 					</div>
-				</CardContent>
-			</Card>
-
-			<Card>
-				<CardHeader>
-					<CardTitle className="text-xl">Guidelines -- Please :)</CardTitle>
-				</CardHeader>
-				<CardContent className="space-y-4">
-					<div>
-						<h3 className="mb-2 font-semibold">For Bug Reports:</h3>
-						<ul className="text-muted-foreground ml-4 space-y-1 text-sm">
-							<li>
-								• Use the{" "}
-								<span className="rounded bg-red-500 px-1 font-mono text-black">
-									bug
-								</span>{" "}
-								label
-							</li>
-							<li>• Describe what you expected to happen</li>
-							<li>• Describe what actually happened</li>
-							<li>• Include steps to reproduce the issue</li>
-							<li>• Add screenshots if applicable</li>
-						</ul>
-					</div>
-					<div>
-						<h3 className="mb-2 font-semibold">For Feature Requests:</h3>
-						<ul className="text-muted-foreground ml-4 space-y-1 text-sm">
-							<li>
-								• Use the{" "}
-								<span className="rounded bg-green-500 px-1 font-mono text-black">
-									feature request
-								</span>{" "}
-								or{" "}
-								<span className="rounded bg-yellow-200 px-1 font-mono text-black">
-									enhancement
-								</span>{" "}
-								label
-							</li>
-							<li>• Explain why this would be useful</li>
-							<li>• Consider if others would benefit from this</li>
-						</ul>
-					</div>
-					<h3>Thank you!</h3>
 				</CardContent>
 			</Card>
 		</div>
