@@ -16,7 +16,7 @@ export function Layout() {
 				>
 					<SidebarTrigger />
 				</div>
-				<div className="p-2">
+				<div>
 					<Outlet />
 				</div>
 			</SidebarInset>
