@@ -116,14 +116,42 @@ function ChartTooltipContent({
 	color,
 	nameKey,
 	labelKey,
-}: React.ComponentProps<typeof RechartsPrimitive.Tooltip> &
-	React.ComponentProps<"div"> & {
-		hideLabel?: boolean;
-		hideIndicator?: boolean;
-		indicator?: "line" | "dot" | "dashed";
-		nameKey?: string;
-		labelKey?: string;
-	}) {
+}: {
+	active?: boolean;
+	payload?: Array<{
+		dataKey: string;
+		name: string;
+		value: number;
+		color: string;
+		payload: Record<string, unknown>;
+	}>;
+	className?: string;
+	indicator?: "line" | "dot" | "dashed";
+	hideLabel?: boolean;
+	hideIndicator?: boolean;
+	label?: string;
+	labelFormatter?: (
+		value: string | number | React.ReactNode,
+		payload: Array<{
+			dataKey: string;
+			name: string;
+			value: number;
+			color: string;
+			payload: Record<string, unknown>;
+		}>
+	) => React.ReactNode;
+	labelClassName?: string;
+	formatter?: (
+		value: number,
+		name: string,
+		props: Record<string, unknown>,
+		index: number,
+		payload: Record<string, unknown>
+	) => React.ReactNode;
+	color?: string;
+	nameKey?: string;
+	labelKey?: string;
+}) {
 	const { config } = useChart();
 
 	const tooltipLabel = React.useMemo(() => {
@@ -139,10 +167,10 @@ function ChartTooltipContent({
 				? config[label as keyof typeof config]?.label || label
 				: itemConfig?.label;
 
-		if (labelFormatter) {
+		if (labelFormatter && value) {
 			return (
 				<div className={cn("font-medium", labelClassName)}>
-					{labelFormatter(value, payload)}
+					{labelFormatter(value, payload || [])}
 				</div>
 			);
 		}
@@ -254,11 +282,18 @@ function ChartLegendContent({
 	payload,
 	verticalAlign = "bottom",
 	nameKey,
-}: React.ComponentProps<"div"> &
-	Pick<RechartsPrimitive.LegendProps, "payload" | "verticalAlign"> & {
-		hideIcon?: boolean;
-		nameKey?: string;
-	}) {
+}: {
+	className?: string;
+	hideIcon?: boolean;
+	payload?: Array<{
+		dataKey: string;
+		name: string;
+		value: string;
+		color: string;
+	}>;
+	verticalAlign?: "top" | "bottom";
+	nameKey?: string;
+}) {
 	const { config } = useChart();
 
 	if (!payload?.length) {
