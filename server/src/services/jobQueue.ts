@@ -1,5 +1,6 @@
 import { Queue, Worker } from "bullmq";
 import { SearchSessionService } from "./searchSessionService.js";
+import { WishlistItemService } from "./wishlistItemService.js";
 import redis from "../utils/redisClient.js";
 
 // Use existing Redis connection
@@ -33,7 +34,7 @@ const searchSessionWorker = new Worker(
   }
 );
 
-// Worker for checking expired items (placeholder for future implementation)
+// Worker for checking expired items
 const expiredItemsWorker = new Worker(
   "expired-items-check",
   async (job) => {
@@ -45,9 +46,8 @@ const expiredItemsWorker = new Worker(
     );
 
     try {
-      // TODO: Implement expired items checking logic
-      // await WishlistService.checkExpiredItems();
-      console.log("Successfully checked expired items");
+      const result = await WishlistItemService.checkAllActiveItems();
+      console.log("Successfully checked expired items:", result);
     } catch (error) {
       console.error("Error checking expired items:", error);
       throw error;

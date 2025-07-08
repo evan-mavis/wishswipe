@@ -118,6 +118,35 @@ export async function searchEbayItems(
   return response.data;
 }
 
+export async function getItemDetails(itemId: string): Promise<any> {
+  try {
+    const accessToken = await getEbayAccessToken();
+
+    const response = await axios.get(
+      `${process.env.EBAY_BASE_URL}/buy/browse/v1/item/${itemId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (response.data && response.data.errors) {
+      console.error(
+        "eBay API errors for item details:",
+        JSON.stringify(response.data.errors, null, 2)
+      );
+      throw new Error("eBay API error");
+    }
+
+    return response.data;
+  } catch (error) {
+    console.error(`Error fetching item details for ${itemId}:`, error);
+    throw error;
+  }
+}
+
 function mapCondition(conditionId: string): string {
   switch (conditionId) {
     case "new":
