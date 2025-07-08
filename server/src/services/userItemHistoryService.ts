@@ -17,7 +17,9 @@ export class UserItemHistoryService {
 
       const result = await client.query(
         `SELECT item_id FROM user_item_history 
-         WHERE user_id = $1 AND item_id IN (${placeholders})`,
+         WHERE user_id = $1 
+         AND item_id IN (${placeholders})
+         AND created_at >= NOW() - INTERVAL '14 days'`,
         [userId, ...itemIds]
       );
 

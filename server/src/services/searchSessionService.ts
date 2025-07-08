@@ -2,7 +2,7 @@ import pool from "../db/index.js";
 import { SearchFilters } from "../types/ebay.js";
 import { SearchSession } from "../types/searchSession.js";
 
-export class PaginationService {
+export class SearchSessionService {
   static async getOrCreateSession(
     userId: string,
     searchHash: string,
@@ -85,6 +85,23 @@ export class PaginationService {
              last_activity = NOW()
          WHERE id = $2`,
         [itemsSeen, sessionId]
+      );
+    } finally {
+      client.release();
+    }
+  }
+
+  static async resetOldSessions(): Promise<void> {
+    const client = await pool.connect();
+
+    try {
+      // Reset sessions older than 1 week back to page 1
+      await client.query(
+        `UPDATE user_search_sessions 
+         SET page_number = 1,
+             total_items_seen = 0,
+             last_activity = NOW()
+         WHERE created_at < NOW() - INTERVAL '7 days'`
       );
     } finally {
       client.release();

@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { z } from "zod";
 import { searchEbayItems } from "../services/ebayBrowseService.js";
-import { PaginationService } from "../services/paginationService.js";
+import { SearchSessionService } from "../services/searchSessionService.js";
 import { UserItemHistoryService } from "../services/userItemHistoryService.js";
 import {
   SimplifiedListing,
@@ -49,7 +49,7 @@ export const getEbayListings = async (
     const searchHash = generateSearchHash(searchFilters);
 
     // get or create search session for this user and search
-    const searchSession = await PaginationService.getOrCreateSession(
+    const searchSession = await SearchSessionService.getOrCreateSession(
       req.dbUser.id,
       searchHash,
       searchFilters
@@ -93,13 +93,13 @@ export const getEbayListings = async (
       ) {
         currentPage += 1;
         currentOffset = (currentPage - 1) * EBAY_RESPONSE_LIMIT;
-        await PaginationService.setNextPage(searchSession.id, currentPage);
+        await SearchSessionService.setNextPage(searchSession.id, currentPage);
       }
 
       if (unseenListings.length === 0) {
         currentPage += 1;
         currentOffset = (currentPage - 1) * EBAY_RESPONSE_LIMIT;
-        await PaginationService.setNextPage(searchSession.id, currentPage);
+        await SearchSessionService.setNextPage(searchSession.id, currentPage);
         attempts++;
       }
     }

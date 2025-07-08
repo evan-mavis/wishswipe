@@ -13,6 +13,7 @@ import preferencesRoutes from "./routes/preferencesRoutes.js";
 import userItemHistoryRoutes from "./routes/userItemHistoryRoutes.js";
 import loginRoutes from "./routes/loginRoutes.js";
 import analyticsRoutes from "./routes/analyticsRoutes.js";
+import { JobQueueService } from "./services/jobQueue.js";
 
 // initialize firebase
 admin.initializeApp({
@@ -46,8 +47,29 @@ app.use("/wishswipe/preferences", preferencesRoutes);
 app.use("/wishswipe/user-item-history", userItemHistoryRoutes);
 app.use("/wishswipe/analytics", analyticsRoutes);
 
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
   console.log(`Server running on http://localhost:${PORT}`);
+
+  // Initialize scheduled jobs
+  try {
+    await JobQueueService.initializeScheduledJobs();
+    console.log("Job queues initialized successfully");
+  } catch (error) {
+    console.error("Failed to initialize job queues:", error);
+  }
+});
+
+// Graceful shutdown
+process.on("SIGTERM", async () => {
+  console.log("SIGTERM received, shutting down gracefully...");
+  await JobQueueService.shutdown();
+  process.exit(0);
+});
+
+process.on("SIGINT", async () => {
+  console.log("SIGINT received, shutting down gracefully...");
+  await JobQueueService.shutdown();
+  process.exit(0);
 });
 
 export default app;

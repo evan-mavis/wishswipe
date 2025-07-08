@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { z } from "zod";
 import { UserItemHistoryService } from "../services/userItemHistoryService.js";
-import { PaginationService } from "../services/paginationService.js";
+import { PaginationService } from "../services/searchSessionService.js";
 import * as wishlistItemRepo from "../db/repositories/wishlistItemRepository.js";
 import { SWIPE_ACTIONS } from "../constants/swipe.js";
 
