@@ -29,7 +29,7 @@ export function PriceStatisticsCard({
 			</CardHeader>
 			<CardContent className="pt-0">
 				<div className="flex h-48 items-center justify-center">
-					<div className="flex w-full items-center justify-between px-8">
+					<div className="flex w-full flex-col items-center justify-between gap-6 px-8 sm:flex-row sm:gap-0">
 						<div className="flex-1 text-center">
 							<div className="animate-bounce-in text-4xl font-bold text-red-600">
 								${min.toFixed(2)}
@@ -37,7 +37,7 @@ export function PriceStatisticsCard({
 							<p className="text-muted-foreground text-base">Lowest</p>
 						</div>
 
-						<div className="h-32 w-px bg-gray-300 dark:bg-gray-600" />
+						<div className="hidden h-32 w-px bg-gray-300 sm:block dark:bg-gray-600" />
 
 						<div className="flex-1 text-center">
 							<div className="animate-bounce-in text-4xl font-bold text-fuchsia-300">
@@ -46,7 +46,7 @@ export function PriceStatisticsCard({
 							<p className="text-muted-foreground text-base">Average</p>
 						</div>
 
-						<div className="h-32 w-px bg-gray-300 dark:bg-gray-600" />
+						<div className="hidden h-32 w-px bg-gray-300 sm:block dark:bg-gray-600" />
 
 						<div className="flex-1 text-center">
 							<div className="animate-bounce-in text-4xl font-bold text-green-600">
