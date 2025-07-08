@@ -2,6 +2,7 @@ import { Queue, Worker } from "bullmq";
 import { SearchSessionService } from "./searchSessionService.js";
 import { WishlistItemService } from "./wishlistItemService.js";
 import redis from "../utils/redisClient.js";
+import logger from "../utils/logger.js";
 
 // Use existing Redis connection
 const connection = redis;
@@ -18,13 +19,15 @@ export const expiredItemsQueue = new Queue("expired-items-check", {
 const searchSessionWorker = new Worker(
   "search-session-reset",
   async (job) => {
-    console.log("Processing job:", job.name, "with data:", job.data);
+    logger.info(
+      `Processing job: ${job.name} with data: ${JSON.stringify(job.data)}`
+    );
 
     try {
       await SearchSessionService.resetOldSessions();
-      console.log("Successfully reset old search sessions");
+      logger.info("Successfully reset old search sessions");
     } catch (error) {
-      console.error("Error resetting search sessions:", error);
+      logger.error("Error resetting search sessions:", error);
       throw error; // This will trigger a retry
     }
   },
@@ -38,18 +41,19 @@ const searchSessionWorker = new Worker(
 const expiredItemsWorker = new Worker(
   "expired-items-check",
   async (job) => {
-    console.log(
-      "Processing expired items check job:",
-      job.name,
-      "with data:",
-      job.data
+    logger.info(
+      `Processing expired items check job: ${
+        job.name
+      } with data: ${JSON.stringify(job.data)}`
     );
 
     try {
       const result = await WishlistItemService.checkAllActiveItems();
-      console.log("Successfully checked expired items:", result);
+      logger.info(
+        `Successfully checked expired items: ${JSON.stringify(result)}`
+      );
     } catch (error) {
-      console.error("Error checking expired items:", error);
+      logger.error("Error checking expired items:", error);
       throw error;
     }
   },
@@ -61,11 +65,11 @@ const expiredItemsWorker = new Worker(
 
 // Error handling
 searchSessionWorker.on("error", (error) => {
-  console.error("Search session worker error:", error);
+  logger.error("Search session worker error:", error);
 });
 
 expiredItemsWorker.on("error", (error) => {
-  console.error("Expired items worker error:", error);
+  logger.error("Expired items worker error:", error);
 });
 
 // Job scheduling functions
@@ -81,7 +85,7 @@ export const JobQueueService = {
         },
       }
     );
-    console.log("Scheduled search session reset job");
+    logger.info("Scheduled search session reset job");
   },
 
   // Schedule expired items check to run daily at 2 AM
@@ -95,7 +99,7 @@ export const JobQueueService = {
         },
       }
     );
-    console.log("Scheduled expired items check job");
+    logger.info("Scheduled expired items check job");
   },
 
   // Initialize all scheduled jobs

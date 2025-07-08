@@ -1,5 +1,6 @@
 import pool from "../db/index.js";
 import { getItemDetails } from "./ebayBrowseService.js";
+import logger from "../utils/logger.js";
 
 export class WishlistItemService {
   /**
@@ -14,7 +15,7 @@ export class WishlistItemService {
       return !!itemDetails;
     } catch (error) {
       // If the item doesn't exist or there's an error, it's not available
-      console.log(`Item ${ebayItemId} is no longer available:`, error);
+      logger.debug(`Item ${ebayItemId} is no longer available:`, error);
       return false;
     }
   }
@@ -78,7 +79,7 @@ export class WishlistItemService {
     let deactivated = 0;
     let errors = 0;
 
-    console.log(
+    logger.info(
       `Checking availability for ${items.length} active wishlist items...`
     );
 
@@ -94,13 +95,13 @@ export class WishlistItemService {
 
           if (!isAvailable) {
             await this.updateItemActiveStatus(item.id, false);
-            console.log(`Deactivated item: ${item.title} (${item.ebayItemId})`);
+            logger.info(`Deactivated item: ${item.title} (${item.ebayItemId})`);
             deactivated++;
           }
 
           checked++;
         } catch (error) {
-          console.error(`Error checking item ${item.ebayItemId}:`, error);
+          logger.error(`Error checking item ${item.ebayItemId}:`, error);
           errors++;
         }
       });
@@ -113,7 +114,7 @@ export class WishlistItemService {
       }
     }
 
-    console.log(
+    logger.info(
       `Availability check complete: ${checked} checked, ${deactivated} deactivated, ${errors} errors`
     );
 

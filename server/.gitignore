@@ -4,3 +4,4 @@ dist/
 .env.prod
 .DS_Store
 npm-debug.log
+logs/
