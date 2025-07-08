@@ -11,6 +11,7 @@ import type { Listing } from "@/types/listing";
 import { Link } from "react-router-dom";
 import { preferencesService } from "@/services/preferencesService";
 import { userInteractionService } from "@/services/userInteractionService";
+import { useNavigationFlush } from "@/hooks/use-navigation-flush";
 
 export function SwipeView() {
 	const { user } = useAuth();
@@ -32,6 +33,9 @@ export function SwipeView() {
 	const undoRef = useRef<(() => void) | null>(null);
 	// Create ref for undo count
 	const undoCountRef = useRef<number>(0);
+
+	// Use navigation flush hook to ensure interactions are saved when switching UIs
+	useNavigationFlush();
 
 	// Load user preferences on mount
 	useEffect(() => {
@@ -105,8 +109,6 @@ export function SwipeView() {
 		return () => {
 			document.removeEventListener("visibilitychange", handleVisibilityChange);
 			window.removeEventListener("beforeunload", handleBeforeUnload);
-			// Flush any remaining interactions on component unmount
-			userInteractionService.forceFlush();
 		};
 	}, []);
 
@@ -134,6 +136,11 @@ export function SwipeView() {
 
 	const handleWishlistsLoadingChange = useCallback((loading: boolean) => {
 		setWishlistsLoading(loading);
+	}, []);
+
+	const handleInteractionAdded = useCallback(() => {
+		// When an interaction is added, we don't need to do anything immediately
+		// The userInteractionService will handle batching and flushing
 	}, []);
 
 	return (
@@ -208,6 +215,7 @@ export function SwipeView() {
 						undoCountRef={undoCountRef}
 						onProgressChange={handleProgressChange}
 						onCurrentListingChange={handleCurrentListingChange}
+						onInteractionAdded={handleInteractionAdded}
 					/>
 				)}
 			</div>

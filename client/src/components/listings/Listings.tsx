@@ -16,10 +16,11 @@ interface ListingsProps {
 		maxPrice?: number;
 	};
 	selectedWishlistId?: string;
-	undoRef?: { current: (() => void) | null }; // Use object with current property
-	undoCountRef?: { current: number }; // Add ref for undo count
+	undoRef?: { current: (() => void) | null };
+	undoCountRef?: { current: number };
 	onProgressChange?: (progress: number) => void;
 	onCurrentListingChange?: (listing: Listing | null) => void;
+	onInteractionAdded?: () => void; // New callback for when interactions are added
 }
 
 export function Listings({
@@ -30,6 +31,7 @@ export function Listings({
 	undoCountRef,
 	onProgressChange,
 	onCurrentListingChange,
+	onInteractionAdded,
 }: ListingsProps) {
 	const [listings, setListings] = useState<Listing[]>([]);
 	const [isLoading, setIsLoading] = useState(false);
@@ -122,6 +124,9 @@ export function Listings({
 					}),
 			});
 
+			// Notify parent that an interaction was added
+			onInteractionAdded?.();
+
 			// Remove from current listings
 			setListings((prev) => {
 				const updatedListings = prev.filter(
@@ -150,6 +155,7 @@ export function Listings({
 			isLoading,
 			isBackgroundLoading,
 			fetchMoreListings,
+			onInteractionAdded,
 		]
 	);
 

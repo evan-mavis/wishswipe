@@ -2,6 +2,7 @@ import { GripVertical } from "lucide-react";
 import { WishlistCard } from "../../components/wishlistCard/WishlistCard";
 import type { WishList } from "@/types/wishlist";
 import { useState, useEffect } from "react";
+import { useNavigationFlush } from "@/hooks/use-navigation-flush";
 import {
 	AlertDialog,
 	AlertDialogContent,
@@ -20,6 +21,9 @@ import { NewWishlistDialog } from "../../components/wishlistCard/components/NewW
 import * as wishlistService from "../../services/wishlistService";
 
 export function Wishlist() {
+	// Use navigation flush hook to ensure interactions are saved when switching UIs
+	useNavigationFlush();
+
 	const [wishlists, setWishlists] = useState<WishList[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);

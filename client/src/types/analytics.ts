@@ -18,7 +18,7 @@ export interface AnalyticsData {
 	}>;
 	priceDistribution: Array<{
 		range: string;
-		avgPrice: number;
+		count: number;
 	}>;
 	wishlistStats: {
 		largestWishlist: {

@@ -23,7 +23,7 @@ class UserInteractionService {
 	private interactionQueue: UserInteraction[] = [];
 	private batchSize = 10;
 	private flushTimeout: NodeJS.Timeout | null = null;
-	private flushDelay = 10000; // 10 seconds
+	private flushDelay = 3000; // 3 seconds - reduced for more responsive updates
 
 	/**
 	 * Add an interaction to the queue
