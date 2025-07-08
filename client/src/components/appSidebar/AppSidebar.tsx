@@ -17,6 +17,7 @@ import {
 	SidebarMenu,
 	SidebarMenuButton,
 	SidebarMenuItem,
+	useSidebar,
 } from "@/components/ui/sidebar";
 import { AppHeader } from "../appHeader/AppHeader";
 import { SidebarFooterContent } from "./components/sidebarFooterContent/SidebarFooterContent";
@@ -53,6 +54,14 @@ const items = [
 export function AppSidebar() {
 	const isMobile = useIsMobile();
 	const location = useLocation();
+	const { setOpenMobile } = useSidebar();
+
+	const handleNavigationClick = () => {
+		// Close mobile sidebar when navigation item is clicked
+		if (isMobile) {
+			setOpenMobile(false);
+		}
+	};
 
 	return (
 		<Sidebar side={isMobile ? "bottom" : "left"}>
@@ -69,6 +78,7 @@ export function AppSidebar() {
 									<SidebarMenuButton
 										asChild
 										isActive={location.pathname === item.url}
+										onClick={handleNavigationClick}
 									>
 										<Link to={item.url}>
 											<item.icon />

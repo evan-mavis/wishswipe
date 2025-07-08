@@ -110,7 +110,7 @@ export function Preferences() {
 		originalPreferences.defaultPriceRange[1] !== 75;
 
 	return (
-		<div className="container mx-auto mt-6 max-w-4xl p-6">
+		<div className="container mx-auto max-w-4xl p-6">
 			<div className="mb-8">
 				<h1 className="text-foreground flex items-center gap-2 text-3xl font-bold">
 					<Settings /> Preferences

@@ -207,7 +207,7 @@ export function Wishlist() {
 
 	return (
 		<>
-			<div className="container mx-auto p-8">
+			<div className="container mx-auto p-6">
 				<div className="mt-5 mr-1 mb-8 ml-1 flex items-center justify-between">
 					<WishlistHeader />
 					{renderWishlistActions()}
