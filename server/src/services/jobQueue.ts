@@ -4,10 +4,10 @@ import { WishlistItemService } from "./wishlistItemService.js";
 import redis from "../utils/redisClient.js";
 import logger from "../utils/logger.js";
 
-// Use existing Redis connection
+// use existing redis connection
 const connection = redis;
 
-// Job queues
+// job queues
 export const searchSessionQueue = new Queue("search-session-reset", {
   connection,
 });
@@ -15,7 +15,7 @@ export const expiredItemsQueue = new Queue("expired-items-check", {
   connection,
 });
 
-// Worker for resetting old search sessions
+// worker for resetting old search sessions
 const searchSessionWorker = new Worker(
   "search-session-reset",
   async (job) => {
@@ -28,16 +28,16 @@ const searchSessionWorker = new Worker(
       logger.info("Successfully reset old search sessions");
     } catch (error) {
       logger.error("Error resetting search sessions:", error);
-      throw error; // This will trigger a retry
+      throw error; // this will trigger a retry
     }
   },
   {
     connection,
-    concurrency: 1, // Only process one job at a time
+    concurrency: 1, // only process one job at a time
   }
 );
 
-// Worker for checking expired items
+// worker for checking expired items
 const expiredItemsWorker = new Worker(
   "expired-items-check",
   async (job) => {
@@ -63,7 +63,7 @@ const expiredItemsWorker = new Worker(
   }
 );
 
-// Error handling
+// error handling
 searchSessionWorker.on("error", (error) => {
   logger.error("Search session worker error:", error);
 });
@@ -72,48 +72,48 @@ expiredItemsWorker.on("error", (error) => {
   logger.error("Expired items worker error:", error);
 });
 
-// Job scheduling functions
+// job scheduling functions
 export const JobQueueService = {
-  // Schedule search session reset to run every hour
+  // schedule search session reset to run every hour
   async scheduleSearchSessionReset(): Promise<void> {
     await searchSessionQueue.add(
       "reset-old-sessions",
       {},
       {
         repeat: {
-          pattern: "0 * * * *", // Every hour at minute 0
+          pattern: "0 * * * *", // every hour at minute 0
         },
       }
     );
     logger.info("Scheduled search session reset job");
   },
 
-  // Schedule expired items check to run daily at 2 AM
+  // schedule expired items check to run daily at 2 am
   async scheduleExpiredItemsCheck(): Promise<void> {
     await expiredItemsQueue.add(
       "check-expired-items",
       {},
       {
         repeat: {
-          pattern: "0 2 * * *", // Daily at 2:00 AM
+          pattern: "0 2 * * *", // daily at 2:00 am
         },
       }
     );
     logger.info("Scheduled expired items check job");
   },
 
-  // Initialize all scheduled jobs
+  // initialize all scheduled jobs
   async initializeScheduledJobs(): Promise<void> {
     await this.scheduleSearchSessionReset();
     await this.scheduleExpiredItemsCheck();
   },
 
-  // Graceful shutdown
+  // graceful shutdown
   async shutdown(): Promise<void> {
     await searchSessionWorker.close();
     await expiredItemsWorker.close();
     await searchSessionQueue.close();
     await expiredItemsQueue.close();
-    // Note: Don't quit the Redis connection as it's shared
+    // note: don't quit the redis connection as it's shared
   },
 };

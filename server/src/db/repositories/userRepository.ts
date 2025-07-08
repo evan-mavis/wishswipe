@@ -1,7 +1,7 @@
 import pool from "../index.js";
 import { DbUser, CreateUserRequest } from "../../types/user.js";
 
-// Transform database row (snake_case) to TypeScript interface (camelCase)
+// transform database row (snake_case) to typescript interface (camelCase)
 function transformDbRowToUser(row: any): DbUser {
   return {
     id: row.id,

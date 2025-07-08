@@ -6,6 +6,7 @@ import {
   EbayItemSummary,
 } from "../types/ebay.js";
 import redis from "../utils/redisClient.js";
+import logger from "../utils/logger.js";
 
 export async function searchEbayItems(
   searchHash: string,
@@ -44,7 +45,7 @@ export async function searchEbayItems(
 
   if (searchFilters.minPrice || searchFilters.maxPrice) {
     let priceFilter = "";
-    // If max price is 200, ignore it and only use min price
+    // if max price is 200, ignore it and only use min price
     const effectiveMaxPrice =
       searchFilters.maxPrice === 200 ? undefined : searchFilters.maxPrice;
 
@@ -61,7 +62,7 @@ export async function searchEbayItems(
     if (priceFilter) filters.push(priceFilter);
   }
 
-  // Combine all filters into a single filter parameter
+  // combine all filters into a single filter parameter
   if (filters.length > 0) {
     params.append("filter", filters.join(","));
   }
@@ -79,29 +80,29 @@ export async function searchEbayItems(
   );
 
   if (response.data && response.data.errors) {
-    console.error(
+    logger.error(
       "eBay API errors:",
       JSON.stringify(response.data.errors, null, 2)
     );
-    // Don't cache error responses
+    // don't cache error responses
     return response.data;
   }
 
   if (response.data && response.data.warnings) {
-    console.warn(
+    logger.warn(
       "eBay API warnings:",
       JSON.stringify(response.data.warnings, null, 2)
     );
   }
 
-  // Filter out items without images
+  // filter out items without images
   if (response.data && response.data.itemSummaries) {
     response.data.itemSummaries = response.data.itemSummaries.filter(
       (item: EbayItemSummary) => item.image?.imageUrl
     );
   }
 
-  // Only cache successful responses with items
+  // only cache successful responses with items
   if (
     response.data &&
     response.data.itemSummaries &&
@@ -111,7 +112,7 @@ export async function searchEbayItems(
       const cacheExpiry = 2400; // 40 minutes
       await redis.setex(cacheKey, cacheExpiry, JSON.stringify(response.data));
     } catch (cacheError) {
-      console.error("Failed to cache results:", cacheError);
+      logger.error("Failed to cache results:", cacheError);
     }
   }
 
@@ -133,7 +134,7 @@ export async function getItemDetails(itemId: string): Promise<any> {
     );
 
     if (response.data && response.data.errors) {
-      console.error(
+      logger.error(
         "eBay API errors for item details:",
         JSON.stringify(response.data.errors, null, 2)
       );
@@ -142,7 +143,7 @@ export async function getItemDetails(itemId: string): Promise<any> {
 
     return response.data;
   } catch (error) {
-    console.error(`Error fetching item details for ${itemId}:`, error);
+    logger.error(`Error fetching item details for ${itemId}:`, error);
     throw error;
   }
 }
@@ -150,11 +151,11 @@ export async function getItemDetails(itemId: string): Promise<any> {
 function mapCondition(conditionId: string): string {
   switch (conditionId) {
     case "new":
-      return "1000|1500|1750"; // New, New other, New with defects
+      return "1000|1500|1750"; // new, new other, new with defects
     case "used":
-      return "2750|3000|4000|5000|6000"; // Like New, Used, Very Good, Good, Acceptable
+      return "2750|3000|4000|5000|6000"; // like new, used, very good, good, acceptable
     case "refurbished":
-      return "2000|2500"; // Certified Refurbished, Seller Refurbished (using more common ones)
+      return "2000|2500"; // certified refurbished, seller refurbished (using more common ones)
     default:
       return "";
   }

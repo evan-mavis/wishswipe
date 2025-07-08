@@ -1,9 +1,10 @@
 import { Request, Response } from "express";
 import { z } from "zod";
 import { UserItemHistoryService } from "../services/userItemHistoryService.js";
-import { PaginationService } from "../services/searchSessionService.js";
+import { SearchSessionService } from "../services/searchSessionService.js";
 import * as wishlistItemRepo from "../db/repositories/wishlistItemRepository.js";
 import { SWIPE_ACTIONS } from "../constants/swipe.js";
+import logger from "../utils/logger.js";
 
 const batchInteractionSchema = z.object({
   interactions: z.array(
@@ -23,7 +24,7 @@ const batchInteractionSchema = z.object({
       sellerFeedbackScore: z.number().int().nonnegative().optional(),
     })
   ),
-  searchSessionId: z.string().nullable().optional(), // Allow null values
+  searchSessionId: z.string().nullable().optional(), // allow null values
 });
 
 export const recordBatchInteractions = async (
@@ -45,12 +46,12 @@ export const recordBatchInteractions = async (
 
     if (searchSessionId) {
       try {
-        await PaginationService.updateSessionProgress(
+        await SearchSessionService.updateSessionProgress(
           parseInt(searchSessionId),
           interactions.length
         );
       } catch (error) {
-        console.error("Failed to update session progress:", error);
+        logger.error("Failed to update session progress:", error);
       }
     }
 
@@ -84,7 +85,7 @@ export const recordBatchInteractions = async (
             sellerFeedbackScore: interaction.sellerFeedbackScore,
           });
         } catch (error) {
-          console.error(
+          logger.error(
             `Failed to add item ${interaction.itemId} to wishlist:`,
             error
           );
@@ -97,7 +98,7 @@ export const recordBatchInteractions = async (
       recordedCount: interactions.length,
     });
   } catch (error) {
-    console.error("Error recording batch interactions:", error);
+    logger.error("Error recording batch interactions:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };

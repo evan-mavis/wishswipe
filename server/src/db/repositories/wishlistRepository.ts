@@ -72,13 +72,13 @@ export async function findWishlistsWithItemsByUserId(
     [userId]
   );
 
-  // Group the results by wishlist
+  // group the results by wishlist
   const wishlistsMap = new Map<string, DbWishlistWithItems>();
 
   rows.forEach((row) => {
     const wishlistId = row.wishlist_id;
 
-    // If we haven't seen this wishlist yet, create it
+    // if we haven't seen this wishlist yet, create it
     if (!wishlistsMap.has(wishlistId)) {
       wishlistsMap.set(wishlistId, {
         id: row.wishlist_id,
@@ -92,7 +92,7 @@ export async function findWishlistsWithItemsByUserId(
       });
     }
 
-    // If there's an item for this wishlist, add it
+    // if there's an item for this wishlist, add it
     if (row.item_id) {
       const wishlist = wishlistsMap.get(wishlistId)!;
       wishlist.items.push({
@@ -112,7 +112,7 @@ export async function findWishlistsWithItemsByUserId(
     }
   });
 
-  // Convert map to array and add item counts
+  // convert map to array and add item counts
   return Array.from(wishlistsMap.values()).map((wishlist) => ({
     ...wishlist,
     itemCount: wishlist.items.length,
@@ -128,7 +128,7 @@ export async function createWishlist(
   try {
     await client.query("BEGIN");
 
-    // If setting as favorite, clear any existing favorites
+    // if setting as favorite, clear any existing favorites
     if (isFavorite) {
       await client.query(
         `UPDATE wishlists SET is_favorite = false WHERE user_id = $1 AND is_favorite = true`,
@@ -136,7 +136,7 @@ export async function createWishlist(
       );
     }
 
-    // If no orderIndex provided, get the next highest order
+    // if no orderIndex provided, get the next highest order
     let finalOrderIndex = orderIndex;
     if (finalOrderIndex === undefined) {
       const { rows } = await client.query(
@@ -183,7 +183,7 @@ export async function updateWishlist(
   try {
     await client.query("BEGIN");
 
-    // If setting as favorite, clear any existing favorites
+    // if setting as favorite, clear any existing favorites
     if (isFavorite === true) {
       await client.query(
         `UPDATE wishlists SET is_favorite = false WHERE user_id = $1 AND is_favorite = true AND id != $2`,

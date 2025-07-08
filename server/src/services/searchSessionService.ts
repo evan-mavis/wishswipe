@@ -95,7 +95,7 @@ export class SearchSessionService {
     const client = await pool.connect();
 
     try {
-      // Reset sessions older than 1 week back to page 1
+      // reset sessions older than 1 week back to page 1
       await client.query(
         `UPDATE user_search_sessions 
          SET page_number = 1,

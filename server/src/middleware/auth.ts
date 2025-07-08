@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction, RequestHandler } from "express";
 import admin from "firebase-admin";
 import * as userRepo from "../db/repositories/userRepository.js";
+import logger from "../utils/logger.js";
 
 export const authenticateUser: RequestHandler = async (
   req: Request,
@@ -17,18 +18,19 @@ export const authenticateUser: RequestHandler = async (
     const token = authHeader.split("Bearer ")[1];
     const decodedToken = await admin.auth().verifyIdToken(token);
 
-    // Look up the user in our database once here
+    // look up the user in our database once here
     const user = await userRepo.findByFirebaseUid(decodedToken.uid);
     if (!user) {
       res.status(404).json({ error: "User not found" });
       return;
     }
 
-    // Attach both Firebase token and our DB user
+    // attach both firebase token and our db user
     req.firebaseUserToken = decodedToken;
     req.dbUser = user;
     next();
   } catch (error) {
+    logger.error("Authentication error:", error);
     res.status(401).json({ error: "Unauthorized" });
     return;
   }

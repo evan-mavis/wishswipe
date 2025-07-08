@@ -1,6 +1,7 @@
 import db from "../db/index.js";
 import { AnalyticsData } from "../types/analytics.js";
 import { SWIPE_ACTIONS } from "../constants/swipe.js";
+import logger from "../utils/logger.js";
 
 export async function getAnalyticsData(userId: string): Promise<AnalyticsData> {
   const [
@@ -163,7 +164,7 @@ async function getPriceDistribution(userId: string) {
 }
 
 async function getWishlistStats(userId: string) {
-  // Get largest wishlist
+  // get largest wishlist
   const largestWishlistResult = await db.query(
     `SELECT 
       w.name,
@@ -177,7 +178,7 @@ async function getWishlistStats(userId: string) {
     [userId]
   );
 
-  // Get price stats from wishlist items
+  // get price stats from wishlist items
   const priceStatsResult = await db.query(
     `SELECT 
       MIN(wi.price) as min_price,
@@ -189,7 +190,7 @@ async function getWishlistStats(userId: string) {
     [userId]
   );
 
-  // Get total items saved
+  // get total items saved
   const totalItemsResult = await db.query(
     `SELECT COUNT(wi.id) as total_items
     FROM wishlists w
@@ -198,7 +199,7 @@ async function getWishlistStats(userId: string) {
     [userId]
   );
 
-  // Get average swipes per session (approximated by daily averages)
+  // get average swipes per session (approximated by daily averages)
   const avgSwipesResult = await db.query(
     `SELECT 
       AVG(daily_swipes) as avg_swipes_per_session

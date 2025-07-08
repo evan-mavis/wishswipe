@@ -9,6 +9,7 @@ import {
   EbayItemSummary,
 } from "../types/ebay.js";
 import { generateSearchHash } from "../utils/searchHashUtility.js";
+import logger from "../utils/logger.js";
 
 const exploreQuerySchema = z.object({
   query: z.string().optional().default("trending"),
@@ -84,8 +85,8 @@ export const getEbayListings = async (
         data.itemSummaries
       );
 
-      // If this is a background fetch and we have very few unseen items, advance to next page
-      // This prevents inefficient repeated calls for small batches
+      // if this is a background fetch and we have very few unseen items, advance to next page
+      // this prevents inefficient repeated calls for small batches
       if (
         parseResult.data.background === "true" &&
         unseenListings.length > 0 &&
@@ -130,7 +131,7 @@ export const getEbayListings = async (
       },
     });
   } catch (error) {
-    console.error("eBay Browse API error:", error);
+    logger.error("eBay Browse API error:", error);
     res.status(500).json({ error: "Failed to fetch eBay listings" });
   }
 };

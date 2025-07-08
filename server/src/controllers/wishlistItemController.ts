@@ -2,15 +2,16 @@ import type { Request, Response } from "express";
 import { z } from "zod";
 import * as wishlistItemRepo from "../db/repositories/wishlistItemRepository.js";
 import * as wishlistRepo from "../db/repositories/wishlistRepository.js";
+import logger from "../utils/logger.js";
 
-// Zod schema for removing items from wishlist
+// zod schema for removing items from wishlist
 const removeItemsSchema = z.object({
   itemIds: z
     .array(z.string().uuid("Invalid item ID"))
     .min(1, "At least one item ID required"),
 });
 
-// Zod schema for reordering wishlist items
+// zod schema for reordering wishlist items
 const reorderItemsSchema = z.object({
   itemIds: z
     .array(z.string().uuid("Invalid item ID"))
@@ -48,7 +49,7 @@ export const removeItemsFromWishlist = async (
       res.status(404).json({ error: "No items found or access denied" });
     }
   } catch (err) {
-    console.error("Error removing items from wishlist:", err);
+    logger.error("Error removing items from wishlist:", err);
     res.status(500).json({ error: "Internal server error" });
   }
 };
@@ -74,7 +75,7 @@ export const reorderWishlistItems = async (
 
     res.status(200).json({ message: "Wishlist items reordered successfully" });
   } catch (err) {
-    console.error("Error reordering wishlist items:", err);
+    logger.error("Error reordering wishlist items:", err);
     res.status(500).json({ error: "Internal server error" });
   }
 };

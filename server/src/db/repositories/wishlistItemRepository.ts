@@ -56,7 +56,7 @@ export async function addItemToWishlist(
     sellerFeedbackScore,
   } = data;
 
-  // Get the next highest order index for this wishlist
+  // get the next highest order index for this wishlist
   const { rows: orderRows } = await pool.query(
     `SELECT COALESCE(MAX(order_index), -1) + 1 as next_order 
      FROM wishlist_items 

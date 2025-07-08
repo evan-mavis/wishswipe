@@ -51,7 +51,7 @@ app.use("/wishswipe/analytics", analyticsRoutes);
 app.listen(PORT, async () => {
   logger.info(`Server running on http://localhost:${PORT}`);
 
-  // Initialize scheduled jobs
+  // initialize scheduled jobs
   try {
     await JobQueueService.initializeScheduledJobs();
     logger.info("Job queues initialized successfully");
@@ -60,7 +60,7 @@ app.listen(PORT, async () => {
   }
 });
 
-// Graceful shutdown
+// graceful shutdown
 process.on("SIGTERM", async () => {
   logger.info("SIGTERM received, shutting down gracefully...");
   await JobQueueService.shutdown();

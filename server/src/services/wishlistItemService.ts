@@ -4,24 +4,24 @@ import logger from "../utils/logger.js";
 
 export class WishlistItemService {
   /**
-   * Check if a wishlist item is still available on eBay
+   * check if a wishlist item is still available on ebay
    */
   static async checkItemAvailability(ebayItemId: string): Promise<boolean> {
     try {
-      // Use the eBay Browse API to check if the item still exists
+      // use the ebay browse api to check if the item still exists
       const itemDetails = await getItemDetails(ebayItemId);
 
-      // If we can get item details, it's still available
+      // if we can get item details, it's still available
       return !!itemDetails;
     } catch (error) {
-      // If the item doesn't exist or there's an error, it's not available
+      // if the item doesn't exist or there's an error, it's not available
       logger.debug(`Item ${ebayItemId} is no longer available:`, error);
       return false;
     }
   }
 
   /**
-   * Get all active wishlist items that need to be checked
+   * get all active wishlist items that need to be checked
    */
   static async getActiveWishlistItems(): Promise<
     Array<{
@@ -46,7 +46,7 @@ export class WishlistItemService {
   }
 
   /**
-   * Update the active status of a wishlist item
+   * update the active status of a wishlist item
    */
   static async updateItemActiveStatus(
     itemId: string,
@@ -67,7 +67,7 @@ export class WishlistItemService {
   }
 
   /**
-   * Check all active wishlist items and update their availability status
+   * check all active wishlist items and update their availability status
    */
   static async checkAllActiveItems(): Promise<{
     checked: number;
@@ -83,12 +83,12 @@ export class WishlistItemService {
       `Checking availability for ${items.length} active wishlist items...`
     );
 
-    // Process items in batches to avoid overwhelming the eBay API
+    // process items in batches to avoid overwhelming the ebay api
     const batchSize = 10;
     for (let i = 0; i < items.length; i += batchSize) {
       const batch = items.slice(i, i + batchSize);
 
-      // Process batch concurrently
+      // process batch concurrently
       const promises = batch.map(async (item) => {
         try {
           const isAvailable = await this.checkItemAvailability(item.ebayItemId);
@@ -108,7 +108,7 @@ export class WishlistItemService {
 
       await Promise.all(promises);
 
-      // Add a small delay between batches to be respectful to eBay's API
+      // add a small delay between batches to be respectful to ebay's api
       if (i + batchSize < items.length) {
         await new Promise((resolve) => setTimeout(resolve, 1000));
       }
@@ -122,7 +122,7 @@ export class WishlistItemService {
   }
 
   /**
-   * Check availability of a specific wishlist item and update its status
+   * check availability of a specific wishlist item and update its status
    */
   static async checkSpecificItem(itemId: string): Promise<{
     wasActive: boolean;
@@ -132,7 +132,7 @@ export class WishlistItemService {
     const client = await pool.connect();
 
     try {
-      // Get the item details
+      // get the item details
       const result = await client.query(
         `SELECT ebay_item_id, title, is_active 
          FROM wishlist_items 
@@ -147,10 +147,10 @@ export class WishlistItemService {
       const item = result.rows[0];
       const wasActive = item.is_active;
 
-      // Check availability on eBay
+      // check availability on ebay
       const isAvailable = await this.checkItemAvailability(item.ebay_item_id);
 
-      // Update the status if it changed
+      // update the status if it changed
       if (wasActive !== isAvailable) {
         await this.updateItemActiveStatus(itemId, isAvailable);
       }

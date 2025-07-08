@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { z } from "zod";
 import { preferencesRepository } from "../db/repositories/preferencesRepository.js";
+import logger from "../utils/logger.js";
 
 // zod schema for upserting user preferences
 const upsertPreferencesSchema = z.object({
@@ -20,7 +21,7 @@ export const getUserPreferences = async (
     );
 
     if (!preferences) {
-      // Return default preferences if none exist
+      // return default preferences if none exist
       res.json({
         defaultSearchTerm: "",
         defaultCondition: "none",
@@ -30,7 +31,7 @@ export const getUserPreferences = async (
       return;
     }
 
-    // Transform database format to frontend format
+    // transform database format to frontend format
     const transformedPreferences = {
       defaultSearchTerm: preferences.default_search_term,
       defaultCondition: preferences.default_condition,
@@ -43,7 +44,7 @@ export const getUserPreferences = async (
 
     res.json(transformedPreferences);
   } catch (error) {
-    console.error("Error getting user preferences:", error);
+    logger.error("Error getting user preferences:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
@@ -70,7 +71,7 @@ export const upsertUserPreferences = async (
       defaultPriceRange,
     } = parseResult.data;
 
-    // Transform frontend format to database format
+    // transform frontend format to database format
     const preferences = {
       default_search_term: defaultSearchTerm,
       default_condition: defaultCondition,
@@ -85,7 +86,7 @@ export const upsertUserPreferences = async (
         preferences
       );
 
-    // Transform back to frontend format
+    // transform back to frontend format
     const response = {
       defaultSearchTerm: updatedPreferences.default_search_term,
       defaultCondition: updatedPreferences.default_condition,
@@ -98,7 +99,7 @@ export const upsertUserPreferences = async (
 
     res.json(response);
   } catch (error) {
-    console.error("Error upserting user preferences:", error);
+    logger.error("Error upserting user preferences:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
@@ -111,7 +112,7 @@ export const deleteUserPreferences = async (
     await preferencesRepository.deleteUserPreferences(req.dbUser.id);
     res.json({ message: "Preferences deleted successfully" });
   } catch (error) {
-    console.error("Error deleting user preferences:", error);
+    logger.error("Error deleting user preferences:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };

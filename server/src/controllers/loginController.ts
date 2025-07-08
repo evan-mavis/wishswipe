@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 import { z } from "zod";
 import * as userRepo from "../db/repositories/userRepository.js";
+import logger from "../utils/logger.js";
 
 // zod schema for login/create user
 const loginUserSchema = z.object({
@@ -44,7 +45,7 @@ export const loginOrCreateUser = async (
 
     res.status(201).json({ user: newUser, created: true });
   } catch (err) {
-    console.error(err);
+    logger.error(err);
     res.status(500).json({ error: "internal server error" });
   }
 };

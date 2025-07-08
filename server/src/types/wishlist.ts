@@ -28,7 +28,7 @@ export interface DbWishlistWithItems extends DbWishlist {
   items: DbWishlistItem[];
 }
 
-// Request types
+// request types
 export interface CreateWishlistRequest {
   userId: string;
   name: string;

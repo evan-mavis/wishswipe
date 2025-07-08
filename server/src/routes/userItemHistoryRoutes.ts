@@ -3,7 +3,7 @@ import * as userItemHistoryController from "../controllers/userItemHistoryContro
 
 const router = express.Router();
 
-// Record batch interactions
+// record batch interactions
 router.post("/batch", userItemHistoryController.recordBatchInteractions);
 
 export default router;

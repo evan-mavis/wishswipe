@@ -17,11 +17,11 @@ export const preferencesRepository = {
     userId: string,
     preferences: UpdateUserPreferences
   ): Promise<UserPreferences> {
-    // First, try to get existing preferences
+    // first, try to get existing preferences
     const existing = await this.getUserPreferences(userId);
 
     if (existing) {
-      // Update existing preferences
+      // update existing preferences
       const result = await pool.query(
         `UPDATE user_preferences 
 				 SET default_search_term = COALESCE($1, default_search_term),
@@ -43,7 +43,7 @@ export const preferencesRepository = {
       );
       return result.rows[0];
     } else {
-      // Create new preferences
+      // create new preferences
       const result = await pool.query(
         `INSERT INTO user_preferences 
 				 (user_id, default_search_term, default_condition, default_category, default_price_min, default_price_max)
