@@ -43,7 +43,7 @@ export function PriceDistributionChart({
 						<Line
 							type="monotone"
 							dataKey="count"
-							stroke="#a855f7"
+							stroke="#e879f9"
 							strokeWidth={2}
 						/>
 					</LineChart>

@@ -6,7 +6,6 @@ export interface AnalyticsData {
   categoryFilters: Array<{
     name: string;
     value: number;
-    color: string;
   }>;
   conditionWishlist: Array<{
     condition: string;

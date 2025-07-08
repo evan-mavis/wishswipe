@@ -67,12 +67,9 @@ async function getCategoryFilters(userId: string) {
     [userId]
   );
 
-  const colors = ["#a855f7", "#8b5cf6", "#3b82f6", "#6366f1", "#7c3aed"];
-
-  return result.rows.map((row, index) => ({
+  return result.rows.map((row) => ({
     name: row.name,
     value: parseInt(row.value),
-    color: colors[index] || "#a855f7",
   }));
 }
 

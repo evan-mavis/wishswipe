@@ -41,15 +41,14 @@ export function ConditionWishlistChart({
 						<YAxis />
 						<ChartTooltip content={<ChartTooltipContent />} />
 						<Bar dataKey="count">
-							{data.map((entry, index) => (
-								<Cell
-									key={`cell-${index}`}
-									fill={
-										config[entry.condition as keyof typeof config]?.color ||
-										"#a855f7"
-									}
-								/>
-							))}
+							{data.map((entry, index) => {
+								const colors = [
+									"#e879f9", // fuchsia-400
+									"#a21caf", // fuchsia-700
+									"#4a044e", // fuchsia-950
+								];
+								return <Cell key={`cell-${index}`} fill={colors[index]} />;
+							})}
 						</Bar>
 					</BarChart>
 				</ChartContainer>
