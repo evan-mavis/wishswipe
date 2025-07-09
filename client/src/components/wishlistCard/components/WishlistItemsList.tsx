@@ -3,6 +3,7 @@ import { GripVertical } from "lucide-react";
 import { SavedListingCard } from "./SavedListingCard";
 import type { WishlistItem } from "@/types/wishlist";
 import { cn } from "@/lib/utils";
+import { memo } from "react";
 
 interface ListingFormat {
 	id: string;
@@ -26,6 +27,48 @@ interface WishlistItemsListProps {
 	onDeleteItem: (itemId: string) => void;
 	convertToListingFormat: (item: WishlistItem) => ListingFormat;
 }
+
+// Lightweight card component for reorder mode to improve performance
+const ReorderCard = memo(
+	({
+		item,
+		convertToListingFormat,
+	}: {
+		item: WishlistItem;
+		convertToListingFormat: (item: WishlistItem) => ListingFormat;
+	}) => {
+		const listing = convertToListingFormat(item);
+
+		return (
+			<div className="group bg-card border-border relative w-[120px] overflow-hidden rounded-lg border">
+				<div className="p-2">
+					<div className="relative mb-2 aspect-square overflow-hidden rounded-md">
+						<img
+							src={listing.imageUrl}
+							alt={listing.title}
+							className="h-full w-full object-contain"
+							draggable={false}
+							loading="lazy"
+						/>
+					</div>
+					<div className="space-y-1">
+						<h3 className="line-clamp-2 text-xs leading-tight font-medium">
+							{listing.title}
+						</h3>
+						<p className="text-muted-foreground text-xs font-semibold">
+							${listing.price.value}
+						</p>
+					</div>
+				</div>
+				<div className="absolute top-1/2 -translate-x-3 -translate-y-1/2 opacity-0 transition-opacity group-hover:opacity-100">
+					<GripVertical className="text-muted-foreground h-3 w-3 cursor-grab active:cursor-grabbing" />
+				</div>
+			</div>
+		);
+	}
+);
+
+ReorderCard.displayName = "ReorderCard";
 
 export function WishlistItemsList({
 	filteredItems,
@@ -74,17 +117,17 @@ export function WishlistItemsList({
 						)}
 						onClick={(e) => e.stopPropagation()}
 					>
-						<SavedListingCard
-							listing={convertToListingFormat(listing)}
-							onDelete={
-								!listingReorderMode ? () => onDeleteItem(listing.id) : undefined
-							}
-							isReorderMode={listingReorderMode}
-						/>
-						{listingReorderMode && (
-							<div className="absolute top-1/2 -translate-x-3 -translate-y-1/2 opacity-0 transition-opacity group-hover/item:opacity-100">
-								<GripVertical className="text-muted-foreground h-3 w-3 cursor-grab active:cursor-grabbing" />
-							</div>
+						{listingReorderMode ? (
+							<ReorderCard
+								item={listing}
+								convertToListingFormat={convertToListingFormat}
+							/>
+						) : (
+							<SavedListingCard
+								listing={convertToListingFormat(listing)}
+								onDelete={() => onDeleteItem(listing.id)}
+								isReorderMode={false}
+							/>
 						)}
 					</div>
 				</Reorder.Item>

@@ -8,7 +8,7 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "@/components/ui/dialog";
-import { useState, useEffect } from "react";
+import { useState, useEffect, memo } from "react";
 import { Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -18,10 +18,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 interface SavedListingCardProps {
 	listing: Listing;
 	onDelete?: () => void;
-	isReorderMode?: boolean; // Add this prop
+	isReorderMode?: boolean;
 }
 
-export function SavedListingCard({
+export const SavedListingCard = memo(function SavedListingCard({
 	listing,
 	onDelete,
 	isReorderMode,
@@ -32,12 +32,14 @@ export function SavedListingCard({
 
 	const highResImageUrl = getLargerImageUrl(listing.imageUrl, 800);
 
-	// Preload the high-resolution image when component mounts
+	// Only preload high-res image if not in reorder mode and details dialog is opened
 	useEffect(() => {
-		const img = new Image();
-		img.onload = () => setHighResImageLoaded(true);
-		img.src = highResImageUrl;
-	}, [highResImageUrl]);
+		if (!isReorderMode && showDetails) {
+			const img = new Image();
+			img.onload = () => setHighResImageLoaded(true);
+			img.src = highResImageUrl;
+		}
+	}, [highResImageUrl, showDetails, isReorderMode]);
 
 	if (!listing) return null;
 
@@ -51,7 +53,7 @@ export function SavedListingCard({
 				)}
 			>
 				<CardContent className="p-0">
-					{onDelete && (
+					{onDelete && !isReorderMode && (
 						<Button
 							variant="ghost"
 							size="sm"
@@ -76,6 +78,7 @@ export function SavedListingCard({
 									alt={listing.title}
 									className="h-full w-full object-contain"
 									draggable={false}
+									loading={isReorderMode ? "lazy" : "eager"}
 								/>
 							</div>
 							<div className="space-y-1">
@@ -87,86 +90,96 @@ export function SavedListingCard({
 								</p>
 							</div>
 						</div>
-						<Button
-							variant="ghost"
-							size="sm"
-							className={cn(
-								"absolute right-2 bottom-2 h-8 w-8 rounded-full p-0 transition-opacity",
-								!isMobile && "opacity-0 group-hover/item:opacity-100",
-								isMobile && "opacity-100"
-							)}
-							onClick={(e) => {
-								e.stopPropagation();
-								setShowDetails(true);
-							}}
-						>
-							<Expand className="h-4 w-4" />
-						</Button>
+						{!isReorderMode && (
+							<Button
+								variant="ghost"
+								size="sm"
+								className={cn(
+									"absolute right-2 bottom-2 h-8 w-8 rounded-full p-0 transition-opacity",
+									!isMobile && "opacity-0 group-hover/item:opacity-100",
+									isMobile && "opacity-100"
+								)}
+								onClick={(e) => {
+									e.stopPropagation();
+									setShowDetails(true);
+								}}
+							>
+								<Expand className="h-4 w-4" />
+							</Button>
+						)}
 					</div>
 				</CardContent>
 			</Card>
 
-			<Dialog open={showDetails} onOpenChange={setShowDetails}>
-				<DialogContent className={cn(
-					"sm:max-w-[600px]",
-					isMobile && "max-h-[90vh] overflow-y-auto p-4"
-				)}>
-					<DialogHeader>
-						<DialogTitle className="line-clamp-2">{listing.title}</DialogTitle>
-					</DialogHeader>
-					<div className="grid gap-6">
-						<div className="rounded-lg">
-							{!highResImageLoaded ? (
-								<div className="flex items-center justify-center">
-									<Skeleton className={cn(
-										"w-full rounded-lg",
-										isMobile ? "h-48" : "h-80"
-									)} />
-								</div>
-							) : (
-								<img
-									src={highResImageUrl}
-									alt={listing.title}
-									className={cn(
-										"w-full object-contain",
-										isMobile ? "max-h-[40vh]" : "max-h-[60vh]"
-									)}
-									draggable={false}
-								/>
-							)}
-						</div>
-						<div className="grid gap-2">
-							<div className="flex justify-between">
-								<span className="text-muted-foreground">Price:</span>
-								<span className="font-medium">
-									${listing.price.value.toString()}
-								</span>
-							</div>
-							<div className="flex justify-between">
-								<span className="text-muted-foreground">Condition:</span>
-								<span className="font-medium">{listing.condition}</span>
-							</div>
-							<div className="flex justify-between">
-								<span className="text-muted-foreground">
-									Seller Feedback Score:
-								</span>
-								<span className="font-medium">
-									{listing.sellerFeedbackScore}
-								</span>
-							</div>
-							<Button
-								className={cn(
-									"bg-fuchsia-300 hover:bg-fuchsia-400",
-									isMobile ? "mt-3" : "mt-4"
+			{!isReorderMode && (
+				<Dialog open={showDetails} onOpenChange={setShowDetails}>
+					<DialogContent
+						className={cn(
+							"sm:max-w-[600px]",
+							isMobile && "max-h-[90vh] overflow-y-auto p-4"
+						)}
+					>
+						<DialogHeader>
+							<DialogTitle className="line-clamp-2">
+								{listing.title}
+							</DialogTitle>
+						</DialogHeader>
+						<div className="grid gap-6">
+							<div className="rounded-lg">
+								{!highResImageLoaded ? (
+									<div className="flex items-center justify-center">
+										<Skeleton
+											className={cn(
+												"w-full rounded-lg",
+												isMobile ? "h-48" : "h-80"
+											)}
+										/>
+									</div>
+								) : (
+									<img
+										src={highResImageUrl}
+										alt={listing.title}
+										className={cn(
+											"w-full object-contain",
+											isMobile ? "max-h-[40vh]" : "max-h-[60vh]"
+										)}
+										draggable={false}
+									/>
 								)}
-								onClick={() => window.open(listing.itemWebUrl, "_blank")}
-							>
-								View on eBay
-							</Button>
+							</div>
+							<div className="grid gap-2">
+								<div className="flex justify-between">
+									<span className="text-muted-foreground">Price:</span>
+									<span className="font-medium">
+										${listing.price.value.toString()}
+									</span>
+								</div>
+								<div className="flex justify-between">
+									<span className="text-muted-foreground">Condition:</span>
+									<span className="font-medium">{listing.condition}</span>
+								</div>
+								<div className="flex justify-between">
+									<span className="text-muted-foreground">
+										Seller Feedback Score:
+									</span>
+									<span className="font-medium">
+										{listing.sellerFeedbackScore}
+									</span>
+								</div>
+								<Button
+									className={cn(
+										"bg-fuchsia-300 hover:bg-fuchsia-400",
+										isMobile ? "mt-3" : "mt-4"
+									)}
+									onClick={() => window.open(listing.itemWebUrl, "_blank")}
+								>
+									View on eBay
+								</Button>
+							</div>
 						</div>
-					</div>
-				</DialogContent>
-			</Dialog>
+					</DialogContent>
+				</Dialog>
+			)}
 		</>
 	);
-}
+});

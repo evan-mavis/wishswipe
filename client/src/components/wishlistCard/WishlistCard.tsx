@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { motion } from "framer-motion";
 import { Star } from "lucide-react";
 import {
@@ -89,19 +89,22 @@ export function WishlistCard({
 	};
 
 	// Convert WishlistItem to Listing format for SavedListingCard
-	const convertToListingFormat = (item: WishlistItem) => ({
-		id: item.ebayItemId,
-		itemId: item.ebayItemId,
-		title: item.title || "",
-		price: {
-			value: item.price?.toString() || "0",
-			currency: "USD",
-		},
-		condition: "New", // You might want to add this to your backend data
-		itemWebUrl: item.itemWebUrl || "",
-		imageUrl: item.imageUrl,
-		sellerFeedbackScore: item.sellerFeedbackScore || 0,
-	});
+	const convertToListingFormat = useCallback(
+		(item: WishlistItem) => ({
+			id: item.ebayItemId,
+			itemId: item.ebayItemId,
+			title: item.title || "",
+			price: {
+				value: item.price?.toString() || "0",
+				currency: "USD",
+			},
+			condition: "New", // You might want to add this to your backend data
+			itemWebUrl: item.itemWebUrl || "",
+			imageUrl: item.imageUrl,
+			sellerFeedbackScore: item.sellerFeedbackScore || 0,
+		}),
+		[]
+	);
 
 	const handleDeleteItem = async (itemId: string) => {
 		try {
