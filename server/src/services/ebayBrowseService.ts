@@ -150,11 +150,11 @@ export async function getItemDetails(itemId: string): Promise<any> {
 
 function mapCondition(conditionId: string): string {
   switch (conditionId) {
-    case "new":
+    case "New":
       return "1000|1500|1750"; // new, new other, new with defects
-    case "used":
+    case "Used":
       return "2750|3000|4000|5000|6000"; // like new, used, very good, good, acceptable
-    case "refurbished":
+    case "Refurbished":
       return "2000|2500"; // certified refurbished, seller refurbished (using more common ones)
     default:
       return "";
