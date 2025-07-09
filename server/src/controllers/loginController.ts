@@ -32,7 +32,14 @@ export const loginOrCreateUser = async (
 
     if (user) {
       const updatedUser = await userRepo.updateLastLogin(user.id);
-      res.json({ user: updatedUser, created: false });
+      res.json({
+        user: {
+          email: updatedUser.email,
+          displayName: updatedUser.displayName,
+          photoUrl: updatedUser.photoUrl,
+        },
+        created: false,
+      });
       return;
     }
 
@@ -43,7 +50,14 @@ export const loginOrCreateUser = async (
       photoUrl: photo_url ?? undefined,
     });
 
-    res.status(201).json({ user: newUser, created: true });
+    res.status(201).json({
+      user: {
+        email: newUser.email,
+        displayName: newUser.displayName,
+        photoUrl: newUser.photoUrl,
+      },
+      created: true,
+    });
   } catch (err) {
     logger.error(err);
     res.status(500).json({ error: "internal server error" });
