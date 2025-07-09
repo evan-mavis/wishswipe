@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 import { z } from "zod";
 import * as userRepo from "../db/repositories/userRepository.js";
+import * as wishlistRepo from "../db/repositories/wishlistRepository.js";
 import logger from "../utils/logger.js";
 
 // zod schema for login/create user
@@ -43,12 +44,29 @@ export const loginOrCreateUser = async (
       return;
     }
 
+    // Create new user
     const newUser = await userRepo.createUser({
       firebaseUid: firebase_uid,
       email,
       displayName: display_name ?? undefined,
       photoUrl: photo_url ?? undefined,
     });
+
+    // Create default wishlist for new user
+    try {
+      await wishlistRepo.createWishlist({
+        userId: newUser.id,
+        name: "🚀 My Wishlist 🚀",
+        description: "Your first wishlist to get started!",
+        isFavorite: true,
+      });
+      logger.info(`Default wishlist created for user ${newUser.id}`);
+    } catch (wishlistError) {
+      logger.error(
+        `Failed to create default wishlist for user ${newUser.id}:`,
+        wishlistError
+      );
+    }
 
     res.status(201).json({
       user: {
