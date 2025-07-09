@@ -10,6 +10,7 @@ router.post("/", wishlistController.createWishlist);
 
 router.patch("/reorder", wishlistController.reorderWishlists);
 router.patch("/:wishlistId", wishlistController.updateWishlist);
+router.patch("/items/move", wishlistController.moveItemsToWishlist);
 
 router.delete("/", wishlistController.deleteWishlists);
 

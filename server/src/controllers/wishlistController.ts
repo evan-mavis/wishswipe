@@ -38,6 +38,14 @@ const deleteWishlistsSchema = z.object({
     .min(1, "At least one wishlist ID required"),
 });
 
+// zod schema for moving items between wishlists
+const moveItemsSchema = z.object({
+  itemIds: z
+    .array(z.string().uuid("Invalid item ID"))
+    .min(1, "At least one item ID required"),
+  targetWishlistId: z.string().uuid("Invalid target wishlist ID"),
+});
+
 export const getWishlists = async (
   req: Request,
   res: Response
@@ -210,6 +218,43 @@ export const getWishlistOptions = async (
     res.json({ wishlists: options });
   } catch (err) {
     logger.error("Error fetching wishlist options:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+export const moveItemsToWishlist = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const parseResult = moveItemsSchema.safeParse(req.body);
+
+    if (!parseResult.success) {
+      res.status(400).json({
+        error: "Invalid request",
+        details: parseResult.error.flatten(),
+      });
+      return;
+    }
+
+    const { itemIds, targetWishlistId } = parseResult.data;
+
+    const movedCount = await wishlistRepo.moveItemsToWishlist(
+      itemIds,
+      targetWishlistId,
+      req.dbUser.id
+    );
+
+    if (movedCount > 0) {
+      res.status(200).json({
+        message: `${movedCount} item(s) moved successfully`,
+        movedCount,
+      });
+    } else {
+      res.status(404).json({ error: "No items found or access denied" });
+    }
+  } catch (err) {
+    logger.error("Error moving items:", err);
     res.status(500).json({ error: "Internal server error" });
   }
 };

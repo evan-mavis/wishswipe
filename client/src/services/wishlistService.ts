@@ -58,6 +58,11 @@ export interface WishlistItemResponse {
 	};
 }
 
+export interface MoveItemsRequest {
+	itemIds: string[];
+	targetWishlistId: string;
+}
+
 export async function fetchWishlists(): Promise<WishList[]> {
 	const response = await axiosInstance.get<WishlistResponse>(
 		"/wishswipe/wishlist"
@@ -127,4 +132,14 @@ export async function removeItemsFromWishlist(
 	await axiosInstance.delete("/wishswipe/wishlist-items", {
 		data: { itemIds },
 	});
+}
+
+export async function moveItemsToWishlist(
+	data: MoveItemsRequest
+): Promise<{ message: string; movedCount: number }> {
+	const response = await axiosInstance.patch(
+		"/wishswipe/wishlist/items/move",
+		data
+	);
+	return response.data;
 }

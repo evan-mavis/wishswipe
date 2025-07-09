@@ -335,3 +335,63 @@ export async function reorderWishlistItems(
     client.release();
   }
 }
+
+export async function moveItemsToWishlist(
+  itemIds: string[],
+  targetWishlistId: string,
+  userId: string
+): Promise<number> {
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+
+    // Verify target wishlist belongs to user
+    const { rows: targetWishlist } = await client.query(
+      `SELECT id FROM wishlists WHERE id = $1 AND user_id = $2`,
+      [targetWishlistId, userId]
+    );
+
+    if (targetWishlist.length === 0) {
+      await client.query("ROLLBACK");
+      return 0;
+    }
+
+    // Get the next order index for the target wishlist
+    const { rows: maxOrder } = await client.query(
+      `SELECT COALESCE(MAX(order_index), 0) + 1 as next_order 
+       FROM wishlist_items WHERE wishlist_id = $1`,
+      [targetWishlistId]
+    );
+
+    let nextOrderIndex = maxOrder[0].next_order;
+
+    // First, update the wishlist_id for all items
+    const { rowCount } = await client.query(
+      `UPDATE wishlist_items 
+       SET wishlist_id = $1, updated_at = now()
+       WHERE id = ANY($2) 
+       AND wishlist_id IN (SELECT id FROM wishlists WHERE user_id = $3)`,
+      [targetWishlistId, itemIds, userId]
+    );
+
+    if (rowCount && rowCount > 0) {
+      // Then update the order indices for the moved items
+      for (let i = 0; i < itemIds.length; i++) {
+        await client.query(
+          `UPDATE wishlist_items 
+           SET order_index = $1, updated_at = now()
+           WHERE id = $2 AND wishlist_id = $3`,
+          [nextOrderIndex + i, itemIds[i], targetWishlistId]
+        );
+      }
+    }
+
+    await client.query("COMMIT");
+    return rowCount ?? 0;
+  } catch (error) {
+    await client.query("ROLLBACK");
+    throw error;
+  } finally {
+    client.release();
+  }
+}
