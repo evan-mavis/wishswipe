@@ -42,9 +42,17 @@ export function Listings({
 	>(null);
 	const [hasMoreItems, setHasMoreItems] = useState<boolean>(true);
 
-	const handleProgressChange = (progress: number) => {
-		onProgressChange?.(progress);
-	};
+	// Performance optimization: Only render the first 3 cards for smooth animations
+	const visibleListings = useMemo(() => {
+		return listings.slice(0, 3);
+	}, [listings]);
+
+	const handleProgressChange = useCallback(
+		(progress: number) => {
+			onProgressChange?.(progress);
+		},
+		[onProgressChange]
+	);
 
 	const fetchMoreListings = useCallback(async () => {
 		if (
@@ -95,10 +103,11 @@ export function Listings({
 	const handleItemDismissed = useCallback(
 		(dismissedItem: Listing, swipeDirection: "left" | "right") => {
 			// Only add to dismissed items array if it was a left swipe (dismissal)
+			// Performance optimization: Limit dismissed items to 5 instead of 10
 			if (swipeDirection === "left") {
 				setDismissedItems((prev) => {
 					const newDismissed = [dismissedItem, ...prev];
-					return newDismissed.slice(0, 10); // Keep only last 10 items
+					return newDismissed.slice(0, 5); // Keep only last 5 items for better performance
 				});
 			}
 
@@ -127,20 +136,23 @@ export function Listings({
 			// Notify parent that an interaction was added
 			onInteractionAdded?.();
 
-			// Remove from current listings
+			// Remove from current listings - optimized to avoid unnecessary re-renders
 			setListings((prev) => {
 				const updatedListings = prev.filter(
 					(item) => item.itemId !== dismissedItem.itemId
 				);
 
-				// Check if we need to fetch more items (5 or fewer remaining)
+				// Check if we need to fetch more items (3 or fewer remaining for smoother experience)
 				if (
-					updatedListings.length <= 5 &&
+					updatedListings.length <= 3 &&
 					hasMoreItems &&
 					!isLoading &&
 					!isBackgroundLoading
 				) {
-					fetchMoreListings();
+					// Use setTimeout to avoid blocking the UI during swipe animation
+					setTimeout(() => {
+						fetchMoreListings();
+					}, 100);
 				}
 
 				return updatedListings;
@@ -185,14 +197,18 @@ export function Listings({
 		}
 	}, [undoCountRef, dismissedItems.length]);
 
-	// Update current listing when listings change
-	useEffect(() => {
+	// Update current listing when listings change - optimized with useCallback
+	const updateCurrentListing = useCallback(() => {
 		if (listings.length > 0) {
 			onCurrentListingChange?.(listings[0]);
 		} else {
 			onCurrentListingChange?.(null);
 		}
 	}, [listings, onCurrentListingChange]);
+
+	useEffect(() => {
+		updateCurrentListing();
+	}, [updateCurrentListing]);
 
 	const fetchListingsWithQuery = useCallback(
 		async (query: string) => {
@@ -262,7 +278,7 @@ export function Listings({
 					<PlaceholderListing text="Searching eBay..." />
 				) : listings.length > 0 ? (
 					<AnimatePresence mode="popLayout">
-						{listings.map((listing, index) => (
+						{visibleListings.map((listing, index) => (
 							<ListingCard
 								key={`${listing.itemId}-${index}`}
 								listing={listing}
