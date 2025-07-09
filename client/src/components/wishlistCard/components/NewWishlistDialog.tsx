@@ -36,13 +36,13 @@ export function NewWishlistDialog({
 
 	return (
 		<Dialog open={open} onOpenChange={onOpenChange}>
-			<DialogContent>
+			<DialogContent aria-describedby="wishlist-form">
 				<DialogHeader>
 					<DialogTitle className="text-fuchsia-300">
 						Create New Wishlist
 					</DialogTitle>
 				</DialogHeader>
-				<form onSubmit={handleSubmit} className="space-y-4">
+				<form id="wishlist-form" onSubmit={handleSubmit} className="space-y-4">
 					<div className="space-y-2">
 						<Label htmlFor="title">Name</Label>
 						<Input
