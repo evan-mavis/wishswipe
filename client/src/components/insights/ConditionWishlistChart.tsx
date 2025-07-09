@@ -34,7 +34,7 @@ export function ConditionWishlistChart({
 				</CardDescription>
 			</CardHeader>
 			<CardContent>
-				<ChartContainer config={config} className="h-64 w-full">
+				<ChartContainer config={config} className="h-85 w-full">
 					<BarChart data={data}>
 						<CartesianGrid strokeDasharray="3 3" />
 						<XAxis dataKey="condition" />

@@ -29,7 +29,7 @@ export function SearchTermsChart({ data, config }: SearchTermsChartProps) {
 				<CardDescription>Your most frequent search queries</CardDescription>
 			</CardHeader>
 			<CardContent>
-				<ChartContainer config={config} className="h-64 w-full">
+				<ChartContainer config={config} className="h-90 w-full">
 					<BarChart
 						data={data}
 						margin={{ left: 10, right: 10, top: 10, bottom: 40 }}
