@@ -1,6 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { ChevronDown, GripVertical, Pencil } from "lucide-react";
+import { ChevronDown, GripVertical, Pencil, Move } from "lucide-react";
 import { CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,6 +18,7 @@ interface WishlistCardHeaderProps {
 	isExpanded: boolean;
 	deleteMode: boolean;
 	reorderMode?: boolean;
+	moveMode?: boolean;
 	listingReorderMode: boolean;
 	canReorder: boolean;
 	isMobile: boolean;
@@ -26,6 +27,7 @@ interface WishlistCardHeaderProps {
 	onReorderStart: (e: React.MouseEvent) => void;
 	onReorderCancel: (e: React.MouseEvent) => void;
 	onReorderSave: (e: React.MouseEvent) => void;
+	onMoveStart?: (e: React.MouseEvent) => void;
 }
 
 export function WishlistCardHeader({
@@ -34,6 +36,7 @@ export function WishlistCardHeader({
 	isExpanded,
 	deleteMode,
 	reorderMode,
+	moveMode,
 	listingReorderMode,
 	canReorder,
 	isMobile,
@@ -42,13 +45,14 @@ export function WishlistCardHeader({
 	onReorderStart,
 	onReorderCancel,
 	onReorderSave,
+	onMoveStart,
 }: WishlistCardHeaderProps) {
 	return (
 		<CardHeader>
 			<div className="flex items-center justify-between">
 				<div className="flex items-center gap-2">
 					<CardTitle>{name}</CardTitle>
-					{!deleteMode && !reorderMode && (
+					{!deleteMode && !reorderMode && !moveMode && (
 						<TooltipProvider>
 							<Tooltip>
 								<TooltipTrigger asChild>
@@ -75,34 +79,58 @@ export function WishlistCardHeader({
 					)}
 				</div>
 				<div className="flex items-center gap-2">
-					{!deleteMode && !reorderMode && isExpanded && canReorder && (
-						<>
-							{listingReorderMode ? (
-								<ListingReorderControls
-									onCancel={onReorderCancel}
-									onSave={onReorderSave}
-								/>
-							) : (
+					{!deleteMode &&
+						!reorderMode &&
+						!moveMode &&
+						isExpanded &&
+						canReorder && (
+							<>
+								{/* Move Button */}
 								<TooltipProvider>
 									<Tooltip>
 										<TooltipTrigger asChild>
 											<Button
 												variant="ghost"
 												size="sm"
-												onClick={onReorderStart}
-												className="transition-all duration-200 hover:scale-110 hover:bg-green-100 hover:text-green-700 dark:hover:bg-green-900 dark:hover:text-green-300"
+												onClick={onMoveStart}
+												className="transition-all duration-200 hover:scale-110 hover:bg-fuchsia-100 hover:text-fuchsia-700 dark:hover:bg-fuchsia-900 dark:hover:text-fuchsia-300"
 											>
-												<GripVertical className="h-4 w-4" />
+												<Move className="h-4 w-4" />
 											</Button>
 										</TooltipTrigger>
 										<TooltipContent>
-											<p>Reorder wishlist items</p>
+											<p>Move items to another wishlist</p>
 										</TooltipContent>
 									</Tooltip>
 								</TooltipProvider>
-							)}
-						</>
-					)}
+
+								{/* Reorder Button */}
+								{listingReorderMode ? (
+									<ListingReorderControls
+										onCancel={onReorderCancel}
+										onSave={onReorderSave}
+									/>
+								) : (
+									<TooltipProvider>
+										<Tooltip>
+											<TooltipTrigger asChild>
+												<Button
+													variant="ghost"
+													size="sm"
+													onClick={onReorderStart}
+													className="transition-all duration-200 hover:scale-110 hover:bg-green-100 hover:text-green-700 dark:hover:bg-green-900 dark:hover:text-green-300"
+												>
+													<GripVertical className="h-4 w-4" />
+												</Button>
+											</TooltipTrigger>
+											<TooltipContent>
+												<p>Reorder wishlist items</p>
+											</TooltipContent>
+										</Tooltip>
+									</TooltipProvider>
+								)}
+							</>
+						)}
 					<motion.div
 						animate={{
 							rotate: isExpanded ? (isMobile ? 0 : 90) : isMobile ? 180 : -90,

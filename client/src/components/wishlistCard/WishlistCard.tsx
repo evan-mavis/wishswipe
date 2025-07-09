@@ -18,6 +18,13 @@ import {
 	TooltipProvider,
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 import { WishlistCardHeader } from "./components/WishlistCardHeader";
 import { WishlistCardContent } from "./components/WishlistCardContent";
 import { EditWishlistDialog } from "./components/EditWishlistDialog";
@@ -30,6 +37,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 interface WishlistCardProps extends WishList {
 	deleteMode: boolean;
 	reorderMode?: boolean;
+	moveMode?: boolean;
 	isSelected: boolean;
 	onSelect: () => void;
 	onUpdateItems?: (id: string, items: WishlistItem[]) => void;
@@ -37,6 +45,8 @@ interface WishlistCardProps extends WishList {
 		id: string,
 		data: { name: string; description: string; isFavorite: boolean }
 	) => void;
+	availableWishlists?: Array<{ id: string; name: string }>;
+	onRefreshWishlists?: () => void;
 }
 
 export function WishlistCard({
@@ -46,11 +56,14 @@ export function WishlistCard({
 	items: initialItems,
 	deleteMode,
 	reorderMode,
+	moveMode,
 	isSelected,
 	onSelect,
 	onUpdateItems,
 	isFavorite,
 	onUpdate,
+	availableWishlists = [],
+	onRefreshWishlists,
 }: WishlistCardProps) {
 	const isMobile = useIsMobile();
 	const [isExpanded, setIsExpanded] = useState(false);
@@ -59,6 +72,10 @@ export function WishlistCard({
 	const [listingReorderMode, setListingReorderMode] = useState(false);
 	const [showEditDialog, setShowEditDialog] = useState(false);
 	const [searchQuery, setSearchQuery] = useState("");
+	const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
+	const [targetWishlistId, setTargetWishlistId] = useState<string>("");
+	const [showMoveDialog, setShowMoveDialog] = useState(false);
+	const [listingMoveMode, setListingMoveMode] = useState(false);
 
 	// Filter items based on search query
 	const filteredItems = useMemo(() => {
@@ -75,15 +92,20 @@ export function WishlistCard({
 		items &&
 		filteredItems.length === items.length;
 
+	// Filter out current wishlist from available wishlists
+	const otherWishlists = useMemo(() => {
+		return availableWishlists.filter((wishlist) => wishlist.id !== id);
+	}, [availableWishlists, id]);
+
 	const handleClick = () => {
-		if (deleteMode) {
+		if (deleteMode || moveMode) {
 			onSelect();
 		}
 	};
 
 	const handleChevronClick = (e: React.MouseEvent) => {
 		e.stopPropagation();
-		if (!deleteMode && !reorderMode) {
+		if (!deleteMode && !reorderMode && !moveMode) {
 			setIsExpanded(!isExpanded);
 		}
 	};
@@ -119,6 +141,55 @@ export function WishlistCard({
 			console.error("Error deleting item from wishlist:", error);
 			// Close the dialog even if there's an error
 			setItemToDelete(null);
+		}
+	};
+
+	const handleMoveItems = async () => {
+		if (!targetWishlistId || selectedItems.size === 0) return;
+
+		try {
+			await wishlistService.moveItemsToWishlist({
+				itemIds: Array.from(selectedItems),
+				targetWishlistId,
+			});
+
+			// Remove moved items from current wishlist
+			const remainingItems = items.filter(
+				(item) => !selectedItems.has(item.id)
+			);
+			setItems(remainingItems);
+			onUpdateItems?.(id, remainingItems);
+
+			// Reset move mode state
+			setSelectedItems(new Set());
+			setTargetWishlistId("");
+			setShowMoveDialog(false);
+			setListingMoveMode(false);
+
+			// Trigger refresh to update all wishlists
+			onRefreshWishlists?.();
+		} catch (error) {
+			console.error("Error moving items:", error);
+		}
+	};
+
+	const handleItemSelection = (itemId: string) => {
+		setSelectedItems((prev) => {
+			const newSet = new Set(prev);
+			if (newSet.has(itemId)) {
+				newSet.delete(itemId);
+			} else {
+				newSet.add(itemId);
+			}
+			return newSet;
+		});
+	};
+
+	const handleSelectAll = () => {
+		if (selectedItems.size === filteredItems.length) {
+			setSelectedItems(new Set());
+		} else {
+			setSelectedItems(new Set(filteredItems.map((item) => item.id)));
 		}
 	};
 
@@ -164,12 +235,22 @@ export function WishlistCard({
 		}
 	};
 
+	const handleMoveStart = (e: React.MouseEvent) => {
+		e.stopPropagation();
+		setListingMoveMode(true);
+	};
+
+	const handleMoveCancel = () => {
+		setListingMoveMode(false);
+		setSelectedItems(new Set());
+	};
+
 	// Add effect to collapse when entering modes
 	React.useEffect(() => {
-		if (deleteMode || reorderMode) {
+		if (deleteMode || reorderMode || moveMode) {
 			setIsExpanded(false);
 		}
-	}, [deleteMode, reorderMode]);
+	}, [deleteMode, reorderMode, moveMode]);
 
 	// Disable reorder mode when search is active or on mobile
 	React.useEffect(() => {
@@ -177,6 +258,13 @@ export function WishlistCard({
 			setListingReorderMode(false);
 		}
 	}, [canReorder, listingReorderMode]);
+
+	// Reset selected items when move mode is disabled
+	React.useEffect(() => {
+		if (!moveMode && !listingMoveMode) {
+			setSelectedItems(new Set());
+		}
+	}, [moveMode, listingMoveMode]);
 
 	return (
 		<>
@@ -218,7 +306,9 @@ export function WishlistCard({
 					<Card
 						className={cn(
 							"transition-all duration-200",
-							deleteMode || reorderMode ? "cursor-default" : "cursor-pointer",
+							deleteMode || reorderMode || moveMode
+								? "cursor-default"
+								: "cursor-pointer",
 							deleteMode
 								? "hover:border-red-300"
 								: reorderMode
@@ -236,6 +326,7 @@ export function WishlistCard({
 								isExpanded={isExpanded}
 								deleteMode={deleteMode}
 								reorderMode={reorderMode}
+								moveMode={moveMode || listingMoveMode}
 								listingReorderMode={listingReorderMode}
 								canReorder={canReorder}
 								isMobile={isMobile}
@@ -253,27 +344,76 @@ export function WishlistCard({
 									e.stopPropagation();
 									handleListingReorderSave();
 								}}
+								onMoveStart={handleMoveStart}
 							/>
 
 							<WishlistCardContent
 								isExpanded={isExpanded}
 								deleteMode={deleteMode}
 								reorderMode={reorderMode}
+								moveMode={moveMode || listingMoveMode}
 								items={items}
 								filteredItems={filteredItems}
 								searchQuery={searchQuery}
 								listingReorderMode={listingReorderMode}
 								isMobile={isMobile}
+								selectedItems={selectedItems}
 								onSearchChange={setSearchQuery}
 								onClearSearch={() => setSearchQuery("")}
 								onReorderItems={handleReorderItems}
 								onDeleteItem={setItemToDelete}
+								onItemSelection={handleItemSelection}
+								onSelectAll={handleSelectAll}
+								onMoveItems={() => setShowMoveDialog(true)}
+								onMoveCancel={handleMoveCancel}
 								convertToListingFormat={convertToListingFormat}
 							/>
 						</div>
 					</Card>
 				</div>
 			</motion.div>
+
+			{/* Move Items Dialog */}
+			<AlertDialog open={showMoveDialog} onOpenChange={setShowMoveDialog}>
+				<AlertDialogContent>
+					<AlertDialogHeader>
+						<AlertDialogTitle>Move Items</AlertDialogTitle>
+						<AlertDialogDescription>
+							Select a wishlist to move {selectedItems.size} selected item
+							{selectedItems.size > 1 ? "s" : ""} to:
+						</AlertDialogDescription>
+					</AlertDialogHeader>
+					<div className="py-4">
+						<Select
+							value={targetWishlistId}
+							onValueChange={setTargetWishlistId}
+						>
+							<SelectTrigger>
+								<SelectValue placeholder="Choose a wishlist..." />
+							</SelectTrigger>
+							<SelectContent>
+								{otherWishlists.map((wishlist) => (
+									<SelectItem key={wishlist.id} value={wishlist.id}>
+										{wishlist.name}
+									</SelectItem>
+								))}
+							</SelectContent>
+						</Select>
+					</div>
+					<AlertDialogFooter>
+						<AlertDialogCancel onClick={() => setShowMoveDialog(false)}>
+							Cancel
+						</AlertDialogCancel>
+						<AlertDialogAction
+							disabled={!targetWishlistId}
+							onClick={handleMoveItems}
+							className="bg-fuchsia-600 hover:bg-fuchsia-700"
+						>
+							Move Items
+						</AlertDialogAction>
+					</AlertDialogFooter>
+				</AlertDialogContent>
+			</AlertDialog>
 
 			<AlertDialog
 				open={itemToDelete !== null}

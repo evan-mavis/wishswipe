@@ -34,21 +34,21 @@ export function Wishlist() {
 	const [showNewWishlist, setShowNewWishlist] = useState(false);
 	const [originalOrder, setOriginalOrder] = useState<WishList[]>([]);
 
-	useEffect(() => {
-		const loadWishlists = async () => {
-			try {
-				setLoading(true);
-				const fetchedWishlists = await wishlistService.fetchWishlists();
-				setWishlists(fetchedWishlists);
-				setOriginalOrder(fetchedWishlists);
-			} catch (err) {
-				console.error("Error fetching wishlists:", err);
-				setError("Failed to load wishlists");
-			} finally {
-				setLoading(false);
-			}
-		};
+	const loadWishlists = async () => {
+		try {
+			setLoading(true);
+			const fetchedWishlists = await wishlistService.fetchWishlists();
+			setWishlists(fetchedWishlists);
+			setOriginalOrder(fetchedWishlists);
+		} catch (err) {
+			console.error("Error fetching wishlists:", err);
+			setError("Failed to load wishlists");
+		} finally {
+			setLoading(false);
+		}
+	};
 
+	useEffect(() => {
 		loadWishlists();
 	}, []);
 
@@ -249,6 +249,11 @@ export function Wishlist() {
 									isSelected={selectedLists.has(wishlist.id)}
 									onSelect={() => toggleListSelection(wishlist.id)}
 									onUpdate={handleUpdateWishlist}
+									availableWishlists={wishlists.map((w) => ({
+										id: w.id,
+										name: w.name,
+									}))}
+									onRefreshWishlists={loadWishlists}
 								/>
 							</div>
 						</Reorder.Item>

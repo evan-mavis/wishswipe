@@ -1,5 +1,5 @@
 import { Reorder } from "framer-motion";
-import { GripVertical } from "lucide-react";
+import { GripVertical, Check } from "lucide-react";
 import { SavedListingCard } from "./SavedListingCard";
 import type { WishlistItem } from "@/types/wishlist";
 import { cn } from "@/lib/utils";
@@ -22,9 +22,12 @@ interface ListingFormat {
 interface WishlistItemsListProps {
 	filteredItems: WishlistItem[];
 	listingReorderMode: boolean;
+	moveMode?: boolean;
+	selectedItems?: Set<string>;
 	isMobile: boolean;
 	onReorder: (newOrder: WishlistItem[]) => void;
 	onDeleteItem: (itemId: string) => void;
+	onItemSelection?: (itemId: string) => void;
 	convertToListingFormat: (item: WishlistItem) => ListingFormat;
 }
 
@@ -70,12 +73,71 @@ const ReorderCard = memo(
 
 ReorderCard.displayName = "ReorderCard";
 
+// Move mode card component with selection
+const MoveCard = memo(
+	({
+		item,
+		isSelected,
+		onItemSelection,
+		convertToListingFormat,
+	}: {
+		item: WishlistItem;
+		isSelected: boolean;
+		onItemSelection: (itemId: string) => void;
+		convertToListingFormat: (item: WishlistItem) => ListingFormat;
+	}) => {
+		const listing = convertToListingFormat(item);
+
+		return (
+			<div
+				className={cn(
+					"group bg-card border-border relative w-[120px] cursor-pointer overflow-hidden rounded-lg border transition-all",
+					isSelected
+						? "border-fuchsia-500 bg-fuchsia-50"
+						: "hover:border-fuchsia-300"
+				)}
+				onClick={() => onItemSelection(item.id)}
+			>
+				<div className="p-2">
+					<div className="relative mb-2 aspect-square overflow-hidden rounded-md">
+						<img
+							src={listing.imageUrl}
+							alt={listing.title}
+							className="h-full w-full object-contain"
+							draggable={false}
+							loading="lazy"
+						/>
+						{isSelected && (
+							<div className="bg-opacity-20 absolute inset-0 flex items-center justify-center bg-fuchsia-500">
+								<Check className="h-6 w-6 rounded-full bg-white p-1 text-fuchsia-600" />
+							</div>
+						)}
+					</div>
+					<div className="space-y-1">
+						<h3 className="line-clamp-2 text-xs leading-tight font-medium">
+							{listing.title}
+						</h3>
+						<p className="text-muted-foreground text-xs font-semibold">
+							${listing.price.value}
+						</p>
+					</div>
+				</div>
+			</div>
+		);
+	}
+);
+
+MoveCard.displayName = "MoveCard";
+
 export function WishlistItemsList({
 	filteredItems,
 	listingReorderMode,
+	moveMode,
+	selectedItems = new Set(),
 	isMobile,
 	onReorder,
 	onDeleteItem,
+	onItemSelection,
 	convertToListingFormat,
 }: WishlistItemsListProps) {
 	return (
@@ -87,8 +149,8 @@ export function WishlistItemsList({
 				"overflow-auto scroll-smooth pb-4 pl-3",
 				isMobile
 					? "flex flex-col gap-4"
-					: listingReorderMode
-						? "flex gap-2" // Reduced gap for reorder mode
+					: listingReorderMode || moveMode
+						? "flex gap-2" // Reduced gap for reorder/move mode
 						: "flex snap-x snap-mandatory gap-4"
 			)}
 			style={{
@@ -101,7 +163,7 @@ export function WishlistItemsList({
 					value={listing}
 					className={cn(
 						"group/item",
-						!isMobile && !listingReorderMode && "snap-center",
+						!isMobile && !listingReorderMode && !moveMode && "snap-center",
 						listingReorderMode && "cursor-grab active:cursor-grabbing"
 					)}
 					drag={listingReorderMode}
@@ -109,8 +171,8 @@ export function WishlistItemsList({
 					<div
 						className={cn(
 							"group relative",
-							listingReorderMode
-								? "w-[120px] transition-none" // Even smaller in reorder mode
+							listingReorderMode || moveMode
+								? "w-[120px] transition-none" // Even smaller in reorder/move mode
 								: isMobile
 									? "w-full transition-all duration-300 ease-in-out"
 									: "w-[300px] transition-all duration-300 ease-in-out"
@@ -120,6 +182,13 @@ export function WishlistItemsList({
 						{listingReorderMode ? (
 							<ReorderCard
 								item={listing}
+								convertToListingFormat={convertToListingFormat}
+							/>
+						) : moveMode ? (
+							<MoveCard
+								item={listing}
+								isSelected={selectedItems.has(listing.id)}
+								onItemSelection={onItemSelection!}
 								convertToListingFormat={convertToListingFormat}
 							/>
 						) : (
