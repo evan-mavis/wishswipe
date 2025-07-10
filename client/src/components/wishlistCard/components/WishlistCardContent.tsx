@@ -1,5 +1,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { X, Move } from "lucide-react";
 import { WishlistSearchBar } from "./WishlistSearchBar";
 import { WishlistItemsContainer } from "./WishlistItemsContainer";
 import { WishlistItemsList } from "./WishlistItemsList";
@@ -111,20 +113,26 @@ export function WishlistCardContent({
 								</div>
 								<div className="flex gap-2">
 									{onMoveCancel && (
-										<button
+										<Button
+											variant="ghost"
+											size="sm"
 											onClick={onMoveCancel}
-											className="rounded bg-gray-500 px-3 py-1 text-xs text-white hover:bg-gray-600"
+											className="gap-2"
 										>
+											<X className="h-4 w-4" />
 											Cancel
-										</button>
+										</Button>
 									)}
 									{selectedItems.size > 0 && onMoveItems && (
-										<button
+										<Button
+											variant="default"
+											size="sm"
 											onClick={onMoveItems}
-											className="rounded bg-fuchsia-600 px-3 py-1 text-xs text-white hover:bg-fuchsia-700"
+											className="gap-2 bg-fuchsia-600 hover:bg-fuchsia-700"
 										>
+											<Move className="h-4 w-4" />
 											Move Items
-										</button>
+										</Button>
 									)}
 								</div>
 							</div>

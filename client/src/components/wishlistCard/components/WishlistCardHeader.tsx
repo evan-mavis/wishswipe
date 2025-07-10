@@ -83,7 +83,8 @@ export function WishlistCardHeader({
 						!reorderMode &&
 						!moveMode &&
 						isExpanded &&
-						canReorder && (
+						canReorder &&
+						!listingReorderMode && (
 							<>
 								{/* Move Button */}
 								<TooltipProvider>
@@ -105,31 +106,36 @@ export function WishlistCardHeader({
 								</TooltipProvider>
 
 								{/* Reorder Button */}
-								{listingReorderMode ? (
-									<ListingReorderControls
-										onCancel={onReorderCancel}
-										onSave={onReorderSave}
-									/>
-								) : (
-									<TooltipProvider>
-										<Tooltip>
-											<TooltipTrigger asChild>
-												<Button
-													variant="ghost"
-													size="sm"
-													onClick={onReorderStart}
-													className="transition-all duration-200 hover:scale-110 hover:bg-green-100 hover:text-green-700 dark:hover:bg-green-900 dark:hover:text-green-300"
-												>
-													<GripVertical className="h-4 w-4" />
-												</Button>
-											</TooltipTrigger>
-											<TooltipContent>
-												<p>Reorder wishlist items</p>
-											</TooltipContent>
-										</Tooltip>
-									</TooltipProvider>
-								)}
+								<TooltipProvider>
+									<Tooltip>
+										<TooltipTrigger asChild>
+											<Button
+												variant="ghost"
+												size="sm"
+												onClick={onReorderStart}
+												className="transition-all duration-200 hover:scale-110 hover:bg-green-100 hover:text-green-700 dark:hover:bg-green-900 dark:hover:text-green-300"
+											>
+												<GripVertical className="h-4 w-4" />
+											</Button>
+										</TooltipTrigger>
+										<TooltipContent>
+											<p>Reorder wishlist items</p>
+										</TooltipContent>
+									</Tooltip>
+								</TooltipProvider>
 							</>
+						)}
+
+					{/* Show reorder controls when in reorder mode */}
+					{!deleteMode &&
+						!reorderMode &&
+						!moveMode &&
+						isExpanded &&
+						listingReorderMode && (
+							<ListingReorderControls
+								onCancel={onReorderCancel}
+								onSave={onReorderSave}
+							/>
 						)}
 					<motion.div
 						animate={{
