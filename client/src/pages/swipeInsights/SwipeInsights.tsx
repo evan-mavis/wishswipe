@@ -52,7 +52,7 @@ export function SwipeInsights() {
 		return (
 			<div className="container mx-auto max-w-7xl p-6">
 				<div className="mb-8">
-					<h1 className="mb-2 flex items-center gap-2 text-3xl font-bold">
+					<h1 className="mb-2 flex items-center gap-2 text-3xl font-bold text-fuchsia-300">
 						<BarChartIcon className="text-xl" /> Swipe Insights
 					</h1>
 					<p className="text-muted-foreground">
@@ -71,7 +71,7 @@ export function SwipeInsights() {
 		return (
 			<div className="container mx-auto max-w-7xl p-6">
 				<div className="mb-8">
-					<h1 className="mb-2 flex items-center gap-2 text-3xl font-bold">
+					<h1 className="mb-2 flex items-center gap-2 text-3xl font-bold text-fuchsia-300">
 						<BarChartIcon className="text-xl" /> Swipe Insights
 					</h1>
 					<p className="text-muted-foreground">
@@ -93,7 +93,7 @@ export function SwipeInsights() {
 	return (
 		<div className="container mx-auto max-w-7xl p-6">
 			<div className="mb-8">
-				<h1 className="mb-2 flex items-center gap-2 text-3xl font-bold">
+				<h1 className="mb-2 flex items-center gap-2 text-3xl font-bold text-fuchsia-300">
 					<BarChartIcon className="text-xl" /> Swipe Insights
 				</h1>
 				<p className="text-muted-foreground">
