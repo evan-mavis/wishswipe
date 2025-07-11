@@ -56,44 +56,57 @@ export async function addItemToWishlist(
     sellerFeedbackScore,
   } = data;
 
-  // get the next highest order index for this wishlist
-  const { rows: orderRows } = await pool.query(
-    `SELECT COALESCE(MAX(order_index), -1) + 1 as next_order 
-     FROM wishlist_items 
-     WHERE wishlist_id = $1 AND is_active = true`,
-    [wishlistId]
-  );
-  const nextOrderIndex = orderRows[0].next_order;
+  // Use a transaction to ensure atomicity
+  const client = await pool.connect();
 
-  const { rows } = await pool.query(
-    `INSERT INTO wishlist_items (id, wishlist_id, ebay_item_id, title, image_url, item_web_url, price, seller_feedback_score, order_index)
-     VALUES (gen_random_uuid(), $1, $2, $3, $4, $5, $6, $7, $8) RETURNING *;`,
-    [
-      wishlistId,
-      ebayItemId,
-      title || null,
-      imageUrl || null,
-      itemWebUrl || null,
-      price || null,
-      sellerFeedbackScore || null,
-      nextOrderIndex,
-    ]
-  );
+  try {
+    await client.query("BEGIN");
 
-  return {
-    id: rows[0].id,
-    wishlistId: rows[0].wishlist_id,
-    ebayItemId: rows[0].ebay_item_id,
-    title: rows[0].title,
-    imageUrl: rows[0].image_url,
-    itemWebUrl: rows[0].item_web_url,
-    price: rows[0].price ? parseFloat(rows[0].price) : undefined,
-    sellerFeedbackScore: rows[0].seller_feedback_score,
-    orderIndex: rows[0].order_index || 0,
-    isActive: rows[0].is_active,
-    createdAt: rows[0].created_at,
-    updatedAt: rows[0].updated_at,
-  };
+    // Shift all existing items down by 1 to make room at the beginning
+    await client.query(
+      `UPDATE wishlist_items 
+       SET order_index = order_index + 1, updated_at = now()
+       WHERE wishlist_id = $1 AND is_active = true`,
+      [wishlistId]
+    );
+
+    // Insert the new item at position 0 (the beginning)
+    const { rows } = await client.query(
+      `INSERT INTO wishlist_items (id, wishlist_id, ebay_item_id, title, image_url, item_web_url, price, seller_feedback_score, order_index)
+       VALUES (gen_random_uuid(), $1, $2, $3, $4, $5, $6, $7, 0) RETURNING *;`,
+      [
+        wishlistId,
+        ebayItemId,
+        title || null,
+        imageUrl || null,
+        itemWebUrl || null,
+        price || null,
+        sellerFeedbackScore || null,
+      ]
+    );
+
+    await client.query("COMMIT");
+
+    return {
+      id: rows[0].id,
+      wishlistId: rows[0].wishlist_id,
+      ebayItemId: rows[0].ebay_item_id,
+      title: rows[0].title,
+      imageUrl: rows[0].image_url,
+      itemWebUrl: rows[0].item_web_url,
+      price: rows[0].price ? parseFloat(rows[0].price) : undefined,
+      sellerFeedbackScore: rows[0].seller_feedback_score,
+      orderIndex: rows[0].order_index || 0,
+      isActive: rows[0].is_active,
+      createdAt: rows[0].created_at,
+      updatedAt: rows[0].updated_at,
+    };
+  } catch (error) {
+    await client.query("ROLLBACK");
+    throw error;
+  } finally {
+    client.release();
+  }
 }
 
 export async function removeItemFromWishlist(
