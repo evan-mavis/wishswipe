@@ -2,7 +2,7 @@ import { AppHeaderWithLogo } from "@/components/appHeader/AppHeaderWithLogo";
 import { useAuth } from "@/hooks/use-auth";
 import { Listings } from "@/components/listings/Listings";
 import { useState, useEffect, useRef, useCallback } from "react";
-import { ActionToolbar } from "@/components/actionToolbar/ActionToolbar";
+import { ActionToolbar } from "@/components/actionToolbar/actionToolbar";
 import { PlaceholderListing } from "@/components/placeholderListing/PlaceholderListing";
 import { ListingCaption } from "@/components/listings/components/listingCaption/ListingCaption";
 import { Progress } from "@/components/ui/progress";
