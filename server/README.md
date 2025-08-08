@@ -104,14 +104,19 @@ built-in security middleware:
   - general api: 100 requests/15min (production), 1000 requests/15min (development)
   - login endpoint: 5 attempts/15min
 
-## background jobs
+## maintenance
 
-using bullmq + redis.
+No always-on job runner needed. Maintenance is performed lazily via authenticated endpoints, typically triggered by the client with debouncing:
 
-- `search-session-reset`: hourly at minute 0
-- `expired-items-check`:
-  - production: scheduled daily at 02:00 with a repeatable job
-  - development: an immediate one-off is enqueued on startup
+- `POST /wishswipe/maintenance/refresh` — incrementally refreshes a bounded set of stale wishlist items for the current user
+- `POST /wishswipe/maintenance/reset-sessions` — resets old search sessions for the current user
+
+Tuning via env:
+
+- `WISHLIST_STALE_HOURS` (default 24)
+- `WISHLIST_REFRESH_LIMIT` (default 40)
+
+Redis remains required for eBay token caching and search result caching.
 
 ## debugging
 
