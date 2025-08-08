@@ -73,39 +73,21 @@ export const JobQueueService = {
   },
 
   async scheduleExpiredItemsCheck(): Promise<void> {
-    if (process.env.NODE_ENV === "production") {
-      await expiredItemsQueue.add(
-        "check-expired-items",
-        {},
-        {
-          repeat: {
-            pattern: "0 2 * * *", // daily at 2:00 am
-          },
-          jobId: "check-expired-items-daily",
-        }
-      );
-      logger.info("Scheduled daily expired items check job (prod)");
-    } else {
-      await expiredItemsQueue.add("check-expired-items", {});
-      logger.info("Scheduled immediate expired items check job (dev)");
-    }
+    await expiredItemsQueue.add(
+      "check-expired-items",
+      {},
+      {
+        repeat: {
+          pattern: "0 2 * * *", // daily at 2:00 am
+        },
+        jobId: "check-expired-items-daily",
+      }
+    );
+    logger.info("Scheduled daily expired items check job (prod)");
   },
 
   async initializeScheduledJobs(): Promise<void> {
     await this.scheduleSearchSessionReset();
-
-    // In development, clear queue on restart to avoid overlap; keep in prod
-    if (process.env.NODE_ENV !== "production") {
-      try {
-        await expiredItemsQueue.obliterate({ force: true });
-        logger.info("Obliterated expired-items queue on startup (dev)");
-      } catch (e) {
-        logger.warn(
-          "Could not obliterate expired-items queue on startup (dev)"
-        );
-      }
-    }
-
     await this.scheduleExpiredItemsCheck();
   },
 
