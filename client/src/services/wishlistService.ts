@@ -1,5 +1,5 @@
 import axiosInstance from "../interceptors/axiosInstance";
-import type { WishList } from "../types/wishlist";
+import type { AvailabilityStatus, WishList } from "../types/wishlist";
 
 export interface CreateWishlistRequest {
 	name: string;
@@ -52,7 +52,7 @@ export interface WishlistItemResponse {
 		price?: number;
 		sellerFeedbackScore?: number;
 		orderIndex: number;
-		isActive: boolean;
+		availabilityStatus: AvailabilityStatus;
 		createdAt: string;
 		updatedAt: string;
 	};

@@ -5,7 +5,7 @@ import { X, Move } from "lucide-react";
 import { WishlistSearchBar } from "./WishlistSearchBar";
 import { WishlistItemsContainer } from "./WishlistItemsContainer";
 import { WishlistItemsList } from "./WishlistItemsList";
-import type { WishlistItem } from "@/types/wishlist";
+import type { AvailabilityStatus, WishlistItem } from "@/types/wishlist";
 
 interface ListingFormat {
 	id: string;
@@ -19,7 +19,7 @@ interface ListingFormat {
 	itemWebUrl: string;
 	imageUrl?: string;
 	sellerFeedbackScore: number;
-	isActive?: boolean;
+	availabilityStatus?: AvailabilityStatus;
 }
 
 interface WishlistCardContentProps {

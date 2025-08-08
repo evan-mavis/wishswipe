@@ -124,7 +124,7 @@ export function WishlistCard({
 			itemWebUrl: item.itemWebUrl || "",
 			imageUrl: item.imageUrl,
 			sellerFeedbackScore: item.sellerFeedbackScore || 0,
-			isActive: item.isActive,
+			availabilityStatus: item.availabilityStatus,
 		}),
 		[]
 	);

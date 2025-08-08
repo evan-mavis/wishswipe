@@ -1,8 +1,7 @@
 import { Reorder } from "framer-motion";
 import { GripVertical, Check } from "lucide-react";
 import { SavedListingCard } from "./SavedListingCard";
-import { Badge } from "@/components/ui/badge";
-import type { WishlistItem } from "@/types/wishlist";
+import type { AvailabilityStatus, WishlistItem } from "@/types/wishlist";
 import { cn } from "@/lib/utils";
 import { memo } from "react";
 
@@ -18,7 +17,7 @@ interface ListingFormat {
 	itemWebUrl: string;
 	imageUrl?: string;
 	sellerFeedbackScore: number;
-	isActive?: boolean;
+	availabilityStatus?: AvailabilityStatus;
 }
 
 interface WishlistItemsListProps {
@@ -48,7 +47,9 @@ const ReorderCard = memo(
 			<div
 				className={cn(
 					"group bg-card border-border relative w-[120px] overflow-hidden rounded-lg border",
-					!item.isActive && "border-red-200 bg-red-50/30 opacity-50"
+					item.availabilityStatus &&
+						!["IN_STOCK", "LIMITED_STOCK"].includes(item.availabilityStatus) &&
+						"border-red-300"
 				)}
 			>
 				<div className="p-2">
@@ -60,13 +61,7 @@ const ReorderCard = memo(
 							draggable={false}
 							loading="lazy"
 						/>
-						{!item.isActive && (
-							<div className="absolute inset-0 flex items-center justify-center bg-red-500/20">
-								<Badge variant="destructive" className="text-xs">
-									Inactive
-								</Badge>
-							</div>
-						)}
+						{/* No overlay; only border changes in reorder mode */}
 					</div>
 					<div className="space-y-1">
 						<h3 className="line-clamp-2 text-xs leading-tight font-medium">
@@ -109,7 +104,9 @@ const MoveCard = memo(
 					isSelected
 						? "border-fuchsia-500 bg-fuchsia-50"
 						: "hover:border-fuchsia-300",
-					!item.isActive && "border-red-200 bg-red-50/30 opacity-50"
+					item.availabilityStatus &&
+						!["IN_STOCK", "LIMITED_STOCK"].includes(item.availabilityStatus) &&
+						"border-red-300"
 				)}
 				onClick={() => onItemSelection(item.id)}
 			>
@@ -127,13 +124,7 @@ const MoveCard = memo(
 								<Check className="h-6 w-6 rounded-full bg-white p-1 text-fuchsia-600" />
 							</div>
 						)}
-						{!item.isActive && (
-							<div className="absolute inset-0 flex items-center justify-center bg-red-500/20">
-								<Badge variant="destructive" className="text-xs">
-									Inactive
-								</Badge>
-							</div>
-						)}
+						{/* No overlay; only border changes in move mode */}
 					</div>
 					<div className="space-y-1">
 						<h3 className="line-clamp-2 text-xs leading-tight font-medium">

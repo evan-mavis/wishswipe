@@ -15,9 +15,18 @@ import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { getLargerImageUrl } from "@/lib/image";
 import { Skeleton } from "@/components/ui/skeleton";
+import type { AvailabilityStatus } from "@/types/wishlist";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface SavedListingCardProps {
-	listing: Listing & { isActive?: boolean };
+	listing: Listing & {
+		availabilityStatus?: AvailabilityStatus;
+	};
 	onDelete?: () => void;
 	isReorderMode?: boolean;
 }
@@ -50,8 +59,7 @@ export const SavedListingCard = memo(function SavedListingCard({
 				className={cn(
 					"group/item relative overflow-hidden transition-colors",
 					isReorderMode && "hover:border-green-400",
-					isMobile && "w-full",
-					!listing.isActive && "border-red-200 bg-red-50/30 opacity-50"
+					isMobile && "w-full"
 				)}
 			>
 				<CardContent className="p-0">
@@ -73,6 +81,44 @@ export const SavedListingCard = memo(function SavedListingCard({
 						</Button>
 					)}
 					<div className={cn("p-4", isMobile && "w-full")}>
+						{/* Status badge above image */}
+						{listing.availabilityStatus &&
+							!["IN_STOCK", "LIMITED_STOCK"].includes(
+								listing.availabilityStatus
+							) && (
+								<div className="mb-2 flex justify-center">
+									<TooltipProvider>
+										<Tooltip>
+											<TooltipTrigger asChild>
+												<Badge variant="destructive" className="text-xs">
+													{`Status Update: ${
+														listing.availabilityStatus === "NOT_FOUND"
+															? "Not Found"
+															: listing.availabilityStatus === "ENDED"
+																? "Listing Ended"
+																: listing.availabilityStatus === "OUT_OF_STOCK"
+																	? "Out of Stock"
+																	: "Unknown Status"
+													}`}
+												</Badge>
+											</TooltipTrigger>
+											<TooltipContent>
+												<p className="max-w-[220px] text-xs">
+													{listing.availabilityStatus === "NOT_FOUND" &&
+														"We could no longer find the listing."}
+													{listing.availabilityStatus === "ENDED" &&
+														"The listing has likely ended."}
+													{listing.availabilityStatus === "OUT_OF_STOCK" &&
+														"This item is likely out of stock."}
+													{listing.availabilityStatus ===
+														"UNKNOWN_AVAILABILITY" &&
+														"We can't determine this listing's availability right now."}
+												</p>
+											</TooltipContent>
+										</Tooltip>
+									</TooltipProvider>
+								</div>
+							)}
 						<div className="space-y-3">
 							<div className="relative aspect-square overflow-hidden rounded-md">
 								<img
@@ -82,13 +128,7 @@ export const SavedListingCard = memo(function SavedListingCard({
 									draggable={false}
 									loading={isReorderMode ? "lazy" : "eager"}
 								/>
-								{!listing.isActive && (
-									<div className="absolute inset-0 flex items-center justify-center bg-red-500/20">
-										<Badge variant="destructive" className="text-xs">
-											Inactive
-										</Badge>
-									</div>
-								)}
+								{/* Image is not dimmed; card border conveys status */}
 							</div>
 							<div className="space-y-1">
 								<h3 className="line-clamp-2 text-sm font-medium">

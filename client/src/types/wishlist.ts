@@ -1,3 +1,11 @@
+export type AvailabilityStatus =
+	| "NOT_FOUND"
+	| "ENDED"
+	| "OUT_OF_STOCK"
+	| "LIMITED_STOCK"
+	| "IN_STOCK"
+	| "UNKNOWN_AVAILABILITY";
+
 export interface WishlistItem {
 	id: string;
 	wishlistId: string;
@@ -8,7 +16,7 @@ export interface WishlistItem {
 	price?: number;
 	sellerFeedbackScore?: number;
 	orderIndex: number;
-	isActive: boolean;
+	availabilityStatus: AvailabilityStatus;
 	createdAt: Date;
 	updatedAt: Date;
 }
