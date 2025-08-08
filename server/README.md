@@ -1,48 +1,94 @@
-# Debugging the Server (Node.js/Express)
+# wishswipe server
 
-To debug the server API in VS Code:
+node.js + express + typescript api for wishswipe.
 
-1. **Open the Run and Debug Panel**
+## requirements
 
-   - In VS Code, go to the Run and Debug panel (left sidebar or `Cmd+Shift+D`).
+- node 20+
+- postgresql 14+
+- redis 6+
 
-2. **Start the Debugger**
-   - Select `Debug Server` from the configuration dropdown.
-   - Click the green play button to start debugging.
-   - This will automatically start the server using Nodemon with debugging enabled.
+## setup
 
-**Full Stack Debugging:**
+```sh
+cd server
+npm install
+```
 
-- You can debug both client and server at the same time by selecting the `Debug Full Stack` configuration in the Run and Debug panel.
-- **Important:** Make sure to run the Chrome Debug task first, so the client is configured correctly for debugging.
+create a `.env` in `server/` (examples):
 
-**Tip:**
+```
+PORT=3000
+DATABASE_URL=postgres://user:pass@localhost:5432/wishswipe
+REDIS_URL=redis://localhost:6379
 
-- Make sure you have installed all dependencies (`npm install`) in the `server` directory before debugging.
+# firebase admin
+FIREBASE_PROJECT_ID=...
+FIREBASE_CLIENT_EMAIL=...
+FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n"
 
-## Database Migrations
+# ebay api
+EBAY_BASE_URL=https://api.ebay.com
+EBAY_CLIENT_ID=...
+EBAY_CLIENT_SECRET=...
+```
 
-This project uses [node-pg-migrate](https://github.com/salsita/node-pg-migrate) for managing PostgreSQL database migrations.
+## development
 
-### How to Run Migrations
+```sh
+npm run dev
+```
 
-1. **Ensure your environment variables are set** (especially `DATABASE_URL` in your `.env` file).
-2. **Install dependencies** (if you haven't already):
-   ```sh
-   npm install
-   ```
-3. **Create a new migration:**
-   ```sh
-   npm run migrate:create name=your_migration_name
-   ```
-   This will create a new migration file in `src/db/migrations/`.
-4. **Run all pending migrations:**
-   ```sh
-   npm run migrate:up
-   ```
-5. **Revert the last migration:**
-   ```sh
-   npm run migrate:down
-   ```
+starts express with nodemon on `http://localhost:${PORT:-3000}`.
 
-All migration scripts are located in `src/db/migrations/`.
+## build & start (production)
+
+```sh
+npm run build
+npm run start
+```
+
+## scripts
+
+- `dev`: start server with nodemon
+- `build`: compile typescript to `dist/`
+- `start`: run compiled server
+- `migrate:create`: create a new migration
+- `migrate:up`: run pending migrations
+- `migrate:down`: revert last migration
+
+## database migrations
+
+powered by [node-pg-migrate]. files live in `src/db/migrations/`.
+
+```sh
+npm run migrate:create name=add_table
+npm run migrate:up
+npm run migrate:down
+```
+
+## routes
+
+- `GET /` health check `{ status: "ok" }`
+- public auth routes under `/login`
+- authenticated app routes under `/wishswipe/**` (protected by firebase auth middleware)
+
+## background jobs
+
+using bullmq + redis.
+
+- `search-session-reset`: hourly at minute 0
+- `expired-items-check`:
+  - production: scheduled daily at 02:00 with a repeatable job
+  - development: an immediate one-off is enqueued on startup
+
+## debugging
+
+- use vscode `Debug Server` launch or run `npm run dev` and attach manually.
+- logs are emitted via winston (see `src/utils/logger.ts`).
+
+## troubleshooting
+
+- db/redis connection issues: verify `DATABASE_URL` and `REDIS_URL`.
+- ebay api errors: ensure `EBAY_CLIENT_ID/SECRET` and `EBAY_BASE_URL`.
+- auth failures: validate firebase admin creds in `.env`.
