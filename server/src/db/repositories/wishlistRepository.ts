@@ -62,7 +62,7 @@ export async function findWishlistsWithItemsByUserId(
       wi.price,
       wi.seller_feedback_score,
       wi.order_index as item_order_index,
-      wi.is_active,
+      wi.availability_status,
       wi.created_at as item_created_at,
       wi.updated_at as item_updated_at
     FROM wishlists w
@@ -105,7 +105,7 @@ export async function findWishlistsWithItemsByUserId(
         price: row.price ? parseFloat(row.price) : undefined,
         sellerFeedbackScore: row.seller_feedback_score,
         orderIndex: row.item_order_index || 0,
-        isActive: row.is_active,
+        availabilityStatus: row.availability_status,
         createdAt: row.item_created_at,
         updatedAt: row.item_updated_at,
       });

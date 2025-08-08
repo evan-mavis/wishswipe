@@ -53,7 +53,11 @@ export const up = (pgm) => {
     price: { type: "numeric" },
     seller_feedback_score: { type: "integer" },
     order_index: { type: "integer", notNull: true, default: 0 },
-    is_active: { type: "boolean", notNull: true, default: true },
+    availability_status: {
+      type: "varchar(32)",
+      notNull: true,
+      default: "IN_STOCK",
+    },
     created_at: {
       type: "timestamp",
       notNull: true,

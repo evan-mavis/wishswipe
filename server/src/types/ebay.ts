@@ -85,3 +85,25 @@ export interface EbaySearchResponse {
   offset: number;
   itemSummaries: EbayItemSummary[];
 }
+
+export interface EbayItemAvailability {
+  estimatedAvailabilityStatus: "IN_STOCK" | "OUT_OF_STOCK" | "LIMITED_STOCK";
+}
+
+export interface EbayItemDetails {
+  itemId: string;
+  title: string;
+  price: EbayPrice;
+  estimatedAvailabilities: EbayItemAvailability[];
+  itemEndDate?: string;
+  condition: string;
+  conditionId: string;
+  itemWebUrl: string;
+  image?: {
+    imageUrl: string;
+  };
+}
+
+export type EbayItemResult =
+  | { success: true; data: EbayItemDetails }
+  | { success: false; error: "NOT_FOUND" | "API_ERROR"; message: string };

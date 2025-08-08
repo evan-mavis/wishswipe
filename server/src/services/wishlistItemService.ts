@@ -1,28 +1,87 @@
 import pool from "../db/index.js";
 import { getItemDetails } from "./ebayBrowseService.js";
+import { EbayItemResult } from "../types/ebay.js";
 import logger from "../utils/logger.js";
+import { EbayItemDetails } from "../types/ebay.js";
+
+type AvailabilityCheckReason =
+  | "NOT_FOUND"
+  | "ENDED"
+  | "OUT_OF_STOCK"
+  | "LIMITED_STOCK"
+  | "IN_STOCK"
+  | "UNKNOWN_AVAILABILITY"
+  | `API_ERROR: ${string}`;
+
+interface AvailabilityCheckResult {
+  available: boolean;
+  reason: AvailabilityCheckReason;
+}
+
+type DbAvailabilityStatus =
+  | "NOT_FOUND"
+  | "ENDED"
+  | "OUT_OF_STOCK"
+  | "LIMITED_STOCK"
+  | "IN_STOCK"
+  | "UNKNOWN_AVAILABILITY";
+
+function normalizeToDbStatus(
+  reason: AvailabilityCheckReason
+): DbAvailabilityStatus {
+  if (reason.startsWith("API_ERROR")) {
+    return "UNKNOWN_AVAILABILITY";
+  }
+  return reason as DbAvailabilityStatus;
+}
 
 export class WishlistItemService {
-  /**
-   * check if a wishlist item is still available on ebay
-   */
-  static async checkItemAvailability(ebayItemId: string): Promise<boolean> {
-    try {
-      // use the ebay browse api to check if the item still exists
-      const itemDetails = await getItemDetails(ebayItemId);
+  static async checkAvailability(
+    ebayItemId: string
+  ): Promise<AvailabilityCheckResult> {
+    const result: EbayItemResult = await getItemDetails(ebayItemId);
 
-      // if we can get item details, it's still available
-      return !!itemDetails;
-    } catch (error) {
-      // if the item doesn't exist or there's an error, it's not available
-      logger.debug(`Item ${ebayItemId} is no longer available:`, error);
-      return false;
+    if (!result.success) {
+      if (result.error === "NOT_FOUND") {
+        return { available: false, reason: "NOT_FOUND" };
+      }
+
+      // return API error as reason instead of throwing, to keep batch checks resilient
+      return { available: false, reason: `API_ERROR: ${result.message}` };
     }
+
+    const itemDetails: EbayItemDetails = result.data;
+
+    // check if the item has ended
+    if (itemDetails.itemEndDate) {
+      const endDate = new Date(itemDetails.itemEndDate);
+      const now = new Date();
+      if (endDate <= now) {
+        return { available: false, reason: "ENDED" };
+      }
+    }
+
+    // check availability status
+    if (
+      itemDetails.estimatedAvailabilities &&
+      itemDetails.estimatedAvailabilities.length > 0
+    ) {
+      const availability = itemDetails.estimatedAvailabilities[0];
+
+      if (availability.estimatedAvailabilityStatus === "OUT_OF_STOCK") {
+        return { available: false, reason: "OUT_OF_STOCK" };
+      }
+
+      if (availability.estimatedAvailabilityStatus === "LIMITED_STOCK") {
+        return { available: true, reason: "LIMITED_STOCK" };
+      }
+
+      return { available: true, reason: "IN_STOCK" };
+    }
+
+    return { available: true, reason: "UNKNOWN_AVAILABILITY" };
   }
 
-  /**
-   * get all active wishlist items that need to be checked
-   */
   static async getActiveWishlistItems(): Promise<
     Array<{
       id: string;
@@ -36,132 +95,110 @@ export class WishlistItemService {
       const result = await client.query(
         `SELECT id, ebay_item_id, title 
          FROM wishlist_items 
-         WHERE is_active = true`
+         WHERE availability_status IN ('IN_STOCK','LIMITED_STOCK')
+         ORDER BY id ASC`
       );
 
-      return result.rows;
+      return result.rows.map((row) => ({
+        id: row.id,
+        ebayItemId: row.ebay_item_id,
+        title: row.title,
+      }));
     } finally {
       client.release();
     }
   }
 
-  /**
-   * update the active status of a wishlist item
-   */
-  static async updateItemActiveStatus(
+  static async updateItemAvailabilityStatus(
     itemId: string,
-    isActive: boolean
+    availabilityStatus:
+      | "NOT_FOUND"
+      | "ENDED"
+      | "OUT_OF_STOCK"
+      | "LIMITED_STOCK"
+      | "IN_STOCK"
+      | "UNKNOWN_AVAILABILITY"
   ): Promise<void> {
     const client = await pool.connect();
 
     try {
       await client.query(
         `UPDATE wishlist_items 
-         SET is_active = $1, updated_at = NOW() 
+         SET availability_status = $1, updated_at = NOW() 
          WHERE id = $2`,
-        [isActive, itemId]
+        [availabilityStatus, itemId]
       );
     } finally {
       client.release();
     }
   }
 
-  /**
-   * check all active wishlist items and update their availability status
-   */
   static async checkAllActiveItems(): Promise<{
-    checked: number;
-    deactivated: number;
-    errors: number;
+    totalChecked: number;
+    availableCount: number;
+    unavailableCount: number;
+    deactivatedCount: number;
   }> {
     const items = await this.getActiveWishlistItems();
-    let checked = 0;
-    let deactivated = 0;
-    let errors = 0;
 
     logger.info(
       `Checking availability for ${items.length} active wishlist items...`
     );
 
-    // process items in batches to avoid overwhelming the ebay api
-    const batchSize = 10;
-    for (let i = 0; i < items.length; i += batchSize) {
-      const batch = items.slice(i, i + batchSize);
+    let availableCount = 0;
+    let unavailableCount = 0;
+    let deactivatedCount = 0;
 
-      // process batch concurrently
-      const promises = batch.map(async (item) => {
-        try {
-          const isAvailable = await this.checkItemAvailability(item.ebayItemId);
+    for (let index = 0; index < items.length; index++) {
+      const item = items[index];
+      const itemNumber = index + 1;
 
-          if (!isAvailable) {
-            await this.updateItemActiveStatus(item.id, false);
-            logger.info(`Deactivated item: ${item.title} (${item.ebayItemId})`);
-            deactivated++;
-          }
+      try {
+        const availability = await this.checkAvailability(item.ebayItemId);
 
-          checked++;
-        } catch (error) {
-          logger.error(`Error checking item ${item.ebayItemId}:`, error);
-          errors++;
+        const status = availability.available
+          ? "Available"
+          : `Unavailable (${availability.reason})`;
+        const truncatedTitle =
+          item.title.length > 28
+            ? item.title.substring(0, 25) + "..."
+            : item.title;
+        logger.info(
+          `[${itemNumber}/${items.length}] ${status}: ${truncatedTitle} (${item.ebayItemId})`
+        );
+
+        if (availability.available) {
+          availableCount += 1;
+          await this.updateItemAvailabilityStatus(
+            item.id,
+            normalizeToDbStatus(availability.reason)
+          );
+        } else {
+          unavailableCount += 1;
+          await this.updateItemAvailabilityStatus(
+            item.id,
+            normalizeToDbStatus(availability.reason)
+          );
+          deactivatedCount += 1;
         }
-      });
-
-      await Promise.all(promises);
-
-      // add a small delay between batches to be respectful to ebay's api
-      if (i + batchSize < items.length) {
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+      } catch (error) {
+        logger.error(
+          `[${itemNumber}/${items.length}] Error checking item ${item.ebayItemId}: ${error}`
+        );
       }
     }
+
+    const summary = {
+      totalChecked: items.length,
+      availableCount,
+      unavailableCount,
+      deactivatedCount,
+    };
 
     logger.info(
-      `Availability check complete: ${checked} checked, ${deactivated} deactivated, ${errors} errors`
+      `Availability check summary: checked=${summary.totalChecked}, available=${summary.availableCount}, unavailable=${summary.unavailableCount}, deactivated=${summary.deactivatedCount}`
     );
 
-    return { checked, deactivated, errors };
-  }
-
-  /**
-   * check availability of a specific wishlist item and update its status
-   */
-  static async checkSpecificItem(itemId: string): Promise<{
-    wasActive: boolean;
-    isNowActive: boolean;
-    title: string;
-  }> {
-    const client = await pool.connect();
-
-    try {
-      // get the item details
-      const result = await client.query(
-        `SELECT ebay_item_id, title, is_active 
-         FROM wishlist_items 
-         WHERE id = $1`,
-        [itemId]
-      );
-
-      if (result.rows.length === 0) {
-        throw new Error(`Wishlist item ${itemId} not found`);
-      }
-
-      const item = result.rows[0];
-      const wasActive = item.is_active;
-
-      // check availability on ebay
-      const isAvailable = await this.checkItemAvailability(item.ebay_item_id);
-
-      // update the status if it changed
-      if (wasActive !== isAvailable) {
-        await this.updateItemActiveStatus(itemId, isAvailable);
-      }
-
-      return {
-        wasActive,
-        isNowActive: isAvailable,
-        title: item.title,
-      };
-    } finally {
-      client.release();
-    }
+    return summary;
   }
 }

@@ -18,11 +18,11 @@ export async function findWishlistItemsByWishlistId(
       price,
       seller_feedback_score,
       order_index,
-      is_active,
+      availability_status,
       created_at,
       updated_at
     FROM wishlist_items 
-    WHERE wishlist_id = $1 AND is_active = true
+    WHERE wishlist_id = $1 AND availability_status IN ('IN_STOCK','LIMITED_STOCK')
     ORDER BY order_index ASC, created_at DESC`,
     [wishlistId]
   );
@@ -37,7 +37,7 @@ export async function findWishlistItemsByWishlistId(
     price: row.price ? parseFloat(row.price) : undefined,
     sellerFeedbackScore: row.seller_feedback_score,
     orderIndex: row.order_index || 0,
-    isActive: row.is_active,
+    availabilityStatus: row.availability_status,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   }));
@@ -66,7 +66,7 @@ export async function addItemToWishlist(
     await client.query(
       `UPDATE wishlist_items 
        SET order_index = order_index + 1, updated_at = now()
-       WHERE wishlist_id = $1 AND is_active = true`,
+       WHERE wishlist_id = $1 AND availability_status IN ('IN_STOCK','LIMITED_STOCK')`,
       [wishlistId]
     );
 
@@ -97,7 +97,7 @@ export async function addItemToWishlist(
       price: rows[0].price ? parseFloat(rows[0].price) : undefined,
       sellerFeedbackScore: rows[0].seller_feedback_score,
       orderIndex: rows[0].order_index || 0,
-      isActive: rows[0].is_active,
+      availabilityStatus: rows[0].availability_status,
       createdAt: rows[0].created_at,
       updatedAt: rows[0].updated_at,
     };
@@ -115,7 +115,7 @@ export async function removeItemFromWishlist(
 ): Promise<boolean> {
   const { rowCount } = await pool.query(
     `UPDATE wishlist_items 
-     SET is_active = false, updated_at = now()
+     SET availability_status = 'UNKNOWN_AVAILABILITY', updated_at = now()
      WHERE id = $1 
      AND wishlist_id IN (SELECT id FROM wishlists WHERE user_id = $2)`,
     [itemId, userId]

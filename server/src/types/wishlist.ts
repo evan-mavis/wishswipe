@@ -9,6 +9,14 @@ export interface DbWishlist {
   itemCount?: number;
 }
 
+export type AvailabilityStatus =
+  | "NOT_FOUND"
+  | "ENDED"
+  | "OUT_OF_STOCK"
+  | "LIMITED_STOCK"
+  | "IN_STOCK"
+  | "UNKNOWN_AVAILABILITY";
+
 export interface DbWishlistItem {
   id: string;
   wishlistId: string;
@@ -19,7 +27,7 @@ export interface DbWishlistItem {
   price?: number;
   sellerFeedbackScore?: number;
   orderIndex: number;
-  isActive: boolean;
+  availabilityStatus: AvailabilityStatus;
   createdAt: Date;
   updatedAt: Date;
 }

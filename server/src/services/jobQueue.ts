@@ -4,7 +4,6 @@ import { WishlistItemService } from "./wishlistItemService.js";
 import redis from "../utils/redisClient.js";
 import logger from "../utils/logger.js";
 
-// use existing redis connection
 const connection = redis;
 
 // job queues
@@ -23,17 +22,12 @@ const searchSessionWorker = new Worker(
       `Processing job: ${job.name} with data: ${JSON.stringify(job.data)}`
     );
 
-    try {
-      await SearchSessionService.resetOldSessions();
-      logger.info("Successfully reset old search sessions");
-    } catch (error) {
-      logger.error("Error resetting search sessions:", error);
-      throw error; // this will trigger a retry
-    }
+    await SearchSessionService.resetOldSessions();
+    logger.info("Successfully reset old search sessions");
   },
   {
     connection,
-    concurrency: 1, // only process one job at a time
+    concurrency: 1,
   }
 );
 
@@ -41,21 +35,12 @@ const searchSessionWorker = new Worker(
 const expiredItemsWorker = new Worker(
   "expired-items-check",
   async (job) => {
-    logger.info(
-      `Processing expired items check job: ${
-        job.name
-      } with data: ${JSON.stringify(job.data)}`
-    );
+    logger.info(`Processing expired items check job: ${job.name}`);
 
-    try {
-      const result = await WishlistItemService.checkAllActiveItems();
-      logger.info(
-        `Successfully checked expired items: ${JSON.stringify(result)}`
-      );
-    } catch (error) {
-      logger.error("Error checking expired items:", error);
-      throw error;
-    }
+    const summary = await WishlistItemService.checkAllActiveItems();
+    logger.info(
+      `Expired items check complete: checked=${summary.totalChecked}, available=${summary.availableCount}, unavailable=${summary.unavailableCount}, deactivated=${summary.deactivatedCount}`
+    );
   },
   {
     connection,
@@ -74,7 +59,6 @@ expiredItemsWorker.on("error", (error) => {
 
 // job scheduling functions
 export const JobQueueService = {
-  // schedule search session reset to run every hour
   async scheduleSearchSessionReset(): Promise<void> {
     await searchSessionQueue.add(
       "reset-old-sessions",
@@ -88,27 +72,51 @@ export const JobQueueService = {
     logger.info("Scheduled search session reset job");
   },
 
-  // schedule expired items check to run daily at 2 am
   async scheduleExpiredItemsCheck(): Promise<void> {
-    await expiredItemsQueue.add(
-      "check-expired-items",
-      {},
-      {
-        repeat: {
-          pattern: "0 2 * * *", // daily at 2:00 am
-        },
+    const singletonJobId = "expired-items-single";
+    try {
+      const existing = await expiredItemsQueue.getJob(singletonJobId);
+      if (existing) {
+        const state = await existing.getState();
+        if (state === "waiting" || state === "active" || state === "delayed") {
+          logger.info(
+            "Expired items check already scheduled or running; skipping immediate run"
+          );
+          return;
+        }
       }
-    );
-    logger.info("Scheduled expired items check job");
+    } catch {}
+
+    await expiredItemsQueue.add("check-expired-items", {});
+    logger.info("Scheduled immediate expired items check job for testing");
+
+    // await expiredItemsQueue.add(
+    //   "check-expired-items",
+    //   {},
+    //   {
+    //     repeat: {
+    //       pattern: "0 2 * * *", // daily at 2:00 am
+    //     },
+    //     jobId: "check-expired-items-daily",
+    //   }
+    // );
+    // logger.info("Scheduled daily expired items check job");
   },
 
-  // initialize all scheduled jobs
   async initializeScheduledJobs(): Promise<void> {
     await this.scheduleSearchSessionReset();
+
+    // kill any lingering jobs on restart to avoid overlap
+    try {
+      await expiredItemsQueue.obliterate({ force: true });
+      logger.info("Obliterated expired-items queue on startup");
+    } catch (e) {
+      logger.warn("Could not obliterate expired-items queue on startup");
+    }
+
     await this.scheduleExpiredItemsCheck();
   },
 
-  // graceful shutdown
   async shutdown(): Promise<void> {
     await searchSessionWorker.close();
     await expiredItemsWorker.close();

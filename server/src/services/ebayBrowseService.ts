@@ -4,6 +4,7 @@ import {
   SearchFilters,
   EbaySearchResponse,
   EbayItemSummary,
+  EbayItemResult,
 } from "../types/ebay.js";
 import redis from "../utils/redisClient.js";
 import logger from "../utils/logger.js";
@@ -119,10 +120,10 @@ export async function searchEbayItems(
   return response.data;
 }
 
-export async function getItemDetails(itemId: string): Promise<any> {
-  try {
-    const accessToken = await getEbayAccessToken();
+export async function getItemDetails(itemId: string): Promise<EbayItemResult> {
+  const accessToken = await getEbayAccessToken();
 
+  try {
     const response = await axios.get(
       `${process.env.EBAY_BASE_URL}/buy/browse/v1/item/${itemId}`,
       {
@@ -141,8 +142,20 @@ export async function getItemDetails(itemId: string): Promise<any> {
       throw new Error("eBay API error");
     }
 
-    return response.data;
-  } catch (error) {
+    return {
+      success: true,
+      data: response.data,
+    };
+  } catch (error: any) {
+    // handle 404s gracefully
+    if (error?.response?.status === 404) {
+      return {
+        success: false,
+        error: "NOT_FOUND",
+        message: `Item ${itemId} not found or no longer available`,
+      };
+    }
+
     logger.error(`Error fetching item details for ${itemId}:`, error);
     throw error;
   }
