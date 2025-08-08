@@ -7,6 +7,7 @@
 
 - **swipe-first discovery**: fast, card-based browsing of ebay items
 - **wishlists**: create, edit, reorder, move items between lists
+- **user preferences**: set default search terms, item condition, category, and price range for personalized browsing
 - **status awareness**: background job checks item availability (e.g., Not Found, Listing Ended, Out of Stock, Limited Stock, In Stock, Unknown Status) and surfaces a status badge in the ui
 - **insights**: basic analytics on swipes, prices, categories, conditions
 - **auth**: firebase-based authentication, protected server routes
