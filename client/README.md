@@ -56,6 +56,32 @@ src/
   lib/               # utilities (debounce, image helpers, etc.)
 ```
 
+## interaction batching
+
+**WishSwipe** optimizes network efficiency through intelligent batching of user swipe interactions:
+
+**batching strategy:**
+
+- **queue-based**: swipe interactions are collected in an in-memory queue rather than sent immediately
+- **dual triggers**: queue flushes when either 10 interactions accumulate OR after 3 seconds of inactivity
+- **error recovery**: failed requests automatically re-queue interactions and retry after 10 seconds
+- **singleton service**: `userInteractionService` maintains a single queue across the entire app
+
+**flush triggers:**
+
+- **automatic**: every 10 swipes or 3-second timeout
+- **navigation**: hook ensures pending interactions flush when switching between pages
+- **visibility changes**: page hidden/beforeunload events trigger immediate flush
+- **manual**: `forceFlush()` method for explicit saves
+
+**performance benefits:**
+
+- reduces server requests by ~90% compared to individual swipe calls
+- maintains responsiveness with 3-second maximum delay
+- preserves user data integrity even during network failures or navigation
+
+this approach balances real-time data persistence with efficient network usage.
+
 ## scripts
 
 - `dev`: start vite dev server
