@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc && cp src/db/index.js dist/db/index.js",
     "start": "node dist/app.js",
-    "dev": "nodemon src/app.ts",
+    "dev": "nodemon --watch src --ext ts,js --exec \"npm run build && npm start\"",
     "test": "echo \"Error: no test specified\" && exit 1",
     "migrate:create": "node-pg-migrate create -c ./node-pg-migrate.config.js --migrations-dir src/db/migrations",
     "migrate:up": "node-pg-migrate up -c ./node-pg-migrate.config.js --migrations-dir src/db/migrations",
