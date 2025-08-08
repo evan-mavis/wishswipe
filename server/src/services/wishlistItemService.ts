@@ -36,6 +36,116 @@ function normalizeToDbStatus(
 }
 
 export class WishlistItemService {
+  static async getUserActiveWishlistItems(
+    userId: string,
+    options?: { maxItemsToCheck?: number; staleAfterHours?: number }
+  ): Promise<
+    Array<{
+      id: string;
+      ebayItemId: string;
+      title: string;
+    }>
+  > {
+    const client = await pool.connect();
+
+    const maxItems = options?.maxItemsToCheck ?? 50;
+    const staleHours = options?.staleAfterHours ?? 24;
+
+    try {
+      const result = await client.query(
+        `SELECT wi.id, wi.ebay_item_id, wi.title
+         FROM wishlist_items wi
+         INNER JOIN wishlists w ON wi.wishlist_id = w.id
+         WHERE w.user_id = $1
+           AND wi.availability_status IN ('IN_STOCK','LIMITED_STOCK')
+           AND wi.updated_at < NOW() - INTERVAL '${staleHours} hours'
+         ORDER BY wi.updated_at ASC
+         LIMIT $2`,
+        [userId, maxItems]
+      );
+
+      return result.rows.map((row) => ({
+        id: row.id,
+        ebayItemId: row.ebay_item_id,
+        title: row.title,
+      }));
+    } finally {
+      client.release();
+    }
+  }
+
+  static async checkActiveItemsForUser(
+    userId: string,
+    options?: { maxItemsToCheck?: number; staleAfterHours?: number }
+  ): Promise<{
+    totalChecked: number;
+    availableCount: number;
+    unavailableCount: number;
+    deactivatedCount: number;
+  }> {
+    const items = await this.getUserActiveWishlistItems(userId, options);
+
+    logger.info(
+      `User ${userId}: checking availability for ${items.length} wishlist items...`
+    );
+
+    let availableCount = 0;
+    let unavailableCount = 0;
+    let deactivatedCount = 0;
+
+    for (let index = 0; index < items.length; index++) {
+      const item = items[index];
+      const itemNumber = index + 1;
+
+      try {
+        const availability = await this.checkAvailability(item.ebayItemId);
+
+        const status = availability.available
+          ? "Available"
+          : `Unavailable (${availability.reason})`;
+        const truncatedTitle =
+          item.title && item.title.length > 28
+            ? item.title.substring(0, 25) + "..."
+            : item.title;
+        logger.info(
+          `User ${userId} [${itemNumber}/${items.length}] ${status}: ${truncatedTitle} (${item.ebayItemId})`
+        );
+
+        if (availability.available) {
+          availableCount += 1;
+          await this.updateItemAvailabilityStatus(
+            item.id,
+            normalizeToDbStatus(availability.reason)
+          );
+        } else {
+          unavailableCount += 1;
+          await this.updateItemAvailabilityStatus(
+            item.id,
+            normalizeToDbStatus(availability.reason)
+          );
+          deactivatedCount += 1;
+        }
+      } catch (error) {
+        logger.error(
+          `User ${userId} [${itemNumber}/${items.length}] Error checking item ${item.ebayItemId}: ${error}`
+        );
+      }
+    }
+
+    const summary = {
+      totalChecked: items.length,
+      availableCount,
+      unavailableCount,
+      deactivatedCount,
+    };
+
+    logger.info(
+      `User ${userId} availability check summary: checked=${summary.totalChecked}, available=${summary.availableCount}, unavailable=${summary.unavailableCount}, deactivated=${summary.deactivatedCount}`
+    );
+
+    return summary;
+  }
+
   static async checkAvailability(
     ebayItemId: string
   ): Promise<AvailabilityCheckResult> {

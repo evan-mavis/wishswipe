@@ -1,5 +1,6 @@
 import axiosInstance from "../interceptors/axiosInstance";
 import type { AvailabilityStatus, WishList } from "../types/wishlist";
+import { refreshWishlistMaintenanceDebounced } from "@/services/maintenanceService";
 
 export interface CreateWishlistRequest {
 	name: string;
@@ -64,6 +65,9 @@ export interface MoveItemsRequest {
 }
 
 export async function fetchWishlists(): Promise<WishList[]> {
+	// opportunistically trigger a lightweight refresh before fetching
+	refreshWishlistMaintenanceDebounced(10);
+
 	const response = await axiosInstance.get<WishlistResponse>(
 		"/wishswipe/wishlist"
 	);

@@ -3,6 +3,22 @@ import { SearchFilters } from "../types/ebay.js";
 import { SearchSession } from "../types/searchSession.js";
 
 export class SearchSessionService {
+  static async resetOldSessionsForUser(userId: string): Promise<void> {
+    const client = await pool.connect();
+
+    try {
+      await client.query(
+        `UPDATE user_search_sessions 
+         SET page_number = 1,
+             total_items_seen = 0,
+             last_activity = NOW()
+         WHERE user_id = $1 AND created_at < NOW() - INTERVAL '7 days'`,
+        [userId]
+      );
+    } finally {
+      client.release();
+    }
+  }
   static async getOrCreateSession(
     userId: string,
     searchHash: string,
@@ -85,23 +101,6 @@ export class SearchSessionService {
              last_activity = NOW()
          WHERE id = $2`,
         [itemsSeen, sessionId]
-      );
-    } finally {
-      client.release();
-    }
-  }
-
-  static async resetOldSessions(): Promise<void> {
-    const client = await pool.connect();
-
-    try {
-      // reset sessions older than 1 week back to page 1
-      await client.query(
-        `UPDATE user_search_sessions 
-         SET page_number = 1,
-             total_items_seen = 0,
-             last_activity = NOW()
-         WHERE created_at < NOW() - INTERVAL '7 days'`
       );
     } finally {
       client.release();

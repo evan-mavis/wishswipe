@@ -10,6 +10,7 @@ import { ArrowDownToLine, Trash2 } from "lucide-react";
 import type { Listing } from "@/types/listing";
 import { Link } from "react-router-dom";
 import { preferencesService } from "@/services/preferencesService";
+import { resetSearchSessionsDebounced } from "@/services/maintenanceService";
 import { userInteractionService } from "@/services/userInteractionService";
 import { useNavigationFlush } from "@/hooks/use-navigation-flush";
 
@@ -41,6 +42,8 @@ export function SwipeView() {
 	useEffect(() => {
 		const loadPreferences = async () => {
 			try {
+				resetSearchSessionsDebounced(60);
+
 				const preferences = await preferencesService.loadPreferences();
 				if (preferences.defaultSearchTerm) {
 					setSearch(preferences.defaultSearchTerm);

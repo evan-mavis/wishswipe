@@ -15,8 +15,8 @@ import preferencesRoutes from "./routes/preferencesRoutes.js";
 import userItemHistoryRoutes from "./routes/userItemHistoryRoutes.js";
 import loginRoutes from "./routes/loginRoutes.js";
 import analyticsRoutes from "./routes/analyticsRoutes.js";
+import maintenanceRoutes from "./routes/maintenanceRoutes.js";
 import logger from "./utils/logger.js";
-import jobsRoutes from "./routes/jobsRoutes.js";
 
 // initialize firebase
 admin.initializeApp({
@@ -105,7 +105,7 @@ app.use("/wishswipe/wishlist-items", wishlistItemRoutes);
 app.use("/wishswipe/preferences", preferencesRoutes);
 app.use("/wishswipe/user-item-history", userItemHistoryRoutes);
 app.use("/wishswipe/analytics", analyticsRoutes);
-app.use("/wishswipe/jobs", jobsRoutes);
+app.use("/wishswipe/maintenance", maintenanceRoutes);
 
 app.listen(PORT, async () => {
   logger.info(`Server running on http://localhost:${PORT}`);
