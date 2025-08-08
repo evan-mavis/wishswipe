@@ -48,6 +48,22 @@ npm run build
 npm run start
 ```
 
+## project structure
+
+```
+src/
+  controllers/       # request handlers for routes
+  services/          # business logic and external api calls
+  db/
+    repositories/    # data access layer
+    migrations/      # database schema changes
+  routes/            # express route definitions
+  middleware/        # auth and other middleware
+  types/             # shared typescript interfaces
+  utils/             # logger, redis client, utilities
+  config/            # firebase and other configurations
+```
+
 ## scripts
 
 - `dev`: start server with nodemon
