@@ -46,10 +46,7 @@ const ReorderCard = memo(
 		return (
 			<div
 				className={cn(
-					"group bg-card border-border relative w-[120px] overflow-hidden rounded-lg border",
-					item.availabilityStatus &&
-						!["IN_STOCK", "LIMITED_STOCK"].includes(item.availabilityStatus) &&
-						"border-red-300"
+					"group bg-card border-border relative w-[120px] overflow-hidden rounded-lg border"
 				)}
 			>
 				<div className="p-2">
@@ -103,10 +100,7 @@ const MoveCard = memo(
 					"group bg-card border-border relative w-[120px] cursor-pointer overflow-hidden rounded-lg border transition-all",
 					isSelected
 						? "border-fuchsia-500 bg-fuchsia-50"
-						: "hover:border-fuchsia-300",
-					item.availabilityStatus &&
-						!["IN_STOCK", "LIMITED_STOCK"].includes(item.availabilityStatus) &&
-						"border-red-300"
+						: "hover:border-fuchsia-300"
 				)}
 				onClick={() => onItemSelection(item.id)}
 			>
