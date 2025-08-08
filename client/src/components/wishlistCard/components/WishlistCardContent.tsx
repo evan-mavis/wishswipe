@@ -19,6 +19,7 @@ interface ListingFormat {
 	itemWebUrl: string;
 	imageUrl?: string;
 	sellerFeedbackScore: number;
+	isActive?: boolean;
 }
 
 interface WishlistCardContentProps {

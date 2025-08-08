@@ -1,5 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Expand } from "lucide-react";
 import type { Listing } from "@/types/listing";
 import {
@@ -16,7 +17,7 @@ import { getLargerImageUrl } from "@/lib/image";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface SavedListingCardProps {
-	listing: Listing;
+	listing: Listing & { isActive?: boolean };
 	onDelete?: () => void;
 	isReorderMode?: boolean;
 }
@@ -49,7 +50,8 @@ export const SavedListingCard = memo(function SavedListingCard({
 				className={cn(
 					"group/item relative overflow-hidden transition-colors",
 					isReorderMode && "hover:border-green-400",
-					isMobile && "w-full"
+					isMobile && "w-full",
+					!listing.isActive && "border-red-200 bg-red-50/30 opacity-50"
 				)}
 			>
 				<CardContent className="p-0">
@@ -80,6 +82,13 @@ export const SavedListingCard = memo(function SavedListingCard({
 									draggable={false}
 									loading={isReorderMode ? "lazy" : "eager"}
 								/>
+								{!listing.isActive && (
+									<div className="absolute inset-0 flex items-center justify-center bg-red-500/20">
+										<Badge variant="destructive" className="text-xs">
+											Inactive
+										</Badge>
+									</div>
+								)}
 							</div>
 							<div className="space-y-1">
 								<h3 className="line-clamp-2 text-sm font-medium">
