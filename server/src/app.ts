@@ -3,6 +3,8 @@ dotenv.config();
 
 import express from "express";
 import cors from "cors";
+import helmet from "helmet";
+import rateLimit from "express-rate-limit";
 import admin, { getServiceAccount } from "./config/firebase.js";
 import baseRoutes from "./routes/baseRoutes.js";
 import { authenticateUser } from "./middleware/auth.js";
@@ -24,10 +26,66 @@ admin.initializeApp({
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// middleware
-app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+// security middleware
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        scriptSrc: ["'self'"],
+        imgSrc: ["'self'", "data:", "https:"],
+        connectSrc: ["'self'"],
+        fontSrc: ["'self'"],
+        objectSrc: ["'none'"],
+        mediaSrc: ["'self'"],
+        frameSrc: ["'none'"],
+      },
+    },
+    crossOriginEmbedderPolicy: false, // disable for firebase auth compatibility
+  })
+);
+
+// cors configuration
+const corsOptions = {
+  origin:
+    process.env.NODE_ENV === "production"
+      ? process.env.ALLOWED_ORIGINS?.split(",")
+      : ["http://localhost:5173", "http://localhost:3000"],
+  credentials: true,
+  optionsSuccessStatus: 200,
+};
+app.use(cors(corsOptions));
+
+// rate limiting
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: process.env.NODE_ENV === "production" ? 100 : 1000, // limit each IP to 100 requests per windowMs in production
+  message: {
+    error: "Too many requests from this IP, please try again later.",
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// apply rate limiting to all requests
+app.use(limiter);
+
+// stricter rate limiting for login endpoint
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5, // limit each IP to 5 login requests per windowMs
+  message: {
+    error:
+      "Too many login attempts from this IP, please try again after 15 minutes.",
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// body parsing middleware
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
 // base public route for health check
 app.get("/", (req, res) => {
@@ -35,7 +93,7 @@ app.get("/", (req, res) => {
 });
 
 // public routes (no authentication required)
-app.use("/login", loginRoutes);
+app.use("/login", loginLimiter, loginRoutes);
 
 // protect everything else under /wishswipe
 app.use("/wishswipe", authenticateUser);

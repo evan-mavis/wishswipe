@@ -22,6 +22,9 @@ PORT=3000
 DATABASE_URL=postgres://user:pass@localhost:5432/wishswipe
 REDIS_URL=redis://localhost:6379
 
+# security - cors allowed origins for production (comma-separated)
+ALLOWED_ORIGINS=https://yourdomain.com,https://www.yourdomain.com
+
 # firebase admin
 FIREBASE_PROJECT_ID=...
 FIREBASE_CLIENT_EMAIL=...
@@ -88,6 +91,18 @@ npm run migrate:down
 - `GET /` health check `{ status: "ok" }`
 - public auth routes under `/login`
 - authenticated app routes under `/wishswipe/**` (protected by firebase auth middleware)
+
+## security
+
+built-in security middleware:
+
+- **helmet**: security headers (csp, xss protection, etc.)
+- **cors**: configurable cross-origin resource sharing
+  - development: allows localhost:5173, localhost:3000
+  - production: uses `ALLOWED_ORIGINS` environment variable
+- **rate limiting**: protects against abuse
+  - general api: 100 requests/15min (production), 1000 requests/15min (development)
+  - login endpoint: 5 attempts/15min
 
 ## background jobs
 
