@@ -10,7 +10,7 @@ export interface UserInteraction {
 	priceMax?: number;
 	itemPrice: number;
 	timestamp: Date;
-	searchSessionId?: string; // Add session ID to each interaction
+	searchSessionId?: string;
 	// for right swipes
 	wishlistId?: string;
 	title?: string;
@@ -34,11 +34,11 @@ class UserInteractionService {
 			timestamp: new Date(),
 		});
 
-		// Flush if we reach batch size
+		// flush if we reach batch size
 		if (this.interactionQueue.length >= this.batchSize) {
 			this.flushQueue();
 		} else {
-			// Set timeout to flush after delay
+			// set timeout to flush after delay
 			this.scheduleFlush();
 		}
 	}
@@ -70,8 +70,8 @@ class UserInteractionService {
 			this.flushTimeout = null;
 		}
 
-		// At this point, interactions array is guaranteed to have items
-		// because we checked this.interactionQueue.length > 0 at the start
+		// at this point, interactions array is guaranteed to have items
+		// because we checked this.interactionqueue.length > 0 at the start
 		try {
 			await axiosInstance.post("/wishswipe/user-item-history/batch", {
 				interactions: interactions.map((interaction) => ({
@@ -94,10 +94,10 @@ class UserInteractionService {
 		} catch (error) {
 			console.error("Failed to send interactions to backend:", error);
 
-			// Re-queue failed interactions
+			// re-queue failed interactions
 			this.interactionQueue.unshift(...interactions);
 
-			// Try again after a delay
+			// try again after a delay
 			setTimeout(() => {
 				this.flushQueue();
 			}, 10000); // 10 seconds
@@ -130,5 +130,5 @@ class UserInteractionService {
 	}
 }
 
-// Export singleton instance
+// export singleton instance
 export const userInteractionService = new UserInteractionService();

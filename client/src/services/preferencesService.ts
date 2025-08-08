@@ -14,7 +14,6 @@ export const preferencesService = {
 			return response.data;
 		} catch (error) {
 			console.error("Error loading preferences:", error);
-			// Return default preferences on error
 			return {
 				defaultSearchTerm: "",
 				defaultCondition: "none",

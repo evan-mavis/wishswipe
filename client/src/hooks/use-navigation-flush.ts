@@ -10,13 +10,13 @@ export function useNavigationFlush() {
 	const location = useLocation();
 
 	useEffect(() => {
-		// Flush interactions when the component mounts (user navigated to this page)
-		// This ensures any pending interactions from previous pages are saved
+		// flush interactions when the component mounts (user navigated to this page)
+		// this ensures any pending interactions from previous pages are saved
 		userInteractionService.forceFlush();
 
-		// Set up cleanup to flush when component unmounts (user navigates away)
+		// set up cleanup to flush when component unmounts (user navigates away)
 		return () => {
 			userInteractionService.forceFlush();
 		};
-	}, [location.pathname]); // Re-run when pathname changes
+	}, [location.pathname]); // re-run when pathname changes
 }

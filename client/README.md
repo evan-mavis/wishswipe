@@ -1,24 +1,83 @@
-# Debugging the Client (React/Vite)
+# wishswipe client
 
-To debug the client in VS Code:
+react + vite + typescript app for wishswipe.
 
-1. **Open Chrome with Debugging Enabled**
+## requirements
 
-   - Run the VS Code task `Start Chrome Debug` (Command Palette: `Run Task` > `Start Chrome Debug`), or run this command in your terminal:
-     ```sh
-     /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --remote-debugging-port=9222 --user-data-dir=/tmp/chrome-debug http://localhost:5173
-     ```
+- node 20+
+- pnpm or npm
 
-2. **Attach the Debugger**
-   - In VS Code, go to the Run and Debug panel and start `Debug Client`.
-   - This will automatically start the Vite dev server, attach the debugger, and let you set breakpoints in your React code as you use the app in Chrome.
+## setup
 
-**Full Stack Debugging:**
+```sh
+cd client
+npm install
+```
 
-- You can debug both client and server at the same time by selecting the `Debug Full Stack` configuration in the Run and Debug panel.
-- **Important:** Make sure to run the Chrome Debug task first, so the client is configured correctly for debugging.
+## development
 
-**Tip:**
+```sh
+npm run dev
+```
 
-- Always use the Chrome window started with remote debugging for breakpoints to work.
-- You can close any extra browser windows that Vite opens automatically.
+starts vite on `http://localhost:5173` and proxies api to `http://localhost:3000`.
+
+## build
+
+```sh
+npm run build
+```
+
+outputs production assets to `dist/`.
+
+## preview
+
+```sh
+npm run preview
+```
+
+serves the built `dist/` locally.
+
+## environment variables
+
+vite reads variables prefixed with `VITE_` from `.env` files. common values:
+
+- `VITE_API_BASE` (optional; axios instance may default to proxy)
+
+## project structure
+
+```
+src/
+  components/        # ui and feature components
+  hooks/             # shared hooks
+  pages/             # route-level pages
+  services/          # api calls
+  types/             # shared types
+  lib/               # utilities (debounce, image helpers, etc.)
+```
+
+## scripts
+
+- `dev`: start vite dev server
+- `build`: typecheck and bundle
+- `preview`: serve built app
+- `lint`: run eslint
+
+## debugging
+
+- vs code: use the provided launch to attach to a chrome instance started with remote debugging.
+- or start chrome manually:
+  ```sh
+  /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --remote-debugging-port=9222 --user-data-dir=/tmp/chrome-debug http://localhost:5173
+  ```
+
+## conventions
+
+- comments start with lowercase and are concise.
+- use functional, typed react components.
+- avoid unused code and props; run `npm run lint` regularly.
+
+## troubleshooting
+
+- casing matters: import paths must match file names (e.g. `actionToolbar` not `ActionToolbar`).
+- firebase auth popup blocked by coop: prefer redirect flow or set `Cross-Origin-Opener-Policy: same-origin-allow-popups` on auth routes.

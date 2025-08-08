@@ -21,7 +21,7 @@ import { NewWishlistDialog } from "../../components/wishlistCard/components/NewW
 import * as wishlistService from "../../services/wishlistService";
 
 export function Wishlist() {
-	// Use navigation flush hook to ensure interactions are saved when switching UIs
+	// use navigation flush hook to ensure interactions are saved when switching uis
 	useNavigationFlush();
 
 	const [wishlists, setWishlists] = useState<WishList[]>([]);
@@ -57,7 +57,7 @@ export function Wishlist() {
 			const selectedIds = Array.from(selectedLists);
 			await wishlistService.deleteWishlists(selectedIds);
 
-			// Update local state
+			// update local state
 			setWishlists((prev) =>
 				prev.filter((list) => !selectedLists.has(list.id))
 			);
@@ -93,7 +93,7 @@ export function Wishlist() {
 	};
 
 	const handleReorderCancel = () => {
-		setWishlists(originalOrder); // Reset to original order
+		setWishlists(originalOrder); // reset to original order
 		setReorderMode(false);
 	};
 
@@ -101,12 +101,12 @@ export function Wishlist() {
 		try {
 			const wishlistIds = wishlists.map((w) => w.id);
 			await wishlistService.reorderWishlists(wishlistIds);
-			setOriginalOrder(wishlists); // Update original order after successful save
+			setOriginalOrder(wishlists); // update original order after successful save
 			setReorderMode(false);
 		} catch (err) {
 			console.error("Error reordering wishlists:", err);
 			setError("Failed to reorder wishlists");
-			// Revert to original order on error
+			// revert to original order on error
 			setWishlists(originalOrder);
 			setReorderMode(false);
 		}
@@ -126,7 +126,7 @@ export function Wishlist() {
 				isFavorite: false,
 			});
 
-			// Ensure the new wishlist has an items array
+			// ensure the new wishlist has an items array
 			const wishlistWithItems = {
 				...newWishlist,
 				items: newWishlist.items || [],
@@ -156,7 +156,7 @@ export function Wishlist() {
 								isFavorite: updatedWishlist.isFavorite,
 							}
 						: w.id !== id && updatedWishlist.isFavorite
-							? { ...w, isFavorite: false } // Clear other favorites if this one becomes favorite
+							? { ...w, isFavorite: false } // clear other favorites if this one becomes favorite
 							: w
 				)
 			);
