@@ -69,49 +69,41 @@ export const JobQueueService = {
         },
       }
     );
-    logger.info("Scheduled search session reset job");
+    logger.info("Scheduled search session reset job (prod)");
   },
 
   async scheduleExpiredItemsCheck(): Promise<void> {
-    const singletonJobId = "expired-items-single";
-    try {
-      const existing = await expiredItemsQueue.getJob(singletonJobId);
-      if (existing) {
-        const state = await existing.getState();
-        if (state === "waiting" || state === "active" || state === "delayed") {
-          logger.info(
-            "Expired items check already scheduled or running; skipping immediate run"
-          );
-          return;
+    if (process.env.NODE_ENV === "production") {
+      await expiredItemsQueue.add(
+        "check-expired-items",
+        {},
+        {
+          repeat: {
+            pattern: "0 2 * * *", // daily at 2:00 am
+          },
+          jobId: "check-expired-items-daily",
         }
-      }
-    } catch {}
-
-    await expiredItemsQueue.add("check-expired-items", {});
-    logger.info("Scheduled immediate expired items check job for testing");
-
-    // await expiredItemsQueue.add(
-    //   "check-expired-items",
-    //   {},
-    //   {
-    //     repeat: {
-    //       pattern: "0 2 * * *", // daily at 2:00 am
-    //     },
-    //     jobId: "check-expired-items-daily",
-    //   }
-    // );
-    // logger.info("Scheduled daily expired items check job");
+      );
+      logger.info("Scheduled daily expired items check job (prod)");
+    } else {
+      await expiredItemsQueue.add("check-expired-items", {});
+      logger.info("Scheduled immediate expired items check job (dev)");
+    }
   },
 
   async initializeScheduledJobs(): Promise<void> {
     await this.scheduleSearchSessionReset();
 
-    // kill any lingering jobs on restart to avoid overlap
-    try {
-      await expiredItemsQueue.obliterate({ force: true });
-      logger.info("Obliterated expired-items queue on startup");
-    } catch (e) {
-      logger.warn("Could not obliterate expired-items queue on startup");
+    // In development, clear queue on restart to avoid overlap; keep in prod
+    if (process.env.NODE_ENV !== "production") {
+      try {
+        await expiredItemsQueue.obliterate({ force: true });
+        logger.info("Obliterated expired-items queue on startup (dev)");
+      } catch (e) {
+        logger.warn(
+          "Could not obliterate expired-items queue on startup (dev)"
+        );
+      }
     }
 
     await this.scheduleExpiredItemsCheck();
