@@ -81,12 +81,12 @@ export const SavedListingCard = memo(function SavedListingCard({
 						</Button>
 					)}
 					<div className={cn("p-4", isMobile && "w-full")}>
-						{/* Status badge above image */}
-						{listing.availabilityStatus &&
-							!["IN_STOCK", "LIMITED_STOCK"].includes(
-								listing.availabilityStatus
-							) && (
-								<div className="mb-2 flex justify-center">
+						{/* Status slot above image: fixed height to keep cards equal */}
+						<div className="mb-2 flex h-5 items-center justify-center">
+							{listing.availabilityStatus &&
+								!["IN_STOCK", "LIMITED_STOCK"].includes(
+									listing.availabilityStatus
+								) && (
 									<TooltipProvider>
 										<Tooltip>
 											<TooltipTrigger asChild>
@@ -117,8 +117,8 @@ export const SavedListingCard = memo(function SavedListingCard({
 											</TooltipContent>
 										</Tooltip>
 									</TooltipProvider>
-								</div>
-							)}
+								)}
+						</div>
 						<div className="space-y-3">
 							<div className="relative aspect-square overflow-hidden rounded-md">
 								<img
