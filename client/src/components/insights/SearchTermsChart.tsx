@@ -45,7 +45,7 @@ export function SearchTermsChart({ data, config }: SearchTermsChartProps) {
 						<YAxis />
 						<ChartTooltip content={<ChartTooltipContent />} />
 						<Bar dataKey="count">
-							{data.map((entry, index) => {
+							{data.map((_entry, index) => {
 								const colors = [
 									"#e879f9", // fuchsia-400
 									"#a21caf", // fuchsia-700
