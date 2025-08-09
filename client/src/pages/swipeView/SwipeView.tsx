@@ -198,7 +198,7 @@ export function SwipeView() {
 
 			{/* Image Area - flexible with max height */}
 			<div
-				className={`flex flex-1 items-center justify-center px-4 ${isMobile ? "mt-1 max-h-[60vh]" : "mt-1 max-h-[75vh]"}`}
+				className={`flex items-center justify-center px-4 ${isMobile ? "mt-1 h-[50vh]" : "mt-1 max-h-[75vh] flex-1"}`}
 			>
 				{wishlistsLoading ? (
 					<PlaceholderListing text="Loading wishlists..." />
