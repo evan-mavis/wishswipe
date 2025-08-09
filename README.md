@@ -9,14 +9,14 @@
 - **smart search sessions**: prevents duplicate items using hash-based session tracking and user interaction history
 - **wishlists**: create, edit, reorder, move items between lists
 - **user preferences**: set default search terms, item condition, category, and price range for personalized browsing
-- **status awareness**: background job checks item availability (e.g., Not Found, Listing Ended, Out of Stock, Limited Stock, In Stock, Unknown Status) and surfaces a status badge in the ui
+- **status awareness**: user-triggered maintenance updates item availability (e.g., Not Found, Listing Ended, Out of Stock, Limited Stock, In Stock, Unknown Status) and surfaces a status badge in the ui
 - **insights**: basic analytics on swipes, prices, categories, conditions
 - **auth**: firebase-based authentication, protected server routes
 
 ### Tech stack
 
 - **client**: react 19, vite 6, typescript, tailwind css 4, radix ui, recharts, framer-motion, lucide
-- **server**: node.js, express 5, typescript, postgresql (pg), redis (ioredis), bullmq, winston, node-pg-migrate
+- **server**: node.js, express 5, typescript, postgresql (pg), redis (ioredis), winston, node-pg-migrate
 - **integrations**: ebay browse api, firebase admin
 
 ### Monorepo
@@ -49,7 +49,9 @@ For detailed setup, scripts, and environment variables, see the subproject READM
 
 **Background maintenance:**
 
-- **hourly reset job**: automatically resets search sessions older than 7 days back to page 1, ensuring fresh content rotation
+- **maintenance endpoints**: the client triggers debounced, authenticated calls to keep data fresh while allowing the API to sleep when idle:
+  - `POST /wishswipe/maintenance/refresh`: incrementally refreshes a bounded set of stale wishlist items for the current user (defaults via `WISHLIST_STALE_HOURS`, `WISHLIST_REFRESH_LIMIT`)
+  - `POST /wishswipe/maintenance/reset-sessions`: resets old search sessions for the current user (triggered on login and explore entry)
 - **14-day interaction window**: user interaction history only blocks items seen in the last 14 days, allowing items to reappear after sufficient time
 
 This approach balances content freshness with computational efficiency, providing a seamless (hopefully lol) browsing experience without duplicates.
@@ -58,4 +60,6 @@ This approach balances content freshness with computational efficiency, providin
 
 - **import casing**: paths must match file names exactly (e.g., `actionToolbar` not `ActionToolbar`)
 - **auth popup blocked**: prefer redirect auth flow or set `Cross-Origin-Opener-Policy: same-origin-allow-popups` on auth routes
-- **background jobs**: in prod, expired-item checks are scheduled daily; search session resets run hourly; in dev, immediate runs are enqueued on startup
+- **maintenance endpoints**: data freshness is maintained via client-triggered calls (see above). To force a refresh manually:
+  - `curl -X POST "$API_URL/wishswipe/maintenance/refresh" -H "Authorization: Bearer <token>"`
+  - `curl -X POST "$API_URL/wishswipe/maintenance/reset-sessions" -H "Authorization: Bearer <token>"`
