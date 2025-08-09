@@ -6,6 +6,7 @@ import {
 } from "framer-motion";
 import { MoveLeft, MoveRight } from "lucide-react";
 import { useState } from "react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const DRAG_THRESHOLD = 150;
 
@@ -19,6 +20,8 @@ const translations = {
 } as const;
 
 function WaveText({ text }: { text: string }) {
+	const isMobile = useIsMobile();
+
 	return (
 		<AnimatePresence mode="wait">
 			<motion.div
@@ -26,7 +29,11 @@ function WaveText({ text }: { text: string }) {
 				initial={{ scale: 1 }}
 				animate={{ scale: [1, 1.4, 1] }}
 				transition={{ duration: 0.5 }}
-				className="animate-keyboard-wave max-w-[280px] bg-gradient-to-r from-white to-fuchsia-400 bg-[length:200%_100%] bg-clip-text text-center text-lg font-medium text-transparent sm:text-xl md:text-2xl"
+				className={`animate-keyboard-wave bg-gradient-to-r from-white to-fuchsia-400 bg-[length:200%_100%] bg-clip-text text-center font-medium text-transparent ${
+					isMobile
+						? "max-w-[200px] text-sm"
+						: "max-w-[280px] text-lg sm:text-xl md:text-2xl"
+				}`}
 			>
 				{text}
 			</motion.div>
@@ -45,6 +52,7 @@ export function PlaceholderListing({
 	actionButton,
 	showArrows = true,
 }: PlaceholderListingProps) {
+	const isMobile = useIsMobile();
 	const [currentLangIndex, setCurrentLangIndex] = useState(0);
 	const languages = Object.values(translations);
 	const x = useMotionValue(0);
@@ -79,14 +87,26 @@ export function PlaceholderListing({
 			className="cursor-grab active:cursor-grabbing"
 			onDragEnd={handleDragEnd}
 		>
-			<div className="bg-card border-border flex h-[400px] w-[400px] items-center justify-between rounded-xl border px-12">
-				{showArrows && <MoveLeft size={32} className="text-muted-foreground" />}
+			<div
+				className={`bg-card border-border flex items-center justify-between rounded-xl border ${
+					isMobile ? "h-[280px] w-[280px] px-6" : "h-[400px] w-[400px] px-12"
+				}`}
+			>
+				{showArrows && (
+					<MoveLeft
+						size={isMobile ? 24 : 32}
+						className="text-muted-foreground"
+					/>
+				)}
 				<div className="flex flex-col items-center justify-center">
 					<WaveText text={text || languages[currentLangIndex]} />
 					{actionButton && <div className="mt-4">{actionButton}</div>}
 				</div>
 				{showArrows && (
-					<MoveRight size={32} className="text-muted-foreground" />
+					<MoveRight
+						size={isMobile ? 24 : 32}
+						className="text-muted-foreground"
+					/>
 				)}
 			</div>
 		</motion.div>
