@@ -150,37 +150,37 @@ export function SwipeView() {
 
 	return (
 		<div className="flex min-h-screen flex-col">
-			{!isMobile && (
-				<div className="flex min-h-[60px] items-center justify-center px-4">
-					<div className="relative">
-						{showWelcome ? (
-							<h1
-								className={`animate-keyboard-wave bg-gradient-to-r from-fuchsia-300 via-white to-fuchsia-300 bg-[length:200%_auto] bg-clip-text text-center text-xl text-transparent transition-opacity duration-500 ${
-									showWelcome ? "opacity-100" : "opacity-0"
-								}`}
-							>
-								Welcome, {user?.displayName || "User"}! Swipe away.
-							</h1>
-						) : (
-							<h1
-								className={`animate-bounce-intransition-opacity duration-500 ${
-									!showWelcome ? "opacity-100" : "opacity-0"
-								}`}
-							>
-								<AppHeaderWithLogo
-									fontSize="text-3xl"
-									imageHeight="8"
-									imageWidth="8"
-									margin="0"
-								/>
-							</h1>
-						)}
-					</div>
+			<div
+				className={`flex items-center justify-center px-4 ${isMobile ? "min-h-[40px]" : "min-h-[60px]"}`}
+			>
+				<div className="relative">
+					{showWelcome ? (
+						<h1
+							className={`animate-keyboard-wave bg-gradient-to-r from-fuchsia-300 via-white to-fuchsia-300 bg-[length:200%_auto] bg-clip-text text-center text-transparent transition-opacity duration-500 ${
+								showWelcome ? "opacity-100" : "opacity-0"
+							} ${isMobile ? "text-sm" : "text-xl"}`}
+						>
+							Welcome, {user?.displayName || "User"}! Swipe away.
+						</h1>
+					) : (
+						<h1
+							className={`animate-bounce-intransition-opacity duration-500 ${
+								!showWelcome ? "opacity-100" : "opacity-0"
+							}`}
+						>
+							<AppHeaderWithLogo
+								fontSize={isMobile ? "text-lg" : "text-3xl"}
+								imageHeight={isMobile ? "5" : "8"}
+								imageWidth={isMobile ? "5" : "8"}
+								margin="0"
+							/>
+						</h1>
+					)}
 				</div>
-			)}
+			</div>
 
 			<div
-				className={`flex items-center justify-center px-4 ${isMobile ? "mt-4 min-h-[60px] py-0" : "min-h-[80px] py-1"}`}
+				className={`flex items-center justify-center px-4 ${isMobile ? "min-h-[60px] py-0" : "min-h-[80px] py-1"}`}
 			>
 				<ActionToolbar
 					search={search}
