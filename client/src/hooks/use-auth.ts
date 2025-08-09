@@ -33,12 +33,9 @@ export function useAuth() {
 		return () => unsubscribe();
 	}, [auth]);
 
-	// on first login per browser session, force maintenance calls once
+	// on each login, trigger maintenance
 	useEffect(() => {
 		if (!user) return;
-		const sessionKey = `ws:initMaintenance:${user.uid}`;
-		if (sessionStorage.getItem(sessionKey) === "1") return;
-		sessionStorage.setItem(sessionKey, "1");
 
 		// fire and forget; update debounce keys to avoid immediate re-runs
 		const now = Date.now();
