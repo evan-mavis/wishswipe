@@ -8,8 +8,9 @@
 		"skipLibCheck": true,
 
 		/* module resolution */
-		"moduleResolution": "node",
+		"moduleResolution": "bundler",
 		"allowImportingTsExtensions": true,
+		"verbatimModuleSyntax": false,
 		"allowSyntheticDefaultImports": true,
 		"esModuleInterop": true,
 		"moduleDetection": "force",
