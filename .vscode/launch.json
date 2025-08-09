@@ -13,8 +13,8 @@
       "name": "Debug Server",
       "cwd": "${workspaceFolder}/server",
       "skipFiles": ["<node_internals>/**"],
-      "program": "${workspaceFolder}/server/app.ts",
-      "runtimeExecutable": "${workspaceFolder}/server/node_modules/.bin/nodemon",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
       "sourceMaps": true,
       "restart": true,
       "env": {
