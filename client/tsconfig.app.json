@@ -9,6 +9,7 @@
 
 		/* module resolution */
 		"moduleResolution": "node",
+		"allowImportingTsExtensions": true,
 		"allowSyntheticDefaultImports": true,
 		"esModuleInterop": true,
 		"moduleDetection": "force",
