@@ -5,7 +5,7 @@ import { AppRoutes } from "./routes/AppRoutes";
 import { getAuth, getRedirectResult } from "firebase/auth";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
-function App() {
+function MyApp() {
 	useEffect(() => {
 		const auth = getAuth();
 		getRedirectResult(auth).catch((error) => {
@@ -24,4 +24,4 @@ function App() {
 	);
 }
 
-export default App;
+export default MyApp;
