@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { ProtectedRoute } from "@/components/protectedRoute/ProtectedRoute";
 import { Layout } from "@/components/layout/Layout";
 import { SwipeView } from "@/pages/swipeView/SwipeView";
@@ -32,6 +32,7 @@ export function AppRoutes() {
 				<Route path="/preferences" element={<Preferences />} />
 				<Route path="/insights" element={<SwipeInsights />} />
 			</Route>
+			<Route path="*" element={<Navigate to="/" replace />} />
 		</Routes>
 	);
 }
