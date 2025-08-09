@@ -1,36 +1,4 @@
 {
   "version": "2.0.0",
-  "tasks": [
-    {
-      "label": "Start Chrome Debug",
-      "type": "shell",
-      "command": "/Applications/Google\\ Chrome.app/Contents/MacOS/Google\\ Chrome --remote-debugging-port=9222 --user-data-dir=/tmp/chrome-debug http://localhost:5173",
-      "isBackground": true,
-      "problemMatcher": []
-    },
-    {
-      "label": "Start Vite Dev Server",
-      "type": "shell",
-      "command": "npm run dev",
-      "options": {
-        "cwd": "${workspaceFolder}/client"
-      },
-      "isBackground": true,
-      "problemMatcher": {
-        "pattern": [
-          {
-            "regexp": ".",
-            "file": 1,
-            "location": 2,
-            "message": 3
-          }
-        ],
-        "background": {
-          "activeOnStart": true,
-          "beginsPattern": "ready in",
-          "endsPattern": "ready in"
-        }
-      }
-    }
-  ]
+  "tasks": []
 }

@@ -74,7 +74,7 @@ app.use(limiter);
 // stricter rate limiting for login endpoint
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5, // limit each IP to 5 login requests per windowMs
+  max: process.env.NODE_ENV === "production" ? 5 : 100,
   message: {
     error:
       "Too many login attempts from this IP, please try again after 15 minutes.",

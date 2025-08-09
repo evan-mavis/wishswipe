@@ -91,11 +91,7 @@ this approach balances real-time data persistence with efficient network usage.
 
 ## debugging
 
-- vs code: use the provided launch to attach to a chrome instance started with remote debugging.
-- or start chrome manually:
-  ```sh
-  /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --remote-debugging-port=9222 --user-data-dir=/tmp/chrome-debug http://localhost:5173
-  ```
+Use your browser devtools (Chrome/Edge/Firefox) for client-side debugging. Source maps are enabled by Vite in dev. No VS Code Chrome debugging setup is required.
 
 ## conventions
 

@@ -1,11 +1,5 @@
 {
   "version": "0.2.0",
-  "compounds": [
-    {
-      "name": "Debug Full Stack",
-      "configurations": ["Debug Server", "Debug Client"]
-    }
-  ],
   "configurations": [
     {
       "type": "node",
@@ -15,6 +9,7 @@
       "skipFiles": ["<node_internals>/**"],
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev"],
+      "outFiles": ["${workspaceFolder}/server/dist/**/*.js"],
       "sourceMaps": true,
       "restart": true,
       "env": {
@@ -22,17 +17,6 @@
         "TS_NODE_FILES": "true"
       },
       "console": "integratedTerminal"
-    },
-    {
-      "type": "chrome",
-      "request": "attach",
-      "name": "Debug Client",
-      "port": 9222,
-      "webRoot": "${workspaceFolder}/client",
-      "sourceMapPathOverrides": {
-        "webpack:///src/*": "${webRoot}/src/*"
-      },
-      "preLaunchTask": "Start Vite Dev Server"
     }
   ]
 }
