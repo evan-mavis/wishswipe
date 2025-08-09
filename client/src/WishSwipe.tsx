@@ -5,7 +5,7 @@ import { AppRoutes } from "./routes/AppRoutes";
 import { getAuth, getRedirectResult } from "firebase/auth";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
-function MyApp() {
+function WishSwipe() {
 	useEffect(() => {
 		const auth = getAuth();
 		getRedirectResult(auth).catch((error) => {
@@ -24,4 +24,4 @@ function MyApp() {
 	);
 }
 
-export default MyApp;
+export default WishSwipe;
