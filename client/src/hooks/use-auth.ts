@@ -6,7 +6,7 @@ import {
 } from "firebase/auth";
 import type { User } from "firebase/auth";
 import { useState, useEffect } from "react";
-import { firebaseApp } from "../auth/firebase";
+import { firebaseApp } from "@/auth/firebase";
 import {
 	refreshWishlistMaintenance,
 	resetSearchSessions,
