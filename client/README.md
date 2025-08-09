@@ -103,3 +103,4 @@ Use your browser devtools (Chrome/Edge/Firefox) for client-side debugging. Sourc
 
 - casing matters: import paths must match file names (e.g. `actionToolbar` not `ActionToolbar`).
 - firebase auth popup blocked by coop: prefer redirect flow or set `Cross-Origin-Opener-Policy: same-origin-allow-popups` on auth routes.
+# Force deployment trigger
