@@ -10,7 +10,7 @@ export interface Preferences {
 export const preferencesService = {
 	loadPreferences: async (): Promise<Preferences> => {
 		try {
-			const response = await axiosInstance.get("wishswipe/preferences");
+			const response = await axiosInstance.get("/wishswipe/preferences");
 			return response.data;
 		} catch (error) {
 			console.error("Error loading preferences:", error);
@@ -25,7 +25,7 @@ export const preferencesService = {
 
 	savePreferences: async (preferences: Preferences): Promise<void> => {
 		try {
-			await axiosInstance.patch("wishswipe/preferences", preferences);
+			await axiosInstance.patch("/wishswipe/preferences", preferences);
 		} catch (error) {
 			console.error("Error saving preferences:", error);
 			throw error;
@@ -34,7 +34,7 @@ export const preferencesService = {
 
 	deletePreferences: async (): Promise<void> => {
 		try {
-			await axiosInstance.delete("wishswipe/preferences");
+			await axiosInstance.delete("/wishswipe/preferences");
 		} catch (error) {
 			console.error("Error deleting preferences:", error);
 			throw error;
