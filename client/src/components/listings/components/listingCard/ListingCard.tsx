@@ -9,6 +9,7 @@ import {
 	useTransform,
 } from "framer-motion";
 import { getLargerImageUrl } from "@/lib/image";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface ListingCardProps {
 	listing: Listing;
@@ -29,11 +30,11 @@ export function ListingCard({
 	onProgressChange,
 	index,
 }: ListingCardProps) {
+	const isMobile = useIsMobile();
 	const x = useMotionValue(0);
-	const DRAG_THRESHOLD = 150;
+	const DRAG_THRESHOLD = isMobile ? 80 : 150;
 	const [isDragCommitted, setIsDragCommitted] = useState(false);
 
-	// Reset drag committed state when this card becomes active (index === 0)
 	useEffect(() => {
 		if (index === 0) {
 			setIsDragCommitted(false);
@@ -45,7 +46,9 @@ export function ListingCard({
 		if (isDragCommitted) return;
 
 		// Only update progress if the movement is significant enough
-		if (Math.abs(latest) < 10) return;
+		// more sensitive on mobile - smaller movement threshold
+		const movementThreshold = isMobile ? 5 : 10;
+		if (Math.abs(latest) < movementThreshold) return;
 
 		// Adjust calculation to reach 0/100 at threshold
 		const progress = 50 + (latest / DRAG_THRESHOLD) * 50;
@@ -109,7 +112,7 @@ export function ListingCard({
 					transition={{ duration: 0.2 }}
 					drag="x"
 					dragConstraints={{ left: 0, right: 0 }}
-					dragElastic={0.7}
+					dragElastic={isMobile ? 0.8 : 0.7}
 					className="relative flex h-full w-full cursor-grab items-center justify-center active:cursor-grabbing"
 					onDragEnd={handleDragEnd}
 				>

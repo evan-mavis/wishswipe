@@ -8,7 +8,8 @@ import { MoveLeft, MoveRight } from "lucide-react";
 import { useState } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
 
-const DRAG_THRESHOLD = 150;
+// mobile-aware drag threshold - more sensitive on mobile
+const getDragThreshold = (isMobile: boolean) => (isMobile ? 80 : 150);
 
 const translations = {
 	english: "Swipe me!",
@@ -53,18 +54,19 @@ export function PlaceholderListing({
 	showArrows = true,
 }: PlaceholderListingProps) {
 	const isMobile = useIsMobile();
+	const dragThreshold = getDragThreshold(isMobile);
 	const [currentLangIndex, setCurrentLangIndex] = useState(0);
 	const languages = Object.values(translations);
 	const x = useMotionValue(0);
 	const opacity = useTransform(
 		x,
-		[-DRAG_THRESHOLD, 0, DRAG_THRESHOLD],
+		[-dragThreshold, 0, dragThreshold],
 		[0.2, 1, 0.2]
 	);
-	const rotate = useTransform(x, [-DRAG_THRESHOLD, DRAG_THRESHOLD], [-15, 15]);
+	const rotate = useTransform(x, [-dragThreshold, dragThreshold], [-15, 15]);
 
 	const handleDragEnd = () => {
-		if (Math.abs(x.get()) > DRAG_THRESHOLD) {
+		if (Math.abs(x.get()) > dragThreshold) {
 			setCurrentLangIndex((prev) => (prev + 1) % languages.length);
 		}
 	};
@@ -83,7 +85,7 @@ export function PlaceholderListing({
 			}}
 			drag="x"
 			dragConstraints={{ left: 0, right: 0 }}
-			dragElastic={0.7}
+			dragElastic={isMobile ? 0.8 : 0.7}
 			className="cursor-grab active:cursor-grabbing"
 			onDragEnd={handleDragEnd}
 		>
