@@ -14,6 +14,7 @@ import { resetSearchSessionsDebounced } from "@/services/maintenanceService";
 import { userInteractionService } from "@/services/userInteractionService";
 import { useNavigationFlush } from "@/hooks/use-navigation-flush";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { toast } from "sonner";
 
 export function SwipeView() {
 	const { user } = useAuth();
@@ -93,6 +94,22 @@ export function SwipeView() {
 
 		return () => clearTimeout(timer);
 	}, []);
+
+	// show one-time desktop keyboard hint using sonner
+	useEffect(() => {
+		if (isMobile) return;
+		const KEY = "wishswipe:seenKeyboardHint:v1";
+		try {
+			if (localStorage.getItem(KEY) === "true") return;
+			localStorage.setItem(KEY, "true");
+			toast("Tip: Use can use your arrow keys to swipe:", {
+				description: "Left to dismiss, right to save",
+				duration: 5000,
+			});
+		} catch {
+			// ignore storage errors
+		}
+	}, [isMobile]);
 
 	// Handle page visibility changes and cleanup
 	useEffect(() => {

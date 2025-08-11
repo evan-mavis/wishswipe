@@ -4,6 +4,7 @@ import { ThemeProvider } from "./components/themeProvider/ThemeProvider";
 import { AppRoutes } from "./routes/AppRoutes";
 import { getAuth, getRedirectResult } from "firebase/auth";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { Toaster } from "@/components/ui/sonner";
 
 function WishSwipe() {
 	useEffect(() => {
@@ -18,6 +19,7 @@ function WishSwipe() {
 			<ThemeProvider>
 				<BrowserRouter>
 					<AppRoutes />
+					<Toaster position="top-center" richColors />
 				</BrowserRouter>
 			</ThemeProvider>
 		</TooltipProvider>
