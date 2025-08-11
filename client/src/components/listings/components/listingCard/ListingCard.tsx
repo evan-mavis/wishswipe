@@ -1,5 +1,5 @@
 import type { Dispatch, SetStateAction } from "react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import type { Listing } from "../../../../types/listing";
 import {
 	AnimatePresence,
@@ -7,6 +7,7 @@ import {
 	useMotionValue,
 	useMotionValueEvent,
 	useTransform,
+	animate,
 } from "framer-motion";
 import { getLargerImageUrl } from "@/lib/image";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -34,6 +35,10 @@ export function ListingCard({
 	const x = useMotionValue(0);
 	const DRAG_THRESHOLD = isMobile ? 80 : 150;
 	const [isDragCommitted, setIsDragCommitted] = useState(false);
+	const [isKeyboardAnimating, setIsKeyboardAnimating] = useState(false);
+	// guard against rapid/held key swipes
+	const lastKeySwipeAtRef = useRef<number>(0);
+	const SWIPE_KEY_COOLDOWN_MS = 300;
 
 	useEffect(() => {
 		if (index === 0) {
@@ -62,36 +67,96 @@ export function ListingCard({
 		[0.2, 1, 0.2]
 	);
 
-	const handleDragEnd = async () => {
-		const currentX = x.get();
-		if (Math.abs(currentX) > DRAG_THRESHOLD) {
-			// Set flag to prevent further progress updates
+	const commitSwipe = useCallback(
+		(direction: "left" | "right") => {
 			setIsDragCommitted(true);
-
-			if (currentX > 0) {
+			if (direction === "right") {
 				onProgressChange?.(100);
 			} else {
 				onProgressChange?.(0);
 			}
-
 			setTimeout(() => {
 				onProgressChange?.(50);
 			}, 200);
-
-			// Determine swipe direction
-			const swipeDirection = currentX > 0 ? "right" : "left";
-
-			// Call onItemDismissed if provided, otherwise fallback to setListings
 			if (onItemDismissed) {
-				onItemDismissed(listing, swipeDirection);
+				onItemDismissed(listing, direction);
 			} else {
-				// Fallback to old behavior for backward compatibility
 				setListings((pv) => pv.filter((v) => v.itemId !== listing.itemId));
 			}
+		},
+		[listing, onItemDismissed, onProgressChange, setListings]
+	);
+
+	const handleDragEnd = async () => {
+		const currentX = x.get();
+		if (Math.abs(currentX) > DRAG_THRESHOLD) {
+			const swipeDirection = currentX > 0 ? "right" : "left";
+			commitSwipe(swipeDirection);
 		} else {
 			onProgressChange?.(50);
 		}
 	};
+
+	// desktop-only arrow key support for the top card
+	useEffect(() => {
+		if (isMobile || index !== 0) return;
+
+		const handleKeyDown = (event: KeyboardEvent) => {
+			// ignore when typing in inputs or editable elements
+			const target = event.target as HTMLElement | null;
+			if (target) {
+				const tag = target.tagName?.toLowerCase();
+				const isInputLike =
+					tag === "input" ||
+					tag === "textarea" ||
+					tag === "select" ||
+					target.isContentEditable;
+				if (isInputLike) return;
+			}
+
+			// block auto-repeat and rapid taps
+			if (event.repeat) return;
+			const now = Date.now();
+			if (now - lastKeySwipeAtRef.current < SWIPE_KEY_COOLDOWN_MS) return;
+
+			if (isDragCommitted || isKeyboardAnimating) return;
+			if (event.key === "ArrowLeft") {
+				event.preventDefault();
+				lastKeySwipeAtRef.current = now;
+				// inline call to avoid dependency on triggerKeyboardSwipe
+				const overshoot = 10;
+				const targetX = -1 * (DRAG_THRESHOLD + overshoot);
+				x.stop();
+				setIsKeyboardAnimating(true);
+				animate(x, targetX, { duration: 0.2, ease: "easeOut" }).then(() => {
+					commitSwipe("left");
+					setIsKeyboardAnimating(false);
+				});
+			} else if (event.key === "ArrowRight") {
+				event.preventDefault();
+				lastKeySwipeAtRef.current = now;
+				const overshoot = 10;
+				const targetX = 1 * (DRAG_THRESHOLD + overshoot);
+				x.stop();
+				setIsKeyboardAnimating(true);
+				animate(x, targetX, { duration: 0.2, ease: "easeOut" }).then(() => {
+					commitSwipe("right");
+					setIsKeyboardAnimating(false);
+				});
+			}
+		};
+
+		document.addEventListener("keydown", handleKeyDown);
+		return () => document.removeEventListener("keydown", handleKeyDown);
+	}, [
+		isMobile,
+		index,
+		isDragCommitted,
+		isKeyboardAnimating,
+		DRAG_THRESHOLD,
+		x,
+		commitSwipe,
+	]);
 
 	const displayImageUrl = getLargerImageUrl(listing.imageUrl);
 
