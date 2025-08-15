@@ -74,8 +74,7 @@ export function SwipeInsights() {
 						<BarChartIcon className="text-xl" /> Swipe Insights
 					</h1>
 					<p className="text-muted-foreground">
-						Analytics from your swiping activity and wishlist data. Yes, I know
-						this is over-engineered!
+						Analytics from your swiping activity and wishlist data.
 					</p>
 				</div>
 				<div className="flex h-64 items-center justify-center">
@@ -96,8 +95,7 @@ export function SwipeInsights() {
 					<BarChartIcon className="text-xl" /> Swipe Insights
 				</h1>
 				<p className="text-muted-foreground">
-					Analytics from your swiping activity and wishlist data. Yes, I know
-					this is over-engineered!
+					Analytics from your swiping activity and wishlist data.
 				</p>
 			</div>
 
