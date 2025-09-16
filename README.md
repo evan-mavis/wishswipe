@@ -15,7 +15,7 @@
 
 ### Tech stack
 
-- **client**: react 19, vite 6, typescript, tailwind css 4, radix ui, recharts, framer-motion, lucide
+- **client**: react 19, vite 6, typescript, tailwind css 4, shadcn, radix ui, recharts, framer-motion, lucide
 - **server**: node.js, express 5, typescript, postgresql (pg), redis (ioredis), winston, node-pg-migrate
 - **integrations**: ebay browse api, firebase admin
 
