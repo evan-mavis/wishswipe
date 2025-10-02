@@ -48,7 +48,7 @@ export function WishlistSelector({
 
 		fetchWishlists();
 		onLoadingChange?.(true);
-	}, []); // Only run once on mount
+	}, [onLoadingChange, onWishlistCountChange]);
 
 	// Separate effect to handle default selection
 	useEffect(() => {
