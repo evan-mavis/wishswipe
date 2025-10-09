@@ -1,5 +1,5 @@
 import type { Dispatch, SetStateAction } from "react";
-import { useState, useEffect, useCallback, useRef } from "react";
+import { memo, useState, useEffect, useCallback, useRef, useMemo } from "react";
 import type { Listing } from "../../../../types/listing";
 import {
 	AnimatePresence,
@@ -11,6 +11,7 @@ import {
 } from "framer-motion";
 import { getLargerImageUrl } from "@/lib/image";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { throttle } from "@/lib/throttle";
 
 interface ListingCardProps {
 	listing: Listing;
@@ -24,7 +25,7 @@ interface ListingCardProps {
 	selectedWishlistId?: string;
 }
 
-export function ListingCard({
+export const ListingCard = memo(function ListingCard({
 	listing,
 	setListings,
 	onItemDismissed,
@@ -46,6 +47,14 @@ export function ListingCard({
 		}
 	}, [index]);
 
+	const throttledProgressChange = useMemo(
+		() =>
+			throttle((progress: number) => {
+				onProgressChange?.(progress);
+			}, 32),
+		[onProgressChange]
+	);
+
 	useMotionValueEvent(x, "change", (latest) => {
 		// Don't update progress if drag is already committed
 		if (isDragCommitted) return;
@@ -57,7 +66,7 @@ export function ListingCard({
 
 		// Adjust calculation to reach 0/100 at threshold
 		const progress = 50 + (latest / DRAG_THRESHOLD) * 50;
-		onProgressChange?.(Math.min(Math.max(progress, 0), 100));
+		throttledProgressChange(Math.min(Math.max(progress, 0), 100));
 	});
 
 	const rotate = useTransform(x, [-DRAG_THRESHOLD, DRAG_THRESHOLD], [-27, 27]);
@@ -194,4 +203,4 @@ export function ListingCard({
 			)}
 		</AnimatePresence>
 	);
-}
+});

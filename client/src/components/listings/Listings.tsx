@@ -1,5 +1,5 @@
 import { ListingCard } from "./components/listingCard/ListingCard";
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { memo, useState, useEffect, useCallback, useMemo } from "react";
 import type { Listing } from "../../types/listing";
 import { AnimatePresence } from "framer-motion";
 import { PlaceholderListing } from "@/components/placeholderListing/PlaceholderListing";
@@ -23,7 +23,7 @@ interface ListingsProps {
 	onInteractionAdded?: () => void; // New callback for when interactions are added
 }
 
-export function Listings({
+export const Listings = memo(function Listings({
 	searchQuery = "",
 	filters = {},
 	selectedWishlistId,
@@ -296,4 +296,4 @@ export function Listings({
 			</div>
 		</div>
 	);
-}
+});

@@ -1,7 +1,7 @@
 import { AppHeaderWithLogo } from "@/components/appHeader/AppHeaderWithLogo";
 import { useAuth } from "@/hooks/use-auth";
 import { Listings } from "@/components/listings/Listings";
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { ActionToolbar } from "@/components/actionToolbar/actionToolbar";
 import { PlaceholderListing } from "@/components/placeholderListing/PlaceholderListing";
 import { ListingCaption } from "@/components/listings/components/listingCaption/ListingCaption";
@@ -144,9 +144,16 @@ export function SwipeView() {
 		}
 	};
 
-	const handleProgressChange = (progress: number) => {
-		setProgress(progress);
-	};
+	const stableSetProgress = useMemo(
+		() => (value: number) => setProgress(value),
+		[]
+	);
+	const handleProgressChange = useCallback(
+		(progress: number) => {
+			stableSetProgress(progress);
+		},
+		[stableSetProgress]
+	);
 
 	const handleCurrentListingChange = (listing: Listing | null) => {
 		setCurrentListing(listing);
