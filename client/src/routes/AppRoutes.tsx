@@ -1,5 +1,6 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import { Suspense, lazy } from "react";
+import { Spinner } from "@/components/ui/spinner";
 import { ProtectedRoute } from "@/components/protectedRoute/ProtectedRoute";
 import { Layout } from "@/components/layout/Layout";
 
@@ -26,7 +27,13 @@ const SwipeInsights = lazy(() =>
 
 export function AppRoutes() {
 	return (
-		<Suspense fallback={null}>
+		<Suspense
+			fallback={
+				<div className="grid place-items-center p-6">
+					<Spinner className="size-6" />
+				</div>
+			}
+		>
 			<Routes>
 				<Route
 					path="/login"
