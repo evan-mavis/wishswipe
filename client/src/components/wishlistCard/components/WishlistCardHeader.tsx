@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 import { motion } from "framer-motion";
 import { ChevronDown, GripVertical, Pencil, Move } from "lucide-react";
 import { CardHeader, CardTitle } from "@/components/ui/card";
@@ -30,7 +30,7 @@ interface WishlistCardHeaderProps {
 	onMoveStart?: (e: React.MouseEvent) => void;
 }
 
-export function WishlistCardHeader({
+export const WishlistCardHeader = memo(function WishlistCardHeader({
 	name,
 	description,
 	isExpanded,
@@ -152,4 +152,4 @@ export function WishlistCardHeader({
 			<p className="text-muted-foreground mb-2 text-sm">{description}</p>
 		</CardHeader>
 	);
-}
+});

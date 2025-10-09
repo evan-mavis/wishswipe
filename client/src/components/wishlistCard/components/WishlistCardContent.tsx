@@ -1,4 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
+import { memo } from "react";
 import { CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { X, Move } from "lucide-react";
@@ -44,7 +45,7 @@ interface WishlistCardContentProps {
 	convertToListingFormat: (item: WishlistItem) => ListingFormat;
 }
 
-export function WishlistCardContent({
+export const WishlistCardContent = memo(function WishlistCardContent({
 	isExpanded,
 	deleteMode,
 	reorderMode,
@@ -164,4 +165,4 @@ export function WishlistCardContent({
 			)}
 		</AnimatePresence>
 	);
-}
+});

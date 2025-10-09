@@ -103,12 +103,15 @@ export function WishlistCard({
 		}
 	};
 
-	const handleChevronClick = (e: React.MouseEvent) => {
-		e.stopPropagation();
-		if (!deleteMode && !reorderMode && !moveMode) {
-			setIsExpanded(!isExpanded);
-		}
-	};
+	const handleChevronClick = useCallback(
+		(e: React.MouseEvent) => {
+			e.stopPropagation();
+			if (!deleteMode && !reorderMode && !moveMode) {
+				setIsExpanded(!isExpanded);
+			}
+		},
+		[deleteMode, reorderMode, moveMode, isExpanded]
+	);
 
 	// Convert WishlistItem to Listing format for SavedListingCard
 	const convertToListingFormat = useCallback(
@@ -129,23 +132,24 @@ export function WishlistCard({
 		[]
 	);
 
-	const handleDeleteItem = async (itemId: string) => {
-		try {
-			await wishlistService.removeItemsFromWishlist([itemId]);
+	const handleDeleteItem = useCallback(
+		async (itemId: string) => {
+			try {
+				await wishlistService.removeItemsFromWishlist([itemId]);
 
-			// Update local state after successful deletion
-			const newItems = items.filter((item) => item.id !== itemId);
-			setItems(newItems);
-			onUpdateItems?.(id, newItems);
-			setItemToDelete(null);
-		} catch (error) {
-			console.error("Error deleting item from wishlist:", error);
-			// Close the dialog even if there's an error
-			setItemToDelete(null);
-		}
-	};
+				const newItems = items.filter((item) => item.id !== itemId);
+				setItems(newItems);
+				onUpdateItems?.(id, newItems);
+				setItemToDelete(null);
+			} catch (error) {
+				console.error("Error deleting item from wishlist:", error);
+				setItemToDelete(null);
+			}
+		},
+		[items, id, onUpdateItems]
+	);
 
-	const handleMoveItems = async () => {
+	const handleMoveItems = useCallback(async () => {
 		if (!targetWishlistId || selectedItems.size === 0) return;
 
 		try {
@@ -172,9 +176,16 @@ export function WishlistCard({
 		} catch (error) {
 			console.error("Error moving items:", error);
 		}
-	};
+	}, [
+		targetWishlistId,
+		selectedItems,
+		items,
+		id,
+		onUpdateItems,
+		onRefreshWishlists,
+	]);
 
-	const handleItemSelection = (itemId: string) => {
+	const handleItemSelection = useCallback((itemId: string) => {
 		setSelectedItems((prev) => {
 			const newSet = new Set(prev);
 			if (newSet.has(itemId)) {
@@ -184,17 +195,17 @@ export function WishlistCard({
 			}
 			return newSet;
 		});
-	};
+	}, []);
 
-	const handleSelectAll = () => {
+	const handleSelectAll = useCallback(() => {
 		if (selectedItems.size === filteredItems.length) {
 			setSelectedItems(new Set());
 		} else {
 			setSelectedItems(new Set(filteredItems.map((item) => item.id)));
 		}
-	};
+	}, [selectedItems.size, filteredItems]);
 
-	const handleListingReorderSave = async () => {
+	const handleListingReorderSave = useCallback(async () => {
 		try {
 			// Only save if we're not in search mode (all items are visible)
 			if (filteredItems.length !== items.length) {
@@ -215,36 +226,38 @@ export function WishlistCard({
 			setItems(initialItems || []);
 			setListingReorderMode(false);
 		}
-	};
+	}, [filteredItems.length, items, onUpdateItems, id, initialItems]);
 
-	const handleListingReorderCancel = () => {
+	const handleListingReorderCancel = useCallback(() => {
 		setItems(initialItems || []);
 		setListingReorderMode(false);
-	};
+	}, [initialItems]);
 
-	const handleEditSubmit = (data: {
-		name: string;
-		description: string;
-		isFavorite: boolean;
-	}) => {
-		onUpdate?.(id, data);
-	};
+	const handleEditSubmit = useCallback(
+		(data: { name: string; description: string; isFavorite: boolean }) => {
+			onUpdate?.(id, data);
+		},
+		[id, onUpdate]
+	);
 
-	const handleReorderItems = (newOrder: WishlistItem[]) => {
-		if (listingReorderMode && filteredItems.length === items.length) {
-			setItems(newOrder);
-		}
-	};
+	const handleReorderItems = useCallback(
+		(newOrder: WishlistItem[]) => {
+			if (listingReorderMode && filteredItems.length === items.length) {
+				setItems(newOrder);
+			}
+		},
+		[listingReorderMode, filteredItems.length, items.length]
+	);
 
-	const handleMoveStart = (e: React.MouseEvent) => {
+	const handleMoveStart = useCallback((e: React.MouseEvent) => {
 		e.stopPropagation();
 		setListingMoveMode(true);
-	};
+	}, []);
 
-	const handleMoveCancel = () => {
+	const handleMoveCancel = useCallback(() => {
 		setListingMoveMode(false);
 		setSelectedItems(new Set());
-	};
+	}, []);
 
 	// Add effect to collapse when entering modes
 	React.useEffect(() => {
