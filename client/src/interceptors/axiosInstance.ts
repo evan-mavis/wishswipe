@@ -1,5 +1,5 @@
 import axios from "axios";
-import { getAuth } from "firebase/auth";
+import { getAuth, signOut } from "firebase/auth";
 
 const baseURL = import.meta.env?.VITE_API_BASE || window.location.origin;
 const axiosInstance = axios.create({ baseURL });
@@ -25,7 +25,10 @@ axiosInstance.interceptors.response.use(
 	(response) => response,
 	async (error) => {
 		if (error.response?.status === 401) {
-			console.log("Session expired, please sign in again");
+			const auth = getAuth();
+			if (auth.currentUser) {
+				await signOut(auth);
+			}
 		}
 
 		return Promise.reject(error);

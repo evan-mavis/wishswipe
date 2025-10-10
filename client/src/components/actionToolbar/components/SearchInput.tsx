@@ -1,5 +1,6 @@
 import { Input } from "@/components/ui/input";
 import { X } from "lucide-react";
+import { sanitizeSearchQuery } from "@/lib/sanitize";
 
 interface SearchInputProps {
 	value: string;
@@ -14,13 +15,18 @@ export function SearchInput({
 	onKeyDown,
 	onClear,
 }: SearchInputProps) {
+	const handleChange = (rawValue: string) => {
+		const sanitized = sanitizeSearchQuery(rawValue);
+		onChange(sanitized);
+	};
+
 	return (
 		<div className="flex items-center gap-2 px-2">
 			<div className="relative flex-1">
 				<Input
 					type="text"
 					value={value}
-					onChange={(e) => onChange(e.target.value)}
+					onChange={(e) => handleChange(e.target.value)}
 					onKeyDown={onKeyDown}
 					placeholder="Search listings..."
 					className="border-none bg-transparent pr-12 shadow-none focus:border-none focus:ring-0"
