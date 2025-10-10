@@ -1,6 +1,7 @@
 import { Navigate } from "react-router-dom";
 import { useAuth } from "@/hooks/use-auth";
 import { useEffect } from "react";
+import { Spinner } from "@/components/ui/spinner";
 
 interface ProtectedRouteProps {
 	children: React.ReactNode;
@@ -16,7 +17,11 @@ export function ProtectedRoute({
 	useEffect(() => {}, [loading, user, requireAuth]);
 
 	if (loading) {
-		return <div>Loading...</div>;
+		return (
+			<div className="grid min-h-screen place-items-center">
+				<Spinner className="size-8" />
+			</div>
+		);
 	}
 
 	if (requireAuth && !user) {

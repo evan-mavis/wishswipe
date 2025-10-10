@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { BrowserRouter } from "react-router-dom";
 import { ThemeProvider } from "./components/themeProvider/ThemeProvider";
+import { AuthProvider } from "./contexts/AuthContext";
 import { AppRoutes } from "./routes/AppRoutes";
 import { getAuth, getRedirectResult } from "firebase/auth";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -17,10 +18,12 @@ function WishSwipe() {
 	return (
 		<TooltipProvider>
 			<ThemeProvider>
-				<BrowserRouter>
-					<AppRoutes />
-					<Toaster position="top-center" richColors />
-				</BrowserRouter>
+				<AuthProvider>
+					<BrowserRouter>
+						<AppRoutes />
+						<Toaster position="top-center" richColors />
+					</BrowserRouter>
+				</AuthProvider>
 			</ThemeProvider>
 		</TooltipProvider>
 	);

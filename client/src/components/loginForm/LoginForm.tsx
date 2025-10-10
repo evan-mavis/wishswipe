@@ -10,23 +10,59 @@ import {
 import { useAuth } from "@/hooks/use-auth";
 import { loginOrCreateUser } from "@/services/loginService";
 import { getAuth } from "firebase/auth";
+import type { User } from "firebase/auth";
+import { useState } from "react";
+import { toast } from "sonner";
 
 type LoginFormProps = React.HTMLAttributes<HTMLDivElement>;
 
 export function LoginForm({ className, ...props }: LoginFormProps) {
-	const { signInWithGoogle } = useAuth();
+	const { signInWithGoogle, clearError } = useAuth();
+	const [isLoading, setIsLoading] = useState(false);
 
 	async function handleGoogleLogin() {
-		const auth = getAuth();
-		await signInWithGoogle();
-		const user = auth.currentUser;
-		if (!user) return;
-		await loginOrCreateUser({
-			firebase_uid: user.uid,
-			email: user.email || "",
-			display_name: user.displayName ?? null,
-			photo_url: user.photoURL ?? null,
-		});
+		setIsLoading(true);
+		clearError();
+
+		try {
+			await signInWithGoogle();
+
+			const auth = getAuth();
+			const user = await new Promise<User | null>((resolve) => {
+				const unsubscribe = auth.onAuthStateChanged((user) => {
+					unsubscribe();
+					resolve(user);
+				});
+			});
+
+			if (!user) {
+				throw new Error("Authentication failed");
+			}
+
+			// sync with backend
+			await loginOrCreateUser({
+				firebase_uid: user.uid,
+				email: user.email || "",
+				display_name: user.displayName ?? null,
+				photo_url: user.photoURL ?? null,
+			});
+		} catch (error) {
+			console.error("Login failed:", error);
+
+			// if backend sync fails, sign out from Firebase
+			const auth = getAuth();
+			if (auth.currentUser) {
+				await auth.signOut();
+			}
+
+			const errorMessage =
+				error instanceof Error
+					? error.message
+					: "Failed to sign in. Please try again.";
+			toast.error(errorMessage);
+		} finally {
+			setIsLoading(false);
+		}
 	}
 
 	return (
@@ -46,8 +82,9 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
 							variant="outline"
 							className="w-full"
 							onClick={handleGoogleLogin}
+							disabled={isLoading}
 						>
-							Login with Google
+							{isLoading ? "Signing in..." : "Login with Google"}
 						</Button>
 						<div className="mt-2 text-center text-sm">
 							Don&apos;t have a Google account?
