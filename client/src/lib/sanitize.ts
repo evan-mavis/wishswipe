@@ -3,7 +3,7 @@
  */
 export function sanitizeSearchQuery(query: string): string {
 	return query
-		.replace(/[<>'"\\]/g, "") // remove potentially harmful chars
+		.replace(/[<>'"\\]/g, "")
 		.trim()
-		.slice(0, 500); // limit length
+		.slice(0, 500);
 }
