@@ -1,6 +1,5 @@
 import { Input } from "@/components/ui/input";
 import { X } from "lucide-react";
-import { sanitizeSearchQuery } from "@/lib/sanitize";
 
 interface SearchInputProps {
 	value: string;
@@ -16,8 +15,7 @@ export function SearchInput({
 	onClear,
 }: SearchInputProps) {
 	const handleChange = (rawValue: string) => {
-		const sanitized = sanitizeSearchQuery(rawValue);
-		onChange(sanitized);
+		onChange(rawValue);
 	};
 
 	return (
