@@ -65,8 +65,7 @@ This approach balances content freshness with computational efficiency, providin
   - `curl -X POST "$API_URL/wishswipe/maintenance/reset-sessions" -H "Authorization: Bearer <token>"`
 
 ### Dark Mode 🌑
-<img width="1424" height="883" alt="image" src="https://github.com/user-attachments/assets/30e5a819-a832-4c71-a2e8-8bb1c906326c" />
+<img width="1322" height="961" alt="Screenshot 2025-11-07 at 5 17 15 PM" src="https://github.com/user-attachments/assets/eb556be7-86b6-4c2a-8078-410bf1cdb96a" />
 
 ### Light Mode ☀️
-<img width="1424" height="883" alt="image" src="https://github.com/user-attachments/assets/480768d5-7f21-4190-a002-561c9d68a11a" />
-
+<img width="1237" height="958" alt="Screenshot 2025-11-07 at 5 18 19 PM" src="https://github.com/user-attachments/assets/f6ac8247-9944-4832-a461-e59d66db5a0b" />
