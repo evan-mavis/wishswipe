@@ -63,3 +63,10 @@ This approach balances content freshness with computational efficiency, providin
 - **maintenance endpoints**: data freshness is maintained via client-triggered calls (see above). To force a refresh manually:
   - `curl -X POST "$API_URL/wishswipe/maintenance/refresh" -H "Authorization: Bearer <token>"`
   - `curl -X POST "$API_URL/wishswipe/maintenance/reset-sessions" -H "Authorization: Bearer <token>"`
+
+### Dark Mode 🌑
+<img width="1424" height="883" alt="image" src="https://github.com/user-attachments/assets/30e5a819-a832-4c71-a2e8-8bb1c906326c" />
+
+### Light Mode ☀️
+<img width="1424" height="883" alt="image" src="https://github.com/user-attachments/assets/480768d5-7f21-4190-a002-561c9d68a11a" />
+
