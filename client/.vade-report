@@ -1,0 +1,47 @@
+## Vercel Web Analytics Integration
+
+Implemented Vercel Web Analytics integration for the WishSwipe React + Vite application.
+
+### Changes Made
+
+**Modified Files:**
+- `client/package.json` - Added `@vercel/analytics@^1.4.0` to dependencies
+- `client/src/WishSwipe.tsx` - Integrated the Analytics component
+
+**Implementation Details:**
+
+1. **Package Addition**: Added `@vercel/analytics` package (version 1.4.0) to the project dependencies. This is the official Vercel analytics package designed for web applications.
+
+2. **Analytics Integration**: 
+   - Imported the `Analytics` component from `@vercel/analytics/react` (the React-specific export)
+   - Added the `<Analytics />` component to the main WishSwipe app component, positioned after the `<Toaster />` component within the BrowserRouter wrapper
+   - This placement ensures the Analytics component is rendered at the root level of the app and can track all routes and page views
+
+### How It Works
+
+Once deployed to Vercel:
+1. The Analytics component will automatically initialize the tracking script
+2. It will create requests to `/_vercel/insights/script.js` (added automatically by Vercel on deployment)
+3. The package provides automatic route tracking for React Router applications
+4. Analytics data will be collected and available in the Vercel dashboard's Analytics tab
+
+### Next Steps for Users
+
+1. Deploy the app to Vercel using `vercel deploy`
+2. Enable Web Analytics in the Vercel dashboard (Analytics tab) if not already enabled
+3. The analytics script will be added to the deployment automatically
+4. View data in the Vercel dashboard after deployment
+
+### Build & Testing
+
+- ✅ Linter passes (no new errors introduced)
+- ✅ Build completes successfully (tested with `npm run build`)
+- ✅ Dependencies installed successfully
+- ✅ No breaking changes to existing code
+- ✅ Compatible with React 19 and React Router 7
+
+### Notes
+
+- The Analytics component has been placed in an optimal position in the component tree, after other providers but within the BrowserRouter context to ensure all routes are tracked
+- No configuration changes to vite.config.ts or other build files were needed
+- The package is production-ready and follows Vercel's recommended patterns for React applications
