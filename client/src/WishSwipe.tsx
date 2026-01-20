@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { BrowserRouter } from "react-router-dom";
+import { Analytics } from "@vercel/analytics/react";
 import { ThemeProvider } from "./components/themeProvider/ThemeProvider";
 import { AuthProvider } from "./contexts/AuthContext";
 import { AppRoutes } from "./routes/AppRoutes";
@@ -22,6 +23,7 @@ function WishSwipe() {
 					<BrowserRouter>
 						<AppRoutes />
 						<Toaster position="top-center" richColors />
+						<Analytics />
 					</BrowserRouter>
 				</AuthProvider>
 			</ThemeProvider>
