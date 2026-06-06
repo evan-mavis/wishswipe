@@ -44,11 +44,37 @@ app.use(
 );
 
 // cors configuration
+const devOrigins = ["http://localhost:5173", "http://localhost:3000"];
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(",")
+      .map((origin) => origin.trim())
+      .filter(Boolean)
+  : process.env.NODE_ENV !== "production"
+    ? devOrigins
+    : [];
+
+if (process.env.NODE_ENV === "production" && allowedOrigins.length === 0) {
+  logger.warn(
+    "ALLOWED_ORIGINS is not set — cross-origin browser requests will be blocked"
+  );
+}
+
 const corsOptions = {
-  origin:
-    process.env.NODE_ENV === "production"
-      ? process.env.ALLOWED_ORIGINS?.split(",")
-      : ["http://localhost:5173", "http://localhost:3000"],
+  origin: (
+    origin: string | undefined,
+    callback: (err: Error | null, allow?: boolean) => void
+  ) => {
+    if (!origin) {
+      callback(null, true);
+      return;
+    }
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+      return;
+    }
+    logger.warn(`CORS blocked request from origin: ${origin}`);
+    callback(new Error("Not allowed by CORS"));
+  },
   credentials: true,
   optionsSuccessStatus: 200,
 };
