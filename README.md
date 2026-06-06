@@ -1,71 +1,75 @@
-# 🛍️WishSwipe🛍️
+# WishSwipe
 
-**Overview:**  
-**WishSwipe** is a swipe-based web application that integrates with **eBay listings** to provide a playful, intuitive way to discover and save items. It mimics a dating-app style interface: swipe right to save to a wishlist, swipe left to dismiss.
+WishSwipe is a swipe-first Next.js app for discovering eBay listings and saving the good ones into wishlists.
 
-### Features
+## Stack
 
-- **swipe-first discovery**: fast, card-based browsing of ebay items
-- **smart search sessions**: prevents duplicate items using hash-based session tracking and user interaction history
-- **wishlists**: create, edit, reorder, move items between lists
-- **user preferences**: set default search terms, item condition, category, and price range for personalized browsing
-- **status awareness**: user-triggered maintenance updates item availability (e.g., Not Found, Listing Ended, Out of Stock, Limited Stock, In Stock, Unknown Status) and surfaces a status badge in the ui
-- **insights**: basic analytics on swipes, prices, categories, conditions
-- **auth**: firebase-based authentication, protected server routes
+- Next.js 16 App Router, React 19, TypeScript
+- Tailwind CSS 4, shadcn/Radix UI, Recharts, Framer Motion
+- Better Auth with Google OAuth
+- Drizzle ORM and PostgreSQL
+- Upstash Redis for eBay token/result caching
+- eBay Browse API
 
-### Tech stack
+## Routes
 
-- **client**: react 19, vite 6, typescript, tailwind css 4, shadcn, radix ui, recharts, framer-motion, lucide
-- **server**: node.js, express 5, typescript, postgresql (pg), redis (ioredis), winston, node-pg-migrate
-- **integrations**: ebay browse api, firebase admin
+- `/login` - Google OAuth sign-in
+- `/swipe` - swipe-based item discovery
+- `/wishlists` - manage wishlists and saved items
+- `/insights` - swipe and wishlist analytics
+- `/settings` - default search/filter preferences
+- `/feedback` - GitHub issue CTA
 
-### Monorepo
+## Environment
 
-- **client** (frontend app): `client/` → see [client/README.md](client/README.md)
-- **server** (api + jobs): `server/` → see [server/README.md](server/README.md)
+Copy `.env.example` to `.env` and fill in the values:
 
-### Getting started (quick)
+```sh
+cp .env.example .env
+```
 
-- **prereqs**: node 20+, postgresql 14+, redis 6+
-- **server**: configure `server/.env` (db, redis, firebase, ebay) and run `npm run dev`
-- **client**: run `npm run dev` (proxies api to `http://localhost:3000`)
+Required variables:
 
-For detailed setup, scripts, and environment variables, see the subproject READMEs:
+- `DATABASE_URL`
+- `BETTER_AUTH_SECRET`
+- `BETTER_AUTH_URL`
+- `GOOGLE_CLIENT_ID`
+- `GOOGLE_CLIENT_SECRET`
+- `UPSTASH_REDIS_REST_URL`
+- `UPSTASH_REDIS_REST_TOKEN`
+- `EBAY_BASE_URL`
+- `EBAY_CLIENT_ID`
+- `EBAY_CLIENT_SECRET`
 
-- frontend: [client/README.md](client/README.md)
-- backend: [server/README.md](server/README.md)
+Generate a Better Auth secret with:
 
-### Smart Search Sessions
+```sh
+openssl rand -base64 32
+```
 
-**WishSwipe** ensures users never (hopefully lol) see the same items twice through a session management system:
+## Development
 
-**How it works:**
+```sh
+npm install
+npm run db:migrate
+npm run dev
+```
 
-1. **unique session creation**: each search combination (query, condition, category, price range) generates a SHA-256 hash that identifies a unique session
-2. **pagination tracking**: sessions maintain current page number and total items seen, automatically advancing through eBay's paginated results
-3. **interaction filtering**: all user interactions (swipes, saves) are stored in a 14-day rolling history that filters out previously seen items
-4. **intelligent pagination**: when background fetches return few unseen items (<10), the system automatically advances pages to find fresh content
-5. **session persistence**: sessions persist across app visits, picking up where users left off in their search journey
+The app runs at `http://localhost:3000`.
 
-**Background maintenance:**
+## Scripts
 
-- **maintenance endpoints**: the client triggers debounced, authenticated calls to keep data fresh while allowing the API to sleep when idle:
-  - `POST /wishswipe/maintenance/refresh`: incrementally refreshes a bounded set of stale wishlist items for the current user (defaults via `WISHLIST_STALE_HOURS`, `WISHLIST_REFRESH_LIMIT`)
-  - `POST /wishswipe/maintenance/reset-sessions`: resets old search sessions for the current user (triggered on login and explore entry)
-- **14-day interaction window**: user interaction history only blocks items seen in the last 14 days, allowing items to reappear after sufficient time
+- `npm run dev` - start the Next dev server
+- `npm run build` - production build
+- `npm run start` - run the production server
+- `npm run lint` - lint the repo
+- `npm run typecheck` - TypeScript check
+- `npm run db:generate` - generate Drizzle migrations
+- `npm run db:migrate` - apply Drizzle migrations
 
-This approach balances content freshness with computational efficiency, providing a seamless (hopefully lol) browsing experience without duplicates.
+## Notes
 
-### Troubleshooting
-
-- **import casing**: paths must match file names exactly (e.g., `actionToolbar` not `ActionToolbar`)
-- **auth popup blocked**: prefer redirect auth flow or set `Cross-Origin-Opener-Policy: same-origin-allow-popups` on auth routes
-- **maintenance endpoints**: data freshness is maintained via client-triggered calls (see above). To force a refresh manually:
-  - `curl -X POST "$API_URL/wishswipe/maintenance/refresh" -H "Authorization: Bearer <token>"`
-  - `curl -X POST "$API_URL/wishswipe/maintenance/reset-sessions" -H "Authorization: Bearer <token>"`
-
-### Dark Mode 🌑
-<img width="1322" height="961" alt="Screenshot 2025-11-07 at 5 17 15 PM" src="https://github.com/user-attachments/assets/eb556be7-86b6-4c2a-8078-410bf1cdb96a" />
-
-### Light Mode ☀️
-<img width="1237" height="958" alt="Screenshot 2025-11-07 at 5 18 19 PM" src="https://github.com/user-attachments/assets/f6ac8247-9944-4832-a461-e59d66db5a0b" />
+- This migration intentionally starts from a fresh database schema.
+- Firebase, Express, Vite, and node-pg-migrate have been removed.
+- Better Auth creates users via Google OAuth and the app creates a default favorite wishlist for each new user.
+- Search sessions and item history preserve the previous behavior: recently seen items are filtered for 14 days, and eBay pagination resumes per search/filter combination.
