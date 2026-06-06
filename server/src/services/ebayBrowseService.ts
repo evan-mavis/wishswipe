@@ -6,7 +6,7 @@ import {
   EbayItemSummary,
   EbayItemResult,
 } from "../types/ebay.js";
-import redis from "../utils/redisClient.js";
+import { cacheGet, cacheSetEx } from "../utils/redisClient.js";
 import logger from "../utils/logger.js";
 
 export async function searchEbayItems(
@@ -16,7 +16,7 @@ export async function searchEbayItems(
 ): Promise<EbaySearchResponse> {
   // check if we have cached results
   const cacheKey = `${searchHash}:${offset}`;
-  const cachedResult = await redis.get(cacheKey);
+  const cachedResult = await cacheGet(cacheKey);
   if (cachedResult) {
     return JSON.parse(cachedResult);
   }
@@ -109,12 +109,8 @@ export async function searchEbayItems(
     response.data.itemSummaries &&
     response.data.itemSummaries.length > 0
   ) {
-    try {
-      const cacheExpiry = 2400; // 40 minutes
-      await redis.setex(cacheKey, cacheExpiry, JSON.stringify(response.data));
-    } catch (cacheError) {
-      logger.error("Failed to cache results:", cacheError);
-    }
+    const cacheExpiry = 2400; // 40 minutes
+    await cacheSetEx(cacheKey, cacheExpiry, JSON.stringify(response.data));
   }
 
   return response.data;

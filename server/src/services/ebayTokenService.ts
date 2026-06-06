@@ -1,8 +1,8 @@
 import axios from "axios";
-import redis from "../utils/redisClient.js";
+import { cacheGet, cacheSetWithExpiry } from "../utils/redisClient.js";
 
 export async function getEbayAccessToken(): Promise<string> {
-  const cachedToken = await redis.get("ebay_access_token");
+  const cachedToken = await cacheGet("ebay_access_token");
   if (cachedToken) {
     return cachedToken;
   }
@@ -28,7 +28,7 @@ export async function getEbayAccessToken(): Promise<string> {
 
   const token = result.data.access_token;
   const expiresIn = result.data.expires_in || 7200;
-  await redis.set("ebay_access_token", token, "EX", expiresIn - 60);
+  await cacheSetWithExpiry("ebay_access_token", token, expiresIn - 60);
 
   return token;
 }
