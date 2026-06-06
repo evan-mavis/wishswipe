@@ -50,22 +50,22 @@ openssl rand -base64 32
 ## Development
 
 ```sh
-npm install
-npm run db:migrate
-npm run dev
+pnpm install
+pnpm db:migrate
+pnpm dev
 ```
 
 The app runs at `http://localhost:3000`.
 
 ## Scripts
 
-- `npm run dev` - start the Next dev server
-- `npm run build` - production build
-- `npm run start` - run the production server
-- `npm run lint` - lint the repo
-- `npm run typecheck` - TypeScript check
-- `npm run db:generate` - generate Drizzle migrations
-- `npm run db:migrate` - apply Drizzle migrations
+- `pnpm dev` - start the Next dev server
+- `pnpm build` - production build
+- `pnpm start` - run the production server
+- `pnpm lint` - lint the repo
+- `pnpm typecheck` - TypeScript check
+- `pnpm db:generate` - generate Drizzle migrations
+- `pnpm db:migrate` - apply Drizzle migrations
 
 ## Notes
 

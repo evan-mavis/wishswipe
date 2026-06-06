@@ -2,6 +2,7 @@
   "name": "wishswipe",
   "version": "1.0.0",
   "private": true,
+  "packageManager": "pnpm@10.18.3",
   "type": "module",
   "engines": {
     "node": ">=22.0.0"
