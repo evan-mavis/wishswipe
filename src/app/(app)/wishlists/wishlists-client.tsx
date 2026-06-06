@@ -198,8 +198,8 @@ export function WishlistsClient({
           values={wishlists}
           onReorder={setWishlists}
           className={cn(
-            "flex flex-wrap gap-6",
-            reorderMode && "flex-col items-start"
+            "flex flex-col items-start gap-6",
+            reorderMode && "w-full"
           )}
         >
           {wishlists.map((wishlist) => (
@@ -209,7 +209,7 @@ export function WishlistsClient({
               dragListener={reorderMode}
               dragControls={undefined}
               className={cn(
-                "list-none",
+                "w-full list-none",
                 reorderMode && "flex w-full items-center gap-3"
               )}
             >
