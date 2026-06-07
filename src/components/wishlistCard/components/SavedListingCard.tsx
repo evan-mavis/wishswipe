@@ -2,16 +2,16 @@ import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Expand } from "lucide-react";
+import { Expand, Trash2, X } from "lucide-react";
 import type { Listing } from "@/types/listing";
 import {
 	Dialog,
+	DialogClose,
 	DialogContent,
 	DialogHeader,
 	DialogTitle,
 } from "@/components/ui/dialog";
 import { useState, useEffect, memo } from "react";
-import { Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { getLargerImageUrl } from "@/lib/image";
@@ -168,13 +168,18 @@ export const SavedListingCard = memo(function SavedListingCard({
 			{!isReorderMode && (
 				<Dialog open={showDetails} onOpenChange={setShowDetails}>
 					<DialogContent
+						showCloseButton={false}
 						className={cn(
 							"sm:max-w-[600px]",
 							isMobile && "max-h-[90vh] overflow-y-auto p-4"
 						)}
 					>
-						<DialogHeader>
-							<DialogTitle className="line-clamp-2">
+						<DialogClose className="ring-offset-background focus:ring-ring absolute top-2 right-3 z-10 flex h-8 w-8 items-center justify-center rounded-xs opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none md:top-4 md:right-4">
+							<X className="h-4 w-4" />
+							<span className="sr-only">Close</span>
+						</DialogClose>
+						<DialogHeader className={cn(isMobile && "pt-7 text-left")}>
+							<DialogTitle className="line-clamp-2 pr-2 leading-snug md:pr-10">
 								{listing.title}
 							</DialogTitle>
 						</DialogHeader>

@@ -73,7 +73,7 @@ export function WishlistSelector({
 			<Select value={value} onValueChange={onChange} disabled={loading}>
 				<SelectTrigger
 					id="wishlist-select"
-					className="h-8 w-full min-w-0 text-xs md:h-9 md:w-[160px] md:text-sm"
+					className="h-8 w-full min-w-0 text-xs [&_[data-slot=select-value]]:overflow-visible [&_[data-slot=select-value]]:leading-normal md:h-9 md:w-[220px] md:text-sm"
 				>
 					<SelectValue placeholder={loading ? "Loading..." : "Choose..."} />
 				</SelectTrigger>

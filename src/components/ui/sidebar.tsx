@@ -332,7 +332,7 @@ function SidebarTrigger({
 				<button
 					type="button"
 					className={cn(
-						"flex size-10 items-center justify-center rounded-full bg-fuchsia-400 shadow-lg transition-colors hover:bg-fuchsia-300 focus-visible:ring-2 focus-visible:ring-fuchsia-300 focus-visible:outline-none",
+						"flex size-10 items-center justify-center rounded-md bg-fuchsia-400 shadow-lg transition-colors hover:bg-fuchsia-300 focus-visible:ring-2 focus-visible:ring-fuchsia-300 focus-visible:outline-none",
 						className
 					)}
 					onClick={(event) => {

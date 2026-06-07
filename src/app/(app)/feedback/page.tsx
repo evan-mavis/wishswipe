@@ -22,9 +22,6 @@ export default function FeedbackPage() {
         <h1 className="text-foreground mb-2 hidden items-center gap-2 text-3xl font-bold md:flex">
           <MessageSquare className="text-xl" /> Feedback
         </h1>
-        <p className="text-muted-foreground">
-          Keep the app personal, sharp, and useful by tracking issues in GitHub.
-        </p>
       </div>
 
       <Card className="border-2 border-fuchsia-200/70 dark:border-fuchsia-900">
