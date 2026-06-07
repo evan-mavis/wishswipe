@@ -168,7 +168,7 @@ export const ListingCard = memo(function ListingCard({
 		commitSwipe,
 	]);
 
-	const displayImageUrl = getLargerImageUrl(listing.imageUrl);
+	const displayImageUrl = getLargerImageUrl(listing.imageUrl, 1000);
 
 	return (
 		<AnimatePresence>
@@ -204,7 +204,7 @@ export const ListingCard = memo(function ListingCard({
 								alt="eBay product"
 								fill
 								sizes="(max-width: 768px) min(88vw, 42vh), min(72vw, 64vh)"
-								className="pointer-events-none object-contain"
+								className="pointer-events-none object-cover"
 								draggable={false}
 							/>
 						)}
