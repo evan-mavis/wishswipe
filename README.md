@@ -48,7 +48,6 @@ WishSwipe turns eBay browsing into a fast, card-based workflow: swipe right to s
 - `GET /api/explore`: fetch eBay listings for the current search session
 - `POST /api/interactions/batch`: record swipe decisions and save right-swiped items
 - `GET /api/wishlists`: read wishlists for the current user
-- `POST /api/wishlists`: create wishlist records
 - `GET /api/wishlists/options`: read lightweight wishlist options for selectors
 - `POST /api/maintenance/refresh`: refresh stale wishlist item availability
 - `POST /api/maintenance/reset-sessions`: reset old search sessions for the current user

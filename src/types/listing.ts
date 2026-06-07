@@ -19,3 +19,16 @@ export interface SearchFilters {
 	minPrice?: number;
 	maxPrice?: number;
 }
+
+export interface ExplorePagination {
+	currentPage: number;
+	currentOffset: number;
+	totalItemsSeen: number;
+	searchSessionId: number;
+	hasMoreItems: boolean;
+}
+
+export interface ExploreListingsResponse {
+	listings: Listing[];
+	pagination: ExplorePagination;
+}

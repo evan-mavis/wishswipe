@@ -2,11 +2,11 @@ import "server-only";
 
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { auth } from "@/lib/auth";
+import { getAuth } from "@/lib/auth";
 import { ensureDefaultWishlist } from "./wishlists";
 
 export async function getCurrentUser() {
-  const session = await auth.api.getSession({
+  const session = await getAuth().api.getSession({
     headers: await headers(),
   });
 
@@ -27,7 +27,7 @@ export async function requireUser() {
 }
 
 export async function requireApiUser() {
-  const session = await auth.api.getSession({
+  const session = await getAuth().api.getSession({
     headers: await headers(),
   });
 

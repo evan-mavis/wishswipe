@@ -70,12 +70,21 @@ export async function setNextPage(sessionId: number, pageNumber: number) {
     .where(eq(userSearchSessions.id, sessionId));
 }
 
-export async function updateSessionProgress(sessionId: number, itemsSeen: number) {
+export async function updateSessionProgress(
+  userId: string,
+  sessionId: number,
+  itemsSeen: number
+) {
   await db
     .update(userSearchSessions)
     .set({
       totalItemsSeen: sql`${userSearchSessions.totalItemsSeen} + ${itemsSeen}`,
       lastActivity: new Date(),
     })
-    .where(eq(userSearchSessions.id, sessionId));
+    .where(
+      and(
+        eq(userSearchSessions.userId, userId),
+        eq(userSearchSessions.id, sessionId)
+      )
+    );
 }

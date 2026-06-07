@@ -41,7 +41,10 @@ export async function POST(request: Request) {
 
     if (searchSessionId) {
       try {
-        await updateSessionProgress(Number.parseInt(searchSessionId, 10), interactions.length);
+        const sessionId = Number.parseInt(searchSessionId, 10);
+        if (Number.isInteger(sessionId)) {
+          await updateSessionProgress(user.id, sessionId, interactions.length);
+        }
       } catch (error) {
         console.error("Failed to update session progress:", error);
       }

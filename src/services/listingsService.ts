@@ -1,9 +1,9 @@
-import type { SearchFilters } from "@/types/listing";
+import type { ExploreListingsResponse, SearchFilters } from "@/types/listing";
 
 export async function fetchListings(
   filters: SearchFilters = {},
   isBackgroundFetch = false
-) {
+): Promise<ExploreListingsResponse> {
   const params = new URLSearchParams();
 
   if (filters.query) params.append("query", filters.query);
@@ -21,5 +21,5 @@ export async function fetchListings(
     throw new Error("Failed to fetch listings");
   }
 
-  return response.json();
+  return response.json() as Promise<ExploreListingsResponse>;
 }

@@ -4,22 +4,47 @@ import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 import * as schema from "./schema";
 
-const connectionString = process.env.DATABASE_URL;
-
 const globalForDb = globalThis as unknown as {
   wishswipePool?: Pool;
 };
 
-export const pool =
-  globalForDb.wishswipePool ??
-  new Pool({
-    connectionString,
+function createPool() {
+  return new Pool({
+    connectionString: process.env.DATABASE_URL,
     max: 5,
   });
-
-if (process.env.NODE_ENV !== "production") {
-  globalForDb.wishswipePool = pool;
 }
 
-export const db = drizzle(pool, { schema });
+export function getPool() {
+  if (!globalForDb.wishswipePool) {
+    globalForDb.wishswipePool = createPool();
+  }
+
+  return globalForDb.wishswipePool;
+}
+
+function createDb() {
+  return drizzle(getPool(), { schema });
+}
+
+type Db = ReturnType<typeof createDb>;
+
+let dbInstance: Db | null = null;
+
+export function getDb() {
+  if (!dbInstance) {
+    dbInstance = createDb();
+  }
+
+  return dbInstance;
+}
+
+export const db = new Proxy({} as Db, {
+  get(_target, property) {
+    const instance = getDb();
+    const value = Reflect.get(instance, property, instance);
+    return typeof value === "function" ? value.bind(instance) : value;
+  },
+});
+
 export { schema };

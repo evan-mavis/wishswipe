@@ -7,6 +7,7 @@ export interface SearchFilters {
 }
 
 export interface SimplifiedListing {
+  id: string;
   itemId: string;
   title: string;
   price: {

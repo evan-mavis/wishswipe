@@ -4,18 +4,12 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Debug Server",
-      "cwd": "${workspaceFolder}/server",
+      "name": "Debug Next.js",
+      "cwd": "${workspaceFolder}",
       "skipFiles": ["<node_internals>/**"],
-      "runtimeExecutable": "npm",
+      "runtimeExecutable": "pnpm",
       "runtimeArgs": ["run", "dev"],
-      "outFiles": ["${workspaceFolder}/server/dist/**/*.js"],
       "sourceMaps": true,
-      "restart": true,
-      "env": {
-        "NODE_ENV": "development",
-        "TS_NODE_FILES": "true"
-      },
       "console": "integratedTerminal"
     }
   ]

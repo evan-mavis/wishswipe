@@ -9,7 +9,7 @@ import {
   setNextPage,
 } from "@/server/search-sessions";
 import type { EbayItemSummary, SimplifiedListing } from "@/types/ebay";
-import type { SearchFilters } from "@/types/listing";
+import type { ExploreListingsResponse, SearchFilters } from "@/types/listing";
 
 const EBAY_RESPONSE_LIMIT = 200;
 
@@ -24,6 +24,7 @@ const exploreQuerySchema = z.object({
 
 function toSimplifiedListings(items: EbayItemSummary[]): SimplifiedListing[] {
   return items.map((item) => ({
+    id: item.itemId,
     itemId: item.itemId,
     title: item.title,
     price: {
@@ -97,7 +98,7 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    return NextResponse.json({
+    const response: ExploreListingsResponse = {
       listings: toSimplifiedListings(unseenListings),
       pagination: {
         currentPage,
@@ -106,7 +107,9 @@ export async function GET(request: NextRequest) {
         searchSessionId: searchSession.id,
         hasMoreItems: hasMoreItems && attempts < maxAttempts,
       },
-    });
+    };
+
+    return NextResponse.json(response);
   } catch (error) {
     if (error instanceof Response) return error;
     console.error("eBay Browse API error:", error);
