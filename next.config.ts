@@ -1,5 +1,4 @@
 import type { NextConfig } from "next";
-import path from "node:path";
 
 const nextConfig: NextConfig = {
   experimental: {
@@ -14,13 +13,6 @@ const nextConfig: NextConfig = {
         hostname: "**",
       },
     ],
-  },
-  webpack: (config) => {
-    config.resolve.alias = {
-      ...config.resolve.alias,
-      kysely: path.resolve(process.cwd(), "src/lib/kysely-compat.mjs"),
-    };
-    return config;
   },
 };
 
