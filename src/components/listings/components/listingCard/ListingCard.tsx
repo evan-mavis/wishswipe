@@ -192,8 +192,10 @@ export const ListingCard = memo(function ListingCard({
 					onDragEnd={handleDragEnd}
 				>
 					<div
-						className={`pointer-events-none relative mx-auto w-full max-w-5xl px-4 ${
-							isMobile ? "h-[42vh]" : "h-[60vh] max-h-[640px]"
+						className={`pointer-events-none relative mx-auto aspect-square overflow-hidden rounded-xl border border-border bg-card ${
+							isMobile
+								? "w-[min(88vw,42vh)]"
+								: "w-[min(72vw,64vh)] max-w-[680px]"
 						}`}
 					>
 						{displayImageUrl && (
@@ -201,8 +203,8 @@ export const ListingCard = memo(function ListingCard({
 								src={displayImageUrl}
 								alt="eBay product"
 								fill
-								sizes="(max-width: 768px) 100vw, 60vw"
-								className="pointer-events-none rounded-4xl object-contain"
+								sizes="(max-width: 768px) min(88vw, 42vh), min(72vw, 64vh)"
+								className="pointer-events-none object-contain"
 								draggable={false}
 							/>
 						)}
