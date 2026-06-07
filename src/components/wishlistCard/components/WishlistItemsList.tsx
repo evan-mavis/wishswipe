@@ -26,7 +26,6 @@ interface WishlistItemsListProps {
 	listingReorderMode: boolean;
 	moveMode?: boolean;
 	selectedItems?: Set<string>;
-	isMobile: boolean;
 	onReorder: (newOrder: WishlistItem[]) => void;
 	onDeleteItem: (itemId: string) => void;
 	onItemSelection?: (itemId: string) => void;
@@ -150,7 +149,6 @@ export function WishlistItemsList({
 	listingReorderMode,
 	moveMode,
 	selectedItems = new Set(),
-	isMobile,
 	onReorder,
 	onDeleteItem,
 	onItemSelection,
@@ -158,16 +156,14 @@ export function WishlistItemsList({
 }: WishlistItemsListProps) {
 	return (
 		<Reorder.Group
-			axis={isMobile ? "y" : "x"}
+			axis="x"
 			values={filteredItems}
 			onReorder={onReorder}
 			className={cn(
-				"overflow-auto scroll-smooth pb-4 pl-3",
-				isMobile
-					? "flex flex-col gap-4"
-					: listingReorderMode || moveMode
-						? "flex gap-2" // Reduced gap for reorder/move mode
-						: "flex snap-x snap-mandatory gap-4"
+				"flex overflow-x-auto overflow-y-hidden scroll-smooth pb-4 pl-3",
+				listingReorderMode || moveMode
+					? "gap-2" // Reduced gap for reorder/move mode
+					: "snap-x snap-mandatory gap-4"
 			)}
 			style={{
 				scrollBehavior: listingReorderMode ? "auto" : "smooth",
@@ -178,8 +174,8 @@ export function WishlistItemsList({
 					key={listing.id}
 					value={listing}
 					className={cn(
-						"group/item",
-						!isMobile && !listingReorderMode && !moveMode && "snap-center",
+						"group/item shrink-0",
+						!listingReorderMode && !moveMode && "snap-center",
 						listingReorderMode && "cursor-grab active:cursor-grabbing"
 					)}
 					drag={listingReorderMode}
@@ -189,9 +185,7 @@ export function WishlistItemsList({
 							"group relative",
 							listingReorderMode || moveMode
 								? "w-[120px] transition-none" // Even smaller in reorder/move mode
-								: isMobile
-									? "w-full transition-all duration-300 ease-in-out"
-									: "w-[300px] transition-all duration-300 ease-in-out"
+								: "w-[300px] transition-all duration-300 ease-in-out"
 						)}
 						onClick={(e) => e.stopPropagation()}
 					>
