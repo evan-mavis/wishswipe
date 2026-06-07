@@ -332,7 +332,7 @@ function SidebarTrigger({
 				<button
 					type="button"
 					className={cn(
-						"flex size-10 items-center justify-center rounded-md bg-fuchsia-400 shadow-lg transition-colors hover:bg-fuchsia-300 focus-visible:ring-2 focus-visible:ring-fuchsia-300 focus-visible:outline-none",
+						"border-input bg-background hover:bg-accent hover:text-accent-foreground flex size-10 items-center justify-center rounded-md border shadow-xs transition-colors focus-visible:ring-2 focus-visible:ring-fuchsia-300 focus-visible:outline-none",
 						className
 					)}
 					onClick={(event) => {
@@ -341,7 +341,7 @@ function SidebarTrigger({
 					}}
 					aria-label="Open menu"
 				>
-					<Menu className="text-white" size={22} />
+					<Menu size={22} />
 				</button>
 			)}
 		</>
