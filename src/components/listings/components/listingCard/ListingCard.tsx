@@ -191,7 +191,11 @@ export const ListingCard = memo(function ListingCard({
 					className="relative flex h-full w-full cursor-grab items-center justify-center active:cursor-grabbing"
 					onDragEnd={handleDragEnd}
 				>
-					<div className="pointer-events-none relative mx-auto h-full max-h-[60vh] w-full px-4">
+					<div
+						className={`pointer-events-none relative mx-auto w-full max-w-5xl px-4 ${
+							isMobile ? "h-[42vh]" : "h-[60vh] max-h-[640px]"
+						}`}
+					>
 						{displayImageUrl && (
 							<Image
 								src={displayImageUrl}
