@@ -275,7 +275,7 @@ export const Listings = memo(function Listings({
 				style={{ contain: "layout style", overflow: "visible" }}
 			>
 				{isLoading ? (
-					<PlaceholderListing text="Searching eBay..." />
+					<PlaceholderListing text="Searching eBay..." showArrows={false} />
 				) : listings.length > 0 ? (
 					<AnimatePresence mode="popLayout">
 						{visibleListings.map((listing, index) => (
@@ -291,7 +291,10 @@ export const Listings = memo(function Listings({
 						))}
 					</AnimatePresence>
 				) : (
-					<PlaceholderListing text="No listings found. Try a different search!" />
+					<PlaceholderListing
+						text="No listings found. Try a different search!"
+						showArrows={false}
+					/>
 				)}
 			</div>
 		</div>

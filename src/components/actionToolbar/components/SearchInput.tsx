@@ -37,7 +37,7 @@ export function SearchInput({
 					className="h-9 cursor-text rounded-lg border-fuchsia-400/30 bg-muted/40 pr-10 pl-9 shadow-sm transition-colors hover:border-fuchsia-300 focus-visible:border-fuchsia-300 focus-visible:ring-fuchsia-300/30 md:pr-20"
 				/>
 				{!value && (
-					<kbd className="text-muted-foreground pointer-events-none absolute top-1/2 right-3 hidden -translate-y-1/2 rounded border border-border bg-background/70 px-1.5 py-0.5 text-[0.65rem] font-medium md:block">
+					<kbd className="text-muted-foreground pointer-events-none absolute top-1/2 right-3 hidden -translate-y-1/2 text-xs font-medium md:block">
 						⌘ K
 					</kbd>
 				)}

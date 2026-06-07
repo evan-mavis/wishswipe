@@ -209,7 +209,7 @@ export function SwipeClient({
         }`}
       >
         {wishlistsLoading ? (
-          <PlaceholderListing text="Loading wishlists..." />
+          <PlaceholderListing text="Loading wishlists..." showArrows={false} />
         ) : wishlistCount === 0 ? (
           <PlaceholderListing
             text="Create a wishlist to start swiping."
