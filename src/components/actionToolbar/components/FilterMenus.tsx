@@ -1,4 +1,4 @@
-import { DollarSign, Menu, Check } from "lucide-react";
+import { Check, DollarSign, Menu } from "lucide-react";
 import {
 	Menubar,
 	MenubarMenu,
@@ -10,6 +10,7 @@ import {
 import { PriceRange } from "@/components/priceRange/PriceRange";
 import { CONDITIONS } from "@/constants/conditions";
 import { CATEGORIES } from "@/constants/categories";
+import { cn } from "@/lib/utils";
 
 interface FilterMenusProps {
 	isMobile: boolean;
@@ -36,10 +37,21 @@ export function FilterMenus({
 	priceRange,
 	setPriceRange,
 }: FilterMenusProps) {
+	const triggerClassName =
+		"relative h-8 min-w-8 justify-center rounded-full px-2 text-xs md:h-auto md:rounded-sm md:px-2 md:text-sm";
+	const activeClassName =
+		"bg-fuchsia-400/10 text-fuchsia-300 ring-1 ring-fuchsia-300/40";
+
 	return (
-		<Menubar className="flex min-w-0 flex-1 items-center gap-0 rounded-b-xl border-none bg-transparent align-middle text-base shadow-none md:gap-1">
+		<Menubar className="flex h-8 min-w-0 flex-none items-center gap-1 rounded-full border-none bg-muted/40 p-0 align-middle text-base shadow-none md:h-9 md:flex-1 md:rounded-b-xl md:bg-transparent md:p-1">
 			<MenubarMenu>
-				<MenubarTrigger>
+				<MenubarTrigger
+					className={cn(
+						triggerClassName,
+						filters.condition && activeClassName
+					)}
+					aria-label="Condition filter"
+				>
 					{isMobile ? <Check size={18} /> : "Condition"}
 				</MenubarTrigger>
 				<MenubarContent>
@@ -58,7 +70,13 @@ export function FilterMenus({
 				</MenubarContent>
 			</MenubarMenu>
 			<MenubarMenu>
-				<MenubarTrigger>
+				<MenubarTrigger
+					className={cn(
+						triggerClassName,
+						filters.category && activeClassName
+					)}
+					aria-label="Category filter"
+				>
 					{isMobile ? <Menu size={18} /> : "Category"}
 				</MenubarTrigger>
 				<MenubarContent>
@@ -77,7 +95,14 @@ export function FilterMenus({
 				</MenubarContent>
 			</MenubarMenu>
 			<MenubarMenu>
-				<MenubarTrigger className="flex items-center align-middle text-sm">
+				<MenubarTrigger
+					className={cn(
+						triggerClassName,
+						(filters.minPrice !== undefined || filters.maxPrice !== undefined) &&
+							activeClassName
+					)}
+					aria-label="Price filter"
+				>
 					{isMobile ? <DollarSign size={18} /> : "Price"}
 				</MenubarTrigger>
 				<MenubarContent>

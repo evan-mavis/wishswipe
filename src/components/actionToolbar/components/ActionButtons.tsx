@@ -5,6 +5,7 @@ import {
 	TooltipContent,
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
 
 interface ActionButtonsProps {
 	isMobile: boolean;
@@ -14,6 +15,7 @@ interface ActionButtonsProps {
 	onUndo: () => void;
 	animateIcon: (ref: React.RefObject<HTMLButtonElement | null>) => void;
 	undoCount: number;
+	hasActiveFilters: boolean;
 }
 
 export function ActionButtons({
@@ -24,17 +26,18 @@ export function ActionButtons({
 	onUndo,
 	animateIcon,
 	undoCount,
+	hasActiveFilters,
 }: ActionButtonsProps) {
 	return (
-		<>
-			{isMobile && (
+		<div className="flex items-center gap-1">
+			{isMobile && hasActiveFilters && (
 				<Tooltip>
 					<TooltipTrigger asChild>
 						<Button
 							variant="ghost"
 							type="button"
 							ref={clearFiltersBtnRef}
-							className="flex items-center rounded p-0 align-middle transition duration-150 hover:text-red-500"
+							className="flex h-8 w-8 items-center rounded-full p-0 align-middle transition duration-150 hover:text-red-500"
 							aria-label="Clear All Filters"
 							onClick={() => {
 								onClearAllFilters();
@@ -55,7 +58,10 @@ export function ActionButtons({
 						type="button"
 						ref={undoBtnRef}
 						disabled={undoCount === 0}
-						className="mr-1 flex items-center rounded align-middle transition duration-150 hover:text-amber-300 disabled:cursor-not-allowed disabled:opacity-50"
+						className={cn(
+							"mr-1 flex items-center rounded align-middle transition duration-150 hover:text-amber-300 disabled:cursor-not-allowed disabled:opacity-50",
+							isMobile && "mr-0 h-8 w-8 rounded-full p-0"
+						)}
 						aria-label={`Undo Last Dismissal (${undoCount} available)`}
 						onClick={() => {
 							onUndo();
@@ -71,6 +77,6 @@ export function ActionButtons({
 						: "No dismissals to undo"}
 				</TooltipContent>
 			</Tooltip>
-		</>
+		</div>
 	);
 }

@@ -63,15 +63,18 @@ export function WishlistSelector({
 	}, [loading, hasSetDefault, value, wishlists, onChange]);
 
 	return (
-		<div className="ml-2 flex min-w-[0] items-center gap-2">
+		<div className="flex w-full min-w-0 items-center gap-2 md:ml-2 md:w-auto">
 			<Label
 				htmlFor="wishlist-select"
-				className="ml-3 hidden text-sm whitespace-nowrap text-gray-600 sm:inline"
+				className="ml-3 hidden text-sm whitespace-nowrap text-gray-600 md:inline"
 			>
 				Wishlist:
 			</Label>
 			<Select value={value} onValueChange={onChange} disabled={loading}>
-				<SelectTrigger id="wishlist-select" className="w-[120px] sm:w-[160px]">
+				<SelectTrigger
+					id="wishlist-select"
+					className="h-8 w-full min-w-0 text-xs md:h-9 md:w-[160px] md:text-sm"
+				>
 					<SelectValue placeholder={loading ? "Loading..." : "Choose..."} />
 				</SelectTrigger>
 				<SelectContent>

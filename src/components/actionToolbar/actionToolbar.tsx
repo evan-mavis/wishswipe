@@ -137,6 +137,12 @@ export function ActionToolbar({
 		}
 	};
 
+	const hasActiveFilters =
+		!!localFilters.condition ||
+		!!localFilters.category ||
+		localFilters.minPrice !== undefined ||
+		localFilters.maxPrice !== undefined;
+
 	return (
 		<div
 			className={`bg-background relative z-10 flex w-full max-w-xl flex-col items-stretch rounded-xl border-2 border-fuchsia-400 transition-colors duration-200 sm:max-w-lg md:max-w-2xl lg:max-w-2xl xl:max-w-2xl 2xl:max-w-3xl`}
@@ -156,15 +162,17 @@ export function ActionToolbar({
 				onClear={clearSearch}
 				inputRef={searchInputRef}
 			/>
-			<div className="mt-1 mb-1 flex w-full flex-wrap items-center gap-2 align-middle text-base">
-				<WishlistSelector
-					value={selectedWishlist}
-					onChange={setSelectedWishlist}
-					onWishlistCountChange={onWishlistCountChange}
-					onLoadingChange={onWishlistsLoadingChange}
-				/>
+			<div className="mt-1 mb-1 flex w-full flex-col gap-1 px-2 text-base md:flex-row md:flex-wrap md:items-center md:gap-2 md:px-0">
+				<div className="w-full md:w-auto">
+					<WishlistSelector
+						value={selectedWishlist}
+						onChange={setSelectedWishlist}
+						onWishlistCountChange={onWishlistCountChange}
+						onLoadingChange={onWishlistsLoadingChange}
+					/>
+				</div>
 
-				<div className="flex min-w-0 flex-1 flex-wrap items-center">
+				<div className="flex min-w-0 flex-1 items-center justify-between border-t border-fuchsia-400/20 pt-1 md:flex-wrap md:justify-start md:border-t-0 md:pt-0">
 					<FilterMenus
 						isMobile={isMobile}
 						filters={localFilters}
@@ -181,6 +189,7 @@ export function ActionToolbar({
 						onUndo={onUndo || (() => {})}
 						animateIcon={animateIcon}
 						undoCount={undoCount}
+						hasActiveFilters={hasActiveFilters}
 					/>
 				</div>
 			</div>
