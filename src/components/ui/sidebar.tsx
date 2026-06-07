@@ -313,9 +313,14 @@ function SidebarTrigger({
 
 	return (
 		<>
-			{/* Desktop trigger - unchanged */}
+			{/* Desktop trigger */}
 			<button
-				className={cn("group", isMobile ? "hidden" : "h-20", className)}
+				type="button"
+				className={cn(
+					"group flex w-12 items-center justify-center rounded-r-full transition-colors hover:bg-fuchsia-300/10 focus-visible:ring-2 focus-visible:ring-fuchsia-300 focus-visible:outline-none",
+					isMobile ? "hidden" : "h-20",
+					className
+				)}
 				onClick={(event) => {
 					onClick?.(event);
 					toggleSidebar();
@@ -324,12 +329,12 @@ function SidebarTrigger({
 				<span className="sr-only">Toggle Sidebar</span>
 				{open ? (
 					<ChevronRight
-						className="text-fuchsia-300 transition group-hover:scale-110 group-hover:rotate-180"
+						className="text-fuchsia-300 transition-colors group-hover:text-fuchsia-200"
 						size={35}
 					/>
 				) : (
 					<ChevronLeft
-						className="text-fuchsia-300 transition group-hover:scale-110 group-hover:rotate-180"
+						className="text-fuchsia-300 transition-colors group-hover:text-fuchsia-200"
 						size={35}
 					/>
 				)}

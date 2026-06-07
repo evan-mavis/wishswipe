@@ -77,6 +77,10 @@ export function WishlistCard({
 	const [showMoveDialog, setShowMoveDialog] = useState(false);
 	const [listingMoveMode, setListingMoveMode] = useState(false);
 
+	React.useEffect(() => {
+		setItems(initialItems || []);
+	}, [initialItems]);
+
 	// Filter items based on search query
 	const filteredItems = useMemo(() => {
 		if (!items || !searchQuery.trim()) return items || [];
