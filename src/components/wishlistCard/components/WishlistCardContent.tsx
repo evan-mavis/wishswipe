@@ -152,6 +152,7 @@ export const WishlistCardContent = memo(function WishlistCardContent({
 									listingReorderMode={listingReorderMode}
 									moveMode={moveMode}
 									selectedItems={selectedItems}
+									isMobile={isMobile}
 									onReorder={onReorderItems}
 									onDeleteItem={onDeleteItem}
 									onItemSelection={onItemSelection}

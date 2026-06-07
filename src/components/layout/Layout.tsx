@@ -1,7 +1,8 @@
 "use client";
 
-import { BarChart, MessageSquare, Scroll, Search, Settings } from "lucide-react";
+import { BarChart, MessageSquare, Scroll, Settings } from "lucide-react";
 import { usePathname } from "next/navigation";
+import { AppHeader } from "../appHeader/AppHeader";
 import { AppSidebar } from "../appSidebar/AppSidebar";
 import { SidebarProvider, SidebarTrigger, SidebarInset } from "../ui/sidebar";
 
@@ -12,8 +13,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
 		<SidebarProvider>
 			<AppSidebar />
 			<SidebarInset>
-				<div className="flex h-14 shrink-0 items-center gap-3 px-4 pt-[env(safe-area-inset-top)] md:hidden">
-					<SidebarTrigger />
+				<div className="relative flex h-14 shrink-0 items-center justify-center px-16 pt-[env(safe-area-inset-top)] md:hidden">
+					<div className="absolute top-1/2 left-4 -translate-y-1/2">
+						<SidebarTrigger />
+					</div>
 					<MobilePageTitle pathname={pathname} />
 				</div>
 				<div
@@ -73,17 +76,15 @@ function MobilePageTitle({ pathname }: { pathname: string }) {
 
 	if (pathname === "/swipe") {
 		return (
-			<h1 className={titleClassName}>
-				<Search className={iconClassName} />
-				<span className="truncate">WishSwipe</span>
+			<h1 className="flex min-w-0 items-center justify-center text-xl leading-none">
+				<AppHeader fontSize="text-xl" />
 			</h1>
 		);
 	}
 
 	return (
-		<h1 className={titleClassName}>
-			<Search className={iconClassName} />
-			<span className="truncate">WishSwipe</span>
+		<h1 className="flex min-w-0 items-center justify-center text-xl leading-none">
+			<AppHeader fontSize="text-xl" />
 		</h1>
 	);
 }
