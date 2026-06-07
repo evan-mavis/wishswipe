@@ -164,27 +164,29 @@ export function WishlistsClient({
       <div className="container mx-auto max-w-7xl p-6">
         <div className="mt-5 mr-1 mb-8 ml-1 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <WishlistHeader />
-          <WishlistActions
-            reorderMode={reorderMode}
-            deleteMode={deleteMode}
-            selectedCount={selectedLists.size}
-            onReorderSave={handleReorderSave}
-            onReorderCancel={() => {
-              setWishlists(originalOrder);
-              setReorderMode(false);
-            }}
-            onDeleteCancel={() => {
-              setDeleteMode(false);
-              setSelectedLists(new Set());
-            }}
-            onDeleteConfirm={() => selectedLists.size > 0 && setShowDeleteConfirm(true)}
-            onModeChange={(mode) => {
-              resetModes();
-              if (mode === "reorder") setReorderMode(true);
-              if (mode === "delete") setDeleteMode(true);
-            }}
-            onNewWishlist={() => setShowNewWishlist(true)}
-          />
+          <div className="fixed top-4 right-4 z-50 sm:static sm:z-auto">
+            <WishlistActions
+              reorderMode={reorderMode}
+              deleteMode={deleteMode}
+              selectedCount={selectedLists.size}
+              onReorderSave={handleReorderSave}
+              onReorderCancel={() => {
+                setWishlists(originalOrder);
+                setReorderMode(false);
+              }}
+              onDeleteCancel={() => {
+                setDeleteMode(false);
+                setSelectedLists(new Set());
+              }}
+              onDeleteConfirm={() => selectedLists.size > 0 && setShowDeleteConfirm(true)}
+              onModeChange={(mode) => {
+                resetModes();
+                if (mode === "reorder") setReorderMode(true);
+                if (mode === "delete") setDeleteMode(true);
+              }}
+              onNewWishlist={() => setShowNewWishlist(true)}
+            />
+          </div>
         </div>
 
         {error && (

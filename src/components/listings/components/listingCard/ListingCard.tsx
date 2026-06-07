@@ -194,7 +194,7 @@ export const ListingCard = memo(function ListingCard({
 					<div
 						className={`pointer-events-none relative mx-auto aspect-square overflow-hidden rounded-xl border border-border bg-card ${
 							isMobile
-								? "w-[min(82vw,36vh)]"
+								? "w-[min(88vw,40vh)]"
 								: "w-[min(58vw,52vh)] max-w-[560px]"
 						}`}
 					>
@@ -203,7 +203,7 @@ export const ListingCard = memo(function ListingCard({
 								src={displayImageUrl}
 								alt="eBay product"
 								fill
-								sizes="(max-width: 768px) min(82vw, 36vh), min(58vw, 52vh)"
+								sizes="(max-width: 768px) min(88vw, 40vh), min(58vw, 52vh)"
 								className="pointer-events-none object-cover"
 								draggable={false}
 							/>

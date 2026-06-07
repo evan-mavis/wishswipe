@@ -2,7 +2,7 @@ import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { cva } from "class-variance-authority";
 import type { VariantProps } from "class-variance-authority";
-import { ChevronLeft, ChevronRight, ChevronUp } from "lucide-react";
+import { ChevronLeft, ChevronRight, Menu } from "lucide-react";
 
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
@@ -259,57 +259,6 @@ function SidebarTrigger({
 	className,
 }: React.ComponentProps<"button">) {
 	const { toggleSidebar, open, isMobile } = useSidebar();
-	const [isVisible, setIsVisible] = React.useState(false);
-	const [hasInteracted, setHasInteracted] = React.useState(false);
-
-	// Handle scroll and touch interactions for mobile
-	React.useEffect(() => {
-		if (!isMobile) return;
-
-		let lastScrollY = window.scrollY;
-
-		const handleScroll = () => {
-			const currentScrollY = window.scrollY;
-			// Show when scrolling down (not up)
-			if (currentScrollY > lastScrollY && currentScrollY > 50) {
-				setIsVisible(true);
-				setHasInteracted(true);
-			}
-			lastScrollY = currentScrollY;
-		};
-
-		const handleTouchStart = (e: TouchEvent) => {
-			const touchY = e.touches[0].clientY;
-			const windowHeight = window.innerHeight;
-			const bottomArea = windowHeight * 0.2; // Bottom 20% of screen
-
-			if (touchY > windowHeight - bottomArea) {
-				setIsVisible(true);
-				setHasInteracted(true);
-			}
-		};
-
-		window.addEventListener("scroll", handleScroll, { passive: true });
-		document.addEventListener("touchstart", handleTouchStart, {
-			passive: true,
-		});
-
-		return () => {
-			window.removeEventListener("scroll", handleScroll);
-			document.removeEventListener("touchstart", handleTouchStart);
-		};
-	}, [isMobile]);
-
-	// Hide after 2 seconds of inactivity
-	React.useEffect(() => {
-		if (!isMobile || !hasInteracted) return;
-
-		const timer = setTimeout(() => {
-			setIsVisible(false);
-		}, 2000);
-
-		return () => clearTimeout(timer);
-	}, [isMobile, hasInteracted, isVisible]);
 
 	return (
 		<>
@@ -340,19 +289,21 @@ function SidebarTrigger({
 				)}
 			</button>
 
-			{/* Mobile trigger - only shows after interaction */}
+			{/* Mobile trigger */}
 			{isMobile && (
 				<button
+					type="button"
 					className={cn(
-						"fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-full bg-fuchsia-400 p-3 shadow-lg transition-all duration-300",
-						isVisible
-							? "translate-y-0 scale-100 opacity-100"
-							: "pointer-events-none translate-y-4 scale-95 opacity-0"
+						"flex size-10 items-center justify-center rounded-full bg-fuchsia-400 shadow-lg transition-colors hover:bg-fuchsia-300 focus-visible:ring-2 focus-visible:ring-fuchsia-300 focus-visible:outline-none",
+						className
 					)}
-					onClick={() => toggleSidebar()}
+					onClick={(event) => {
+						onClick?.(event);
+						toggleSidebar();
+					}}
 					aria-label="Open menu"
 				>
-					<ChevronUp className="text-white" size={24} />
+					<Menu className="text-white" size={22} />
 				</button>
 			)}
 		</>
