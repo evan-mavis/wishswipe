@@ -1,5 +1,5 @@
 import { Input } from "@/components/ui/input";
-import { X } from "lucide-react";
+import { Search, X } from "lucide-react";
 
 interface SearchInputProps {
 	value: string;
@@ -21,8 +21,12 @@ export function SearchInput({
 	};
 
 	return (
-		<div className="flex items-center gap-2 px-2">
+		<div className="flex items-center gap-2 px-2 pt-2 md:pt-0">
 			<div className="relative flex-1">
+				<Search
+					size={16}
+					className="text-muted-foreground pointer-events-none absolute top-1/2 left-3 -translate-y-1/2"
+				/>
 				<Input
 					ref={inputRef}
 					type="text"
@@ -30,12 +34,14 @@ export function SearchInput({
 					onChange={(e) => handleChange(e.target.value)}
 					onKeyDown={onKeyDown}
 					placeholder="Search listings..."
-					className="border-none bg-transparent pr-12 shadow-none focus:border-none focus:ring-0"
+					className="h-9 cursor-text rounded-lg border-fuchsia-400/30 bg-muted/40 pr-10 pl-9 shadow-sm transition-colors hover:border-fuchsia-300 focus-visible:border-fuchsia-300 focus-visible:ring-fuchsia-300/30"
 				/>
 				{value && (
 					<button
+						type="button"
 						onClick={onClear}
 						className="absolute top-1/2 right-2 -translate-y-1/2 rounded-full p-1 transition-colors hover:bg-gray-200"
+						aria-label="Clear search"
 						style={{ zIndex: 21 }}
 					>
 						<X size={14} className="text-gray-500" />

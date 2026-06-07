@@ -1,4 +1,4 @@
-import { Check, DollarSign, Menu } from "lucide-react";
+import { BadgeCheck, DollarSign, Menu } from "lucide-react";
 import {
 	Menubar,
 	MenubarMenu,
@@ -52,7 +52,7 @@ export function FilterMenus({
 					)}
 					aria-label="Condition filter"
 				>
-					{isMobile ? <Check size={18} /> : "Condition"}
+					{isMobile ? <BadgeCheck size={18} /> : "Condition"}
 				</MenubarTrigger>
 				<MenubarContent>
 					<MenubarRadioGroup

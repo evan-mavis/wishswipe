@@ -157,7 +157,7 @@ export function SwipeClient({
   }, []);
 
   return (
-    <div className="flex h-[100dvh] min-h-[100dvh] flex-col overflow-hidden overscroll-none">
+    <div className="flex h-full min-h-0 flex-col overflow-hidden overscroll-none">
       <div
         className={`flex shrink-0 items-center justify-center px-4 ${
           isMobile ? "min-h-[40px]" : "min-h-[60px]"
