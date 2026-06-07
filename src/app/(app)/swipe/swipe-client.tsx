@@ -83,6 +83,26 @@ export function SwipeClient({
   }, []);
 
   useEffect(() => {
+    const { body, documentElement } = document;
+    const previousBodyOverflow = body.style.overflow;
+    const previousBodyOverscroll = body.style.overscrollBehavior;
+    const previousDocumentOverflow = documentElement.style.overflow;
+    const previousDocumentOverscroll = documentElement.style.overscrollBehavior;
+
+    body.style.overflow = "hidden";
+    body.style.overscrollBehavior = "none";
+    documentElement.style.overflow = "hidden";
+    documentElement.style.overscrollBehavior = "none";
+
+    return () => {
+      body.style.overflow = previousBodyOverflow;
+      body.style.overscrollBehavior = previousBodyOverscroll;
+      documentElement.style.overflow = previousDocumentOverflow;
+      documentElement.style.overscrollBehavior = previousDocumentOverscroll;
+    };
+  }, []);
+
+  useEffect(() => {
     const timer = setTimeout(() => setShowWelcome(false), 3000);
     return () => clearTimeout(timer);
   }, []);
@@ -137,9 +157,9 @@ export function SwipeClient({
   }, []);
 
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex h-[100dvh] min-h-[100dvh] flex-col overflow-hidden overscroll-none">
       <div
-        className={`flex items-center justify-center px-4 ${
+        className={`flex shrink-0 items-center justify-center px-4 ${
           isMobile ? "min-h-[40px]" : "min-h-[60px]"
         }`}
       >
@@ -166,7 +186,7 @@ export function SwipeClient({
       </div>
 
       <div
-        className={`flex items-center justify-center px-4 ${
+        className={`flex shrink-0 items-center justify-center px-4 ${
           isMobile ? "min-h-[60px] py-0" : "min-h-[80px] py-1"
         }`}
       >
@@ -187,7 +207,7 @@ export function SwipeClient({
 
       <div
         className={`flex items-center justify-center px-4 ${
-          isMobile ? "mt-1 h-[50vh]" : "mt-1 max-h-[75vh] flex-1"
+          isMobile ? "mt-1 min-h-0 flex-1 overflow-hidden" : "mt-1 max-h-[75vh] flex-1"
         }`}
       >
         {wishlistsLoading ? (
@@ -220,7 +240,7 @@ export function SwipeClient({
 
       {wishlistCount > 0 && (
         <div
-          className={`flex items-center justify-center px-4 ${
+          className={`flex shrink-0 items-center justify-center px-4 ${
             isMobile ? "mt-1 min-h-[30px] py-0" : "min-h-[40px] py-1"
           }`}
         >
@@ -238,7 +258,7 @@ export function SwipeClient({
 
       {wishlistCount > 0 && (
         <div
-          className={`flex items-center justify-center px-4 ${
+          className={`flex shrink-0 items-center justify-center px-4 ${
             isMobile ? "mt-1 min-h-[40px] py-0" : "min-h-[60px] py-1"
           }`}
         >

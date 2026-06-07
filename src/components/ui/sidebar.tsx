@@ -162,6 +162,37 @@ function Sidebar({
 	collapsible?: "offcanvas" | "icon" | "none";
 }) {
 	const { isMobile, state, openMobile, setOpenMobile } = useSidebar();
+	const touchStartYRef = React.useRef<number | null>(null);
+	const touchStartXRef = React.useRef<number | null>(null);
+
+	const handleMobileTouchStart = React.useCallback(
+		(event: React.TouchEvent<HTMLDivElement>) => {
+			if (side !== "bottom") return;
+			const touch = event.touches[0];
+			touchStartYRef.current = touch.clientY;
+			touchStartXRef.current = touch.clientX;
+		},
+		[side]
+	);
+
+	const handleMobileTouchEnd = React.useCallback(
+		(event: React.TouchEvent<HTMLDivElement>) => {
+			if (side !== "bottom") return;
+			const startY = touchStartYRef.current;
+			const startX = touchStartXRef.current;
+			touchStartYRef.current = null;
+			touchStartXRef.current = null;
+			if (startY === null || startX === null) return;
+
+			const touch = event.changedTouches[0];
+			const deltaY = touch.clientY - startY;
+			const deltaX = Math.abs(touch.clientX - startX);
+			if (deltaY > 80 && deltaY > deltaX * 1.25) {
+				setOpenMobile(false);
+			}
+		},
+		[setOpenMobile, side]
+	);
 
 	if (collapsible === "none") {
 		return (
@@ -185,6 +216,8 @@ function Sidebar({
 					data-sidebar="sidebar"
 					data-slot="sidebar"
 					data-mobile="true"
+					onTouchStart={handleMobileTouchStart}
+					onTouchEnd={handleMobileTouchEnd}
 					className={cn(
 						"bg-sidebar text-sidebar-foreground p-0 [&>button]:hidden",
 						side === "bottom" ? "h-[80vh] rounded-t-xl" : "w-(--sidebar-width)"
@@ -196,6 +229,11 @@ function Sidebar({
 					}
 					side={side}
 				>
+					{side === "bottom" && (
+						<div className="flex shrink-0 justify-center pt-3 pb-1">
+							<div className="h-1.5 w-12 rounded-full bg-sidebar-border" />
+						</div>
+					)}
 					<SheetHeader className="sr-only">
 						<SheetTitle>Sidebar</SheetTitle>
 						<SheetDescription>Displays the mobile sidebar.</SheetDescription>

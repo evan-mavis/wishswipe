@@ -179,6 +179,7 @@ export const ListingCard = memo(function ListingCard({
 						rotate,
 						opacity,
 						contain: "layout style paint",
+						touchAction: "none",
 						willChange: "transform",
 					}}
 					initial={{ opacity: 0 }}
@@ -188,7 +189,7 @@ export const ListingCard = memo(function ListingCard({
 					drag="x"
 					dragConstraints={{ left: 0, right: 0 }}
 					dragElastic={isMobile ? 0.8 : 0.7}
-					className="relative flex h-full w-full cursor-grab items-center justify-center active:cursor-grabbing"
+					className="relative flex h-full w-full cursor-grab select-none items-center justify-center active:cursor-grabbing"
 					onDragEnd={handleDragEnd}
 				>
 					<div
