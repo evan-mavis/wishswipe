@@ -28,6 +28,7 @@ interface SearchAndFilterToolbarProps {
 	undoCount?: number;
 	onWishlistCountChange?: (count: number) => void;
 	onWishlistsLoadingChange?: (loading: boolean) => void;
+	searchInputRef?: React.Ref<HTMLInputElement>;
 }
 
 export function ActionToolbar({
@@ -41,6 +42,7 @@ export function ActionToolbar({
 	undoCount = 0,
 	onWishlistCountChange,
 	onWishlistsLoadingChange,
+	searchInputRef,
 }: SearchAndFilterToolbarProps) {
 	const isMobile = useIsMobile();
 	const [priceRange, setPriceRange] = useState<[number, number]>([10, 75]);
@@ -152,6 +154,7 @@ export function ActionToolbar({
 				onChange={setInputValue}
 				onKeyDown={handleKeyDown}
 				onClear={clearSearch}
+				inputRef={searchInputRef}
 			/>
 			<div className="mt-1 mb-1 flex w-full flex-wrap items-center gap-2 align-middle text-base">
 				<WishlistSelector

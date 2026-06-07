@@ -72,6 +72,7 @@ export function SwipeClient({
   const [currentListing, setCurrentListing] = useState<Listing | null>(null);
   const [wishlistCount, setWishlistCount] = useState(initialWishlistCount);
   const [wishlistsLoading, setWishlistsLoading] = useState(false);
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const undoRef = useRef<(() => void) | null>(null);
   const undoCountRef = useRef(0);
 
@@ -116,6 +117,19 @@ export function SwipeClient({
       document.removeEventListener("visibilitychange", handleVisibilityChange);
       window.removeEventListener("beforeunload", handleBeforeUnload);
     };
+  }, []);
+
+  useEffect(() => {
+    const handleSearchShortcut = (event: KeyboardEvent) => {
+      if (!event.metaKey || event.key.toLowerCase() !== "k") return;
+
+      event.preventDefault();
+      searchInputRef.current?.focus({ preventScroll: true });
+      searchInputRef.current?.select();
+    };
+
+    window.addEventListener("keydown", handleSearchShortcut);
+    return () => window.removeEventListener("keydown", handleSearchShortcut);
   }, []);
 
   const handleProgressChange = useCallback((nextProgress: number) => {
@@ -167,6 +181,7 @@ export function SwipeClient({
           undoCount={undoCountRef.current}
           onWishlistCountChange={setWishlistCount}
           onWishlistsLoadingChange={setWishlistsLoading}
+          searchInputRef={searchInputRef}
         />
       </div>
 

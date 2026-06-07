@@ -6,6 +6,7 @@ interface SearchInputProps {
 	onChange: (value: string) => void;
 	onKeyDown: (e: React.KeyboardEvent) => void;
 	onClear: () => void;
+	inputRef?: React.Ref<HTMLInputElement>;
 }
 
 export function SearchInput({
@@ -13,6 +14,7 @@ export function SearchInput({
 	onChange,
 	onKeyDown,
 	onClear,
+	inputRef,
 }: SearchInputProps) {
 	const handleChange = (rawValue: string) => {
 		onChange(rawValue);
@@ -22,6 +24,7 @@ export function SearchInput({
 		<div className="flex items-center gap-2 px-2">
 			<div className="relative flex-1">
 				<Input
+					ref={inputRef}
 					type="text"
 					value={value}
 					onChange={(e) => handleChange(e.target.value)}
