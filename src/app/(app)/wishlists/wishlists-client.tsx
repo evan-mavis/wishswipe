@@ -162,9 +162,9 @@ export function WishlistsClient({
   return (
     <>
       <div className="container mx-auto max-w-7xl p-6">
-        <div className="mt-5 mr-1 mb-8 ml-1 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-5 mr-1 mb-8 ml-1 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <WishlistHeader />
-          <div className="fixed top-4 right-4 z-50 sm:static sm:z-auto">
+          <div className="fixed top-4 right-4 z-50 md:static md:z-auto">
             <WishlistActions
               reorderMode={reorderMode}
               deleteMode={deleteMode}
