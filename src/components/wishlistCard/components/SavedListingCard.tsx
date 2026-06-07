@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -44,8 +45,8 @@ export const SavedListingCard = memo(function SavedListingCard({
 
 	// Only preload high-res image if not in reorder mode and details dialog is opened
 	useEffect(() => {
-		if (!isReorderMode && showDetails) {
-			const img = new Image();
+		if (!isReorderMode && showDetails && highResImageUrl) {
+			const img = new window.Image();
 			img.onload = () => setHighResImageLoaded(true);
 			img.src = highResImageUrl;
 		}
@@ -121,13 +122,17 @@ export const SavedListingCard = memo(function SavedListingCard({
 						</div>
 						<div className="space-y-3">
 							<div className="relative aspect-square overflow-hidden rounded-md">
-								<img
-									src={getLargerImageUrl(listing.imageUrl, 450)}
-									alt={listing.title}
-									className="h-full w-full object-contain"
-									draggable={false}
-									loading={isReorderMode ? "lazy" : "eager"}
-								/>
+								{listing.imageUrl && (
+									<Image
+										src={getLargerImageUrl(listing.imageUrl, 450)}
+										alt={listing.title}
+										fill
+										sizes="(max-width: 768px) 100vw, 240px"
+										className="object-contain"
+										draggable={false}
+										loading={isReorderMode ? "lazy" : "eager"}
+									/>
+								)}
 								{/* Image is not dimmed; card border conveys status */}
 							</div>
 							<div className="space-y-1">
@@ -185,15 +190,21 @@ export const SavedListingCard = memo(function SavedListingCard({
 										/>
 									</div>
 								) : (
-									<img
-										src={highResImageUrl}
-										alt={listing.title}
+									<div
 										className={cn(
-											"w-full object-contain",
-											isMobile ? "max-h-[40vh]" : "max-h-[60vh]"
+											"relative w-full rounded-lg",
+											isMobile ? "h-[40vh] min-h-48" : "h-[60vh] min-h-80"
 										)}
-										draggable={false}
-									/>
+									>
+										<Image
+											src={highResImageUrl}
+											alt={listing.title}
+											fill
+											sizes="(max-width: 768px) 100vw, 600px"
+											className="object-contain"
+											draggable={false}
+										/>
+									</div>
 								)}
 							</div>
 							<div className="grid gap-2">

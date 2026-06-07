@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { Reorder } from "framer-motion";
 import { GripVertical, Check } from "lucide-react";
 import { SavedListingCard } from "./SavedListingCard";
@@ -51,13 +52,17 @@ const ReorderCard = memo(
 			>
 				<div className="p-2">
 					<div className="relative mb-2 aspect-square overflow-hidden rounded-md">
-						<img
-							src={listing.imageUrl}
-							alt={listing.title}
-							className="h-full w-full object-contain"
-							draggable={false}
-							loading="lazy"
-						/>
+						{listing.imageUrl && (
+							<Image
+								src={listing.imageUrl}
+								alt={listing.title}
+								fill
+								sizes="120px"
+								className="object-contain"
+								draggable={false}
+								loading="lazy"
+							/>
+						)}
 						{/* No overlay; only border changes in reorder mode */}
 					</div>
 					<div className="space-y-1">
@@ -106,13 +111,17 @@ const MoveCard = memo(
 			>
 				<div className="p-2">
 					<div className="relative mb-2 aspect-square overflow-hidden rounded-md">
-						<img
-							src={listing.imageUrl}
-							alt={listing.title}
-							className="h-full w-full object-contain"
-							draggable={false}
-							loading="lazy"
-						/>
+						{listing.imageUrl && (
+							<Image
+								src={listing.imageUrl}
+								alt={listing.title}
+								fill
+								sizes="120px"
+								className="object-contain"
+								draggable={false}
+								loading="lazy"
+							/>
+						)}
 						{isSelected && (
 							<div className="bg-opacity-20 absolute inset-0 flex items-center justify-center bg-fuchsia-500">
 								<Check className="h-6 w-6 rounded-full bg-white p-1 text-fuchsia-600" />

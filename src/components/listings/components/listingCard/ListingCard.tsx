@@ -1,4 +1,5 @@
 import type { Dispatch, SetStateAction } from "react";
+import Image from "next/image";
 import { memo, useState, useEffect, useCallback, useRef, useMemo } from "react";
 import type { Listing } from "../../../../types/listing";
 import {
@@ -190,14 +191,17 @@ export const ListingCard = memo(function ListingCard({
 					className="relative flex h-full w-full cursor-grab items-center justify-center active:cursor-grabbing"
 					onDragEnd={handleDragEnd}
 				>
-					<div className="pointer-events-none mx-auto flex w-full items-center justify-center px-4">
-						<img
-							src={displayImageUrl}
-							alt="eBay product"
-							className="pointer-events-none h-auto max-h-[60vh] w-auto max-w-full rounded-4xl object-contain"
-							loading="lazy"
-							draggable="false"
-						/>
+					<div className="pointer-events-none relative mx-auto h-full max-h-[60vh] w-full px-4">
+						{displayImageUrl && (
+							<Image
+								src={displayImageUrl}
+								alt="eBay product"
+								fill
+								sizes="(max-width: 768px) 100vw, 60vw"
+								className="pointer-events-none rounded-4xl object-contain"
+								draggable={false}
+							/>
+						)}
 					</div>
 				</motion.div>
 			)}
