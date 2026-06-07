@@ -162,7 +162,7 @@ export function WishlistsClient({
   return (
     <>
       <div className="container mx-auto max-w-7xl p-6">
-        <div className="mt-5 mr-1 mb-8 ml-1 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div className="mb-4 flex h-0 justify-end md:mt-5 md:mr-1 md:mb-8 md:ml-1 md:h-auto md:flex-row md:items-center md:justify-between">
           <WishlistHeader />
           <div className="fixed top-4 right-4 z-50 md:static md:z-auto">
             <WishlistActions

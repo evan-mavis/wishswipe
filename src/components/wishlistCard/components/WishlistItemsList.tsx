@@ -154,63 +154,74 @@ export function WishlistItemsList({
 	onItemSelection,
 	convertToListingFormat,
 }: WishlistItemsListProps) {
+	const showScrollHint =
+		filteredItems.length > 1 && !listingReorderMode && !moveMode;
+
 	return (
-		<Reorder.Group
-			axis="x"
-			values={filteredItems}
-			onReorder={onReorder}
-			className={cn(
-				"flex overflow-x-auto overflow-y-hidden scroll-smooth pb-4 pl-3",
-				listingReorderMode || moveMode
-					? "gap-2" // Reduced gap for reorder/move mode
-					: "snap-x snap-mandatory gap-4"
-			)}
-			style={{
-				scrollBehavior: listingReorderMode ? "auto" : "smooth",
-			}}
-		>
-			{filteredItems.map((listing) => (
-				<Reorder.Item
-					key={listing.id}
-					value={listing}
-					className={cn(
-						"group/item shrink-0",
-						!listingReorderMode && !moveMode && "snap-center",
-						listingReorderMode && "cursor-grab active:cursor-grabbing"
-					)}
-					drag={listingReorderMode}
-				>
-					<div
+		<div className="relative w-full">
+			<Reorder.Group
+				axis="x"
+				values={filteredItems}
+				onReorder={onReorder}
+				className={cn(
+					"flex overflow-x-auto overflow-y-hidden scroll-smooth pb-4 pl-3 pr-8",
+					listingReorderMode || moveMode
+						? "gap-2" // Reduced gap for reorder/move mode
+						: "snap-x snap-mandatory gap-4"
+				)}
+				style={{
+					scrollBehavior: listingReorderMode ? "auto" : "smooth",
+				}}
+			>
+				{filteredItems.map((listing) => (
+					<Reorder.Item
+						key={listing.id}
+						value={listing}
 						className={cn(
-							"group relative",
-							listingReorderMode || moveMode
-								? "w-[120px] transition-none" // Even smaller in reorder/move mode
-								: "w-[300px] transition-all duration-300 ease-in-out"
+							"group/item shrink-0",
+							!listingReorderMode && !moveMode && "snap-center",
+							listingReorderMode && "cursor-grab active:cursor-grabbing"
 						)}
-						onClick={(e) => e.stopPropagation()}
+						drag={listingReorderMode}
 					>
-						{listingReorderMode ? (
-							<ReorderCard
-								item={listing}
-								convertToListingFormat={convertToListingFormat}
-							/>
-						) : moveMode ? (
-							<MoveCard
-								item={listing}
-								isSelected={selectedItems.has(listing.id)}
-								onItemSelection={onItemSelection!}
-								convertToListingFormat={convertToListingFormat}
-							/>
-						) : (
-							<SavedListingCard
-								listing={convertToListingFormat(listing)}
-								onDelete={() => onDeleteItem(listing.id)}
-								isReorderMode={false}
-							/>
-						)}
-					</div>
-				</Reorder.Item>
-			))}
-		</Reorder.Group>
+						<div
+							className={cn(
+								"group relative",
+								listingReorderMode || moveMode
+									? "w-[120px] transition-none" // Even smaller in reorder/move mode
+									: "w-[72vw] min-w-[220px] max-w-[260px] transition-all duration-300 ease-in-out md:w-[300px] md:min-w-0 md:max-w-none"
+							)}
+							onClick={(e) => e.stopPropagation()}
+						>
+							{listingReorderMode ? (
+								<ReorderCard
+									item={listing}
+									convertToListingFormat={convertToListingFormat}
+								/>
+							) : moveMode ? (
+								<MoveCard
+									item={listing}
+									isSelected={selectedItems.has(listing.id)}
+									onItemSelection={onItemSelection!}
+									convertToListingFormat={convertToListingFormat}
+								/>
+							) : (
+								<SavedListingCard
+									listing={convertToListingFormat(listing)}
+									onDelete={() => onDeleteItem(listing.id)}
+									isReorderMode={false}
+								/>
+							)}
+						</div>
+					</Reorder.Item>
+				))}
+			</Reorder.Group>
+			{showScrollHint && (
+				<>
+					<div className="from-background pointer-events-none absolute inset-y-0 left-0 w-6 bg-gradient-to-r to-transparent md:hidden" />
+					<div className="from-background pointer-events-none absolute inset-y-0 right-0 w-10 bg-gradient-to-l to-transparent md:hidden" />
+				</>
+			)}
+		</div>
 	);
 }

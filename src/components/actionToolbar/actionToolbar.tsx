@@ -172,7 +172,7 @@ export function ActionToolbar({
 					/>
 				</div>
 
-				<div className="flex min-w-0 flex-1 items-center justify-between border-t border-fuchsia-400/20 pt-1 md:flex-wrap md:justify-start md:border-t-0 md:pt-0">
+				<div className="flex min-w-0 flex-1 items-center justify-between pt-1 md:flex-wrap md:justify-start md:pt-0">
 					<FilterMenus
 						isMobile={isMobile}
 						filters={localFilters}

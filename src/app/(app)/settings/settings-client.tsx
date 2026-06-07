@@ -76,7 +76,7 @@ export function SettingsClient({
   return (
     <div className="container mx-auto max-w-4xl p-6">
       <div className="mb-8">
-        <h1 className="text-foreground flex items-center gap-2 text-3xl font-bold">
+        <h1 className="text-foreground hidden items-center gap-2 text-3xl font-bold md:flex">
           <Settings /> Settings
         </h1>
         <p className="text-muted-foreground mt-2">

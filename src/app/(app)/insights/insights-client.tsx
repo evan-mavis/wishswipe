@@ -29,7 +29,7 @@ export function InsightsClient({
   return (
     <div className="container mx-auto max-w-7xl p-6">
       <div className="mb-8">
-        <h1 className="mb-2 flex items-center gap-2 text-3xl font-bold text-fuchsia-300">
+        <h1 className="text-foreground mb-2 hidden items-center gap-2 text-3xl font-bold md:flex">
           <BarChartIcon className="text-xl" /> Swipe Insights
         </h1>
         <p className="text-muted-foreground">
